@@ -1,10 +1,11 @@
 package org.example.authorization.config;
 
-import com.nimbusds.jose.jwk.JWKSet;
-import com.nimbusds.jose.jwk.RSAKey;
-import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
-import com.nimbusds.jose.jwk.source.JWKSource;
-import com.nimbusds.jose.proc.SecurityContext;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.interfaces.RSAPublicKey;
+import java.util.UUID;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -12,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -31,11 +33,11 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
 
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.interfaces.RSAPrivateKey;
-import java.security.interfaces.RSAPublicKey;
-import java.util.UUID;
+import com.nimbusds.jose.jwk.JWKSet;
+import com.nimbusds.jose.jwk.RSAKey;
+import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
+import com.nimbusds.jose.jwk.source.JWKSource;
+import com.nimbusds.jose.proc.SecurityContext;
 
 @Configuration
 @EnableWebSecurity
@@ -44,31 +46,20 @@ public class AuthorizationServerConfig {
     @Order(1)
     public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http)
             throws Exception {
-//        OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
-//        http.getConfigurer(OAuth2AuthorizationServerConfigurer.class)
-//                .oidc(Customizer.withDefaults());	// Enable OpenID Connect 1.0
-//        http
-//                .exceptionHandling((exceptions) -> exceptions
-//                        .defaultAuthenticationEntryPointFor(
-//                                new LoginUrlAuthenticationEntryPoint("/login"),
-//                                new MediaTypeRequestMatcher(MediaType.TEXT_HTML)
-//                        )
-//                )
-//                // Accept access tokens for User Info and/or Client Registration
-//                .oauth2ResourceServer((resourceServer) -> resourceServer
-//                        .jwt(Customizer.withDefaults()));
-        // H2 콘솔 설정
-        http
-                .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/**")
-                )
-                .headers(headers -> headers
-                        .frameOptions(f -> f.sameOrigin()) // Frame Options 비활성화
-                )
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/h2/**").permitAll() // "/h2/**" 경로에 대한 접근 허용
-                        .anyRequest().authenticated() // 나머지 요청은 인증 필요
-                );
+       OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
+       http.getConfigurer(OAuth2AuthorizationServerConfigurer.class)
+               .oidc(Customizer.withDefaults());	// Enable OpenID Connect 1.0
+       http
+               .exceptionHandling((exceptions) -> exceptions
+                       .defaultAuthenticationEntryPointFor(
+                               new LoginUrlAuthenticationEntryPoint("/login"),
+                               new MediaTypeRequestMatcher(MediaType.TEXT_HTML)
+                       )
+               )
+               // Accept access tokens for User Info and/or Client Registration
+               .oauth2ResourceServer((resourceServer) -> resourceServer
+                       .jwt(Customizer.withDefaults()));
+
 
         return http.build();
     }
@@ -78,12 +69,16 @@ public class AuthorizationServerConfig {
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http)
             throws Exception {
         http
+            .csrf(csrf -> csrf.ignoringRequestMatchers("/**"))
+            .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin()))
                 .authorizeHttpRequests((authorize) -> authorize
-                        .anyRequest().authenticated()
+                    .requestMatchers("/h2/**").permitAll()
+                    .requestMatchers("/sign_up").permitAll()
+                    .anyRequest().authenticated()
                 )
                 // Form login handles the redirect to the login page from the
                 // authorization server filter chain
-                .formLogin(Customizer.withDefaults());
+                .formLogin( f-> f.loginPage("/login").permitAll());
 
         return http.build();
     }
@@ -151,5 +146,12 @@ public class AuthorizationServerConfig {
     @Bean
     public AuthorizationServerSettings authorizationServerSettings() {
         return AuthorizationServerSettings.builder().build();
+    }
+
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return web -> web.debug(false)
+            .ignoring()
+            .requestMatchers("/images/**", "/css/**", "/assets/**", "/favicon.ico");
     }
 }
