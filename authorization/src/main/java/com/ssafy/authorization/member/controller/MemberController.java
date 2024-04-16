@@ -8,13 +8,19 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import com.ssafy.authorization.member.model.dto.SignUpRequestDto;
+import com.ssafy.authorization.member.model.repository.MemberRepository;
+import com.ssafy.authorization.member.model.service.CustomUserDetailService;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Controller
 @Slf4j
+@RequiredArgsConstructor
 public class MemberController {
+	private final CustomUserDetailService userDetailService;
+
 	@GetMapping("/sign_up")
 	public String signUp() {
 		return "sign_up";
@@ -27,6 +33,7 @@ public class MemberController {
 			model.addAttribute("errMessage", bindingResult.getAllErrors());
 			return "sign_up";
 		} else {
+			userDetailService.createUser(dto);
 			return "login";
 		}
 	}
