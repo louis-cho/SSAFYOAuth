@@ -1,0 +1,12 @@
+spring:
+  application:
+    name : client
+
+  config:
+    import:
+      - application-oauth.yml
+      - application-jwt.yml
+
+
+server:
+  port: 3000
