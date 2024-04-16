@@ -1,10 +1,12 @@
-package org.example.authorization.secure;
+package com.ssafy.test.org.example.authorization.secure;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.security.KeyPair;
 
 import org.junit.jupiter.api.Test;
+
+import com.ssafy.authorization.secure.RSA2048;
 
 class RSA2048Test {
 

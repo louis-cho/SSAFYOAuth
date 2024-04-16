@@ -1,4 +1,4 @@
-package org.example.authorization.secure;
+package com.ssafy.authorization.secure;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 

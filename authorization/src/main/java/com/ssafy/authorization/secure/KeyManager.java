@@ -1,4 +1,4 @@
-package org.example.authorization.secure;
+package com.ssafy.authorization.secure;
 
 import java.security.KeyFactory;
 import java.security.KeyPair;
@@ -29,7 +29,7 @@ public class KeyManager {
 		return lastRequest;
 	}
 
-	public static KeyManager getInstnace() {
+	public static KeyManager getInstance() {
 		if (instance == null) {
 			instance = new KeyManager();
 			keyMap = new HashMap<>();
@@ -60,7 +60,7 @@ public class KeyManager {
 		}
 	}
 
-	private PrivateKey getPrivateKey(String ip) {
+	public PrivateKey getPrivateKey(String ip) {
 		if (ip == null || !isValidIP(ip)) {
 			return null;
 		}
@@ -115,7 +115,7 @@ public class KeyManager {
 	}
 
 	public String getPublicKeyModulus(String ip) {
-		RSAPublicKey pk = (RSAPublicKey)KeyManager.getInstnace().getPublicKey(ip);
+		RSAPublicKey pk = (RSAPublicKey)KeyManager.getInstance().getPublicKey(ip);
 		if (pk == null) {
 			return null;
 		}
@@ -123,7 +123,7 @@ public class KeyManager {
 	}
 
 	public String getPublicKeyExponent(String ip) {
-		RSAPublicKey pk = (RSAPublicKey)KeyManager.getInstnace().getPublicKey(ip);
+		RSAPublicKey pk = (RSAPublicKey)KeyManager.getInstance().getPublicKey(ip);
 		if (pk == null) {
 			return null;
 		}
