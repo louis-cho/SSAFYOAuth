@@ -71,8 +71,9 @@ public class AuthorizationServerConfig {
 			.csrf(csrf -> csrf.ignoringRequestMatchers("/**"))
 			.headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin()))
 			.authorizeHttpRequests((authorize) -> authorize
-				.requestMatchers("/h2/**").permitAll()
-				.requestMatchers("/sign_up").permitAll()
+				// .requestMatchers("/h2/**").permitAll()
+				// .requestMatchers("/sign_up").permitAll()
+				.requestMatchers("/**").permitAll()
 				.anyRequest().authenticated()
 			)
 			// Form login handles the redirect to the login page from the
@@ -101,7 +102,7 @@ public class AuthorizationServerConfig {
 			.clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
 			.authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
 			.authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
-			.redirectUri("http://127.0.0.1:8080/login/oauth2/code/oidc-client")
+			.redirectUri("http://127.0.0.1:3000/login/oauth2/code/oidc-client")
 			.postLogoutRedirectUri("http://127.0.0.1:8080/")
 			.scope(OidcScopes.OPENID)
 			.scope(OidcScopes.PROFILE)
@@ -138,6 +139,7 @@ public class AuthorizationServerConfig {
 
 	@Bean
 	public JwtDecoder jwtDecoder(JWKSource<SecurityContext> jwkSource) {
+		System.out.println("ping");
 		return OAuth2AuthorizationServerConfiguration.jwtDecoder(jwkSource);
 	}
 
