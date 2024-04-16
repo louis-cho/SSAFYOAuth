@@ -1,4 +1,4 @@
-package org.example.authorization.member.model.domain;
+package com.ssafy.authorization.member.model.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
