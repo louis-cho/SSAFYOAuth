@@ -11,15 +11,15 @@ spring:
   #    password
   datasource:
     url: jdbc:postgresql://localhost:5432/test
-    username: root
+    username: postgres
     password: 1234
     driver-class-name: org.postgresql.Driver
-
   h2:
     console:
       path: /h2
       enabled: true
   jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
     generate-ddl: 'true'
     hibernate:
       ddl-auto: create
