@@ -1,4 +1,4 @@
-package com.ssafy.developer.config;
+package com.ssafy.authorization.config;
 
 import org.springframework.cache.annotation.CachingConfigurer;
 import org.springframework.cache.annotation.EnableCaching;
