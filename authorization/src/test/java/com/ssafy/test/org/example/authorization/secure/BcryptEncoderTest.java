@@ -1,8 +1,10 @@
-package org.example.authorization.secure;
+package com.ssafy.test.org.example.authorization.secure;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
+
+import com.ssafy.authorization.secure.BcryptEncoder;
 
 public class BcryptEncoderTest {
 

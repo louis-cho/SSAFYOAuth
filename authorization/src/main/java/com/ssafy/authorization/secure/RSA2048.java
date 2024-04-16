@@ -1,4 +1,4 @@
-package org.example.authorization.secure;
+package com.ssafy.authorization.secure;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
