@@ -1,4 +1,4 @@
-package com.ssafy.test.org.example.authorization.secure;
+package com.ssafy.test.com.ssafy.authorization.secure;
 
 import static org.junit.jupiter.api.Assertions.*;
 

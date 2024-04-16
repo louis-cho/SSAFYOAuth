@@ -3,7 +3,7 @@ logging:
     org.springframework.security: DEBUG
 spring:
   application:
-    name : authorization
+    name: authorization
   datasource:
     driver-class-name: org.h2.Driver
     url: jdbc:h2:mem:db;MODE=MYSQL
@@ -41,3 +41,7 @@ spring:
                 - "openid"
                 - "profile"
             require-authorization-consent: true
+  data:
+    redis:
+      host: localhost
+      port: 6379
