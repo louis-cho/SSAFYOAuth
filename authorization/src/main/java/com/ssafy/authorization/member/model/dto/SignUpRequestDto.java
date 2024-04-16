@@ -1,4 +1,4 @@
-package org.example.authorization.member.model.dto;
+package com.ssafy.authorization.member.model.dto;
 
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Builder;
