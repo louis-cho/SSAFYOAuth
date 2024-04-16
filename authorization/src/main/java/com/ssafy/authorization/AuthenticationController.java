@@ -1,4 +1,4 @@
-package org.example.authorization;
+package com.ssafy.authorization;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,6 +9,5 @@ public class AuthenticationController {
 	public String login() {
 		return "login";
 	}
-
 
 }
