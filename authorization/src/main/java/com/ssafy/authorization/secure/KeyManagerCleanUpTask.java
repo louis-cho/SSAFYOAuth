@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class KeyManagerCleanUpTask {
 
-	private final int period = 600000;
+	public final int period = 600000;
 
 	@Scheduled(fixedRate = period) // 10 min
 	public void cleanupUnusedKeys() {
