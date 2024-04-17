@@ -32,13 +32,15 @@ spring:
             scope: profile,email
 
           oidc-client:
-            client-id: oidc-client
-            client-secret: secret
+            client-id: "oidc-client"
+            client-secret: "{noop}secret"
             client-name: oidc-client
             authorization-grant-type: authorization_code
             redirect-uri: http://localhost:3000/login/oauth2/code/oidc-client
-            scope: openid, profile
-            client-authentication-method: client_secret_post
+            scope:
+              - "openid"
+              - "profile"
+
 
         provider:
           oidc-client:

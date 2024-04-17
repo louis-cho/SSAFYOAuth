@@ -22,7 +22,7 @@ public class OAuthClientConfig {
 			clientDetails.setClientAuthenticationMethods("client_secret_basic");
 			clientDetails.setClientIdIssuedAt(Instant.now());
 			clientDetails.setClientName("oidc-client");
-			clientDetails.setClientSecret("secret"); // {noop} for no encryption
+			clientDetails.setClientSecret("{noop}secret"); // {noop} for no encryption
 			clientDetails.setClientSecretExpiresAt(Instant.MAX);
 			clientDetails.setPostLogoutRedirectUris("http://localhost:3000/logout");
 			clientDetails.setRedirectUris("http://localhost:3000/login/oauth2/code/oidc-client");

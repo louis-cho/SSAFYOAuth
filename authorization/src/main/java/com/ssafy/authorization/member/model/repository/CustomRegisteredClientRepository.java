@@ -26,12 +26,14 @@ public class CustomRegisteredClientRepository implements RegisteredClientReposit
 
 	@Override
 	public RegisteredClient findById(String id) {
+		log.info("{} dididididididiid"    , id);
 		Client client = clientRepository.findById(id).orElseThrow();
 		return clientUtils.toObject(client);
 	}
 
 	@Override
 	public RegisteredClient findByClientId(String clientId) {
+		log.info("clientID !!! {} ", clientId);
 		Client client = clientRepository.findClientByClientId(clientId).orElseThrow();
 		log.info("clientID !! : {}     {} client URI {}", clientId,client.getClientId(), client.getRedirectUris());
 		return clientUtils.toObject(client);
