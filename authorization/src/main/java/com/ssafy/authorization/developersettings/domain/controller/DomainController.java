@@ -15,52 +15,57 @@ import com.ssafy.authorization.developersettings.domain.service.DomainService;
 
 @RestController
 @RequestMapping("/api/team/domain")
-public class DomainUrlController {
+public class DomainController {
 
 	DomainService domainService;
 	DomainEntityRepository domainEntityRepository;
 
 	@Autowired
-	DomainUrlController(DomainService domainService, DomainEntityRepository domainEntityRepository) {
+	DomainController(DomainService domainService, DomainEntityRepository domainEntityRepository) {
 		this.domainService = domainService;
 		this.domainEntityRepository = domainEntityRepository;
 	}
 
 	@PostMapping("/test")
 	public void regist() {
-		String domainUrl;
+		String domainDomain;
 		UUID teamId, userId;
-		domainUrl = "http://127.43.42.1/test";
+		domainDomain = "http://127.43.42.1/test";
 		teamId = UUID.randomUUID();
 		userId = UUID.randomUUID();
 
-		DomainEntity entity = new DomainEntity(teamId, userId, domainUrl);
+		DomainEntity entity = new DomainEntity(teamId, userId, domainDomain);
 		domainEntityRepository.save(entity);
 	}
 
 	@PostMapping("/regist")
-	public String registDomain(@RequestBody JsonNode requestBody) {
+	public int registDomain(@RequestBody JsonNode requestBody) {
 
 		JsonNode domainNode, teamNode, userNode;
-		String domainUrl, teamId, userId;
+		String domain;
+		UUID teamId, userId;
 
 		domainNode = requestBody.get("domainUrl");
 		teamNode = requestBody.get("teamId");
 		userNode = requestBody.get("userId");
 
 		if (domainNode == null || teamNode == null || userNode == null) {
-			return "X";
+			// Todo : Json 데이터 형식 에러 리턴
+			return -1;
 		} else {
 			try {
-				domainUrl = domainNode.asText();
-				teamId = teamNode.asText();
-				userId = userNode.asText();
+				domain = domainNode.asText();
+				teamId = UUID.fromString(teamNode.asText());
+				userId = UUID.fromString(userNode.asText());
 			} catch (NullPointerException e) {
 				// 에러 코드 응답
-				return "X";
+				// Todo : Json 데이터 형식 에러 리턴
+				return -1;
 			}
 		}
 
-		return "hi";
+		DomainEntity domainEntity = new DomainEntity(teamId, userId, domain);
+
+		return domainService.saveDomain(domainEntity);
 	}
 }
