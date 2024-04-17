@@ -1,4 +1,4 @@
-package com.ssafy.developer.team.settings.redirect;
+package com.ssafy.authorization.developer.settings.redirect;
 
 import org.springframework.stereotype.Controller;
 

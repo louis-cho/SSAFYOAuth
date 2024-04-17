@@ -1,4 +1,4 @@
-package com.ssafy.developer.team.settings.domain;
+package com.ssafy.authorization.developer.settings.domain;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
