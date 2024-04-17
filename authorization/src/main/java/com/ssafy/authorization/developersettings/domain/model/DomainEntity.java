@@ -7,19 +7,22 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
+import jakarta.persistence.Table;
 
 @Entity
+@Table(name = "domain_url", indexes = {@Index(columnList = "teamId")})
 public class DomainEntity implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Long id;
+	private Integer id;
 
 	private UUID teamId;
 
 	private UUID userId;
 
-	private String domainUrl;
+	private String domain;
 
 	// 생성자, 게터 및 세터, toString 등의 메서드는 필요에 따라 추가합니다.
 	// 생성자와 게터/세터는 롬복(Lombok) 등의 라이브러리를 사용하여 간편하게 생성할 수 있습니다.
@@ -29,18 +32,18 @@ public class DomainEntity implements Serializable {
 	}
 
 	// 모든 필드를 사용하는 생성자
-	public DomainEntity(UUID teamId, UUID userId, String domainUrl) {
+	public DomainEntity(UUID teamId, UUID userId, String domain) {
 		this.teamId = teamId;
 		this.userId = userId;
-		this.domainUrl = domainUrl;
+		this.domain = domain;
 	}
 
 	// Getter 및 Setter
-	public Long getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
@@ -60,12 +63,12 @@ public class DomainEntity implements Serializable {
 		this.userId = userId;
 	}
 
-	public String getDomainUrl() {
-		return domainUrl;
+	public String getDomain() {
+		return domain;
 	}
 
-	public void setDomainUrl(String domainUrl) {
-		this.domainUrl = domainUrl;
+	public void setDomain(String domainDomain) {
+		this.domain = domain;
 	}
 
 	// toString 메서드
@@ -75,7 +78,7 @@ public class DomainEntity implements Serializable {
 			"id=" + id +
 			", teamId=" + teamId +
 			", userId=" + userId +
-			", domainUrl='" + domainUrl + '\'' +
+			", domain='" + domain + '\'' +
 			'}';
 	}
 }
