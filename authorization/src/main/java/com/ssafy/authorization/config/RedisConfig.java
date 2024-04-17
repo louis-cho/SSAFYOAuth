@@ -21,15 +21,6 @@ public class RedisConfig implements CachingConfigurer {
 
 	private final RedisProperties redisProperties;
 
-	// @Bean
-	// public RedisTemplate<String, String> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
-	// 	RedisTemplate<String, String> template = new RedisTemplate<>();
-	// 	template.setConnectionFactory(redisConnectionFactory);
-	// 	template.setDefaultSerializer(new GenericJackson2JsonRedisSerializer());
-	// 	return template;
-	// }
-
-
 	@Bean
 	public RedisConnectionFactory redisConnectionFactory() {
 		RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
