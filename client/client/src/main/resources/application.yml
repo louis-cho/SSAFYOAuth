@@ -9,4 +9,10 @@ spring:
 
 
 server:
-  port: 3000
+  port: 8080
+logging:
+  level:
+    root: INFO
+    org.springframework.web: INFO
+    org.springframework.security: INFO
+    org.springframework.security.oauth2: INFO

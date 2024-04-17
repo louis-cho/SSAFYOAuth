@@ -1,186 +1,155 @@
 package com.ssafy.authorization.config;
 
-import static org.springframework.security.config.Customizer.*;
-
-import java.io.IOException;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.interfaces.RSAPrivateKey;
-import java.security.interfaces.RSAPublicKey;
-import java.util.List;
-import java.util.UUID;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.init.DataSourceInitializer;
+import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.core.oidc.OidcScopes;
-import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.security.oauth2.server.authorization.OAuth2TokenType;
-import org.springframework.security.oauth2.server.authorization.client.InMemoryRegisteredClientRepository;
+import org.springframework.security.oauth2.server.authorization.JdbcOAuth2AuthorizationConsentService;
+import org.springframework.security.oauth2.server.authorization.JdbcOAuth2AuthorizationService;
+import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationConsentService;
+import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
+import org.springframework.security.oauth2.server.authorization.client.JdbcRegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
-import org.springframework.security.oauth2.server.authorization.oidc.authentication.OidcUserInfoAuthenticationContext;
-import org.springframework.security.oauth2.server.authorization.oidc.authentication.OidcUserInfoAuthenticationToken;
-import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
-import org.springframework.security.oauth2.server.authorization.token.JwtEncodingContext;
-import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenCustomizer;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
+import org.springframework.security.provisioning.JdbcUserDetailsManager;
+import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
 
-import com.nimbusds.jose.jwk.JWKSet;
-import com.nimbusds.jose.jwk.RSAKey;
-import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
-import com.nimbusds.jose.jwk.source.JWKSource;
-import com.nimbusds.jose.proc.SecurityContext;
-import com.ssafy.authorization.member.model.domain.Member;
-import com.ssafy.authorization.member.model.service.CustomUserDetailService;
-import com.ssafy.authorization.utils.CustomLoginUrlAuthenticationEntryPoint;
+import javax.sql.DataSource;
 
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import java.util.UUID;
+
+import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @EnableWebSecurity
 public class AuthorizationServerConfig {
+
 	@Bean
 	@Order(1)
-	public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http)
-		throws Exception {
+	SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http)
+			throws Exception {
 		OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
-
-		Function<OidcUserInfoAuthenticationContext, OidcUserInfo> userInfoMapper = (context) -> {
-			OidcUserInfoAuthenticationToken authentication = context.getAuthentication();
-			JwtAuthenticationToken principal = (JwtAuthenticationToken) authentication.getPrincipal();
-
-			return new OidcUserInfo(principal.getToken().getClaims());
-		};
-
-		http.getConfigurer(OAuth2AuthorizationServerConfigurer.class).oidc((oidc) -> oidc
-			.userInfoEndpoint((userInfo) -> userInfo
-				.userInfoMapper(userInfoMapper)
-			));
 		http.getConfigurer(OAuth2AuthorizationServerConfigurer.class)
-			.oidc(withDefaults());
-
+				.authorizationEndpoint(auth -> auth
+						.consentPage("/oauth2/consent"))
+				.oidc(withDefaults());
 		http
-			.exceptionHandling((exceptions) -> exceptions
-				.defaultAuthenticationEntryPointFor(
-					new CustomLoginUrlAuthenticationEntryPoint("/login"),
-					new MediaTypeRequestMatcher(MediaType.TEXT_HTML)
+				.exceptionHandling((exceptions) -> exceptions
+						.defaultAuthenticationEntryPointFor(
+								new LoginUrlAuthenticationEntryPoint("/login"),
+								new MediaTypeRequestMatcher(MediaType.TEXT_HTML)
+						)
 				)
-			);
-			http// Accept access tokens for User Info and/or Client Registration
-			.oauth2ResourceServer((resourceServer) -> resourceServer
-				.jwt(withDefaults()));
+				.oauth2ResourceServer((resourceServer) -> resourceServer
+						.jwt(withDefaults()));
 
 		return http.build();
 	}
 
 	@Bean
 	@Order(2)
-	public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http)
-		throws Exception {
+	SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http)
+			throws Exception {
 		http
-			.cors( cors -> cors.disable())
-			.csrf(csrf -> csrf.disable())
-			.headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable()))
-			.authorizeHttpRequests((authorize) -> authorize
-				// .requestMatchers("/h2/**").permitAll()
-				// .requestMatchers("/sign_up").permitAll()
-				.requestMatchers("/**").permitAll()
-				.anyRequest().authenticated()
-			)
-			.formLogin(f -> f.loginPage("/login").permitAll());
-
+				.authorizeHttpRequests((authorize) -> authorize
+						.requestMatchers("/css/**", "/favicon.ico", "/error", "/login").permitAll()
+						.anyRequest().authenticated()
+				)
+				.formLogin(formLogin -> formLogin
+						.loginPage("/login")
+				);
 		return http.build();
 	}
 
-
 	@Bean
-	public JWKSource<SecurityContext> jwkSource() {
-		KeyPair keyPair = generateRsaKey();
-		RSAPublicKey publicKey = (RSAPublicKey)keyPair.getPublic();
-		RSAPrivateKey privateKey = (RSAPrivateKey)keyPair.getPrivate();
-		RSAKey rsaKey = new RSAKey.Builder(publicKey)
-			.privateKey(privateKey)
-			.keyID(UUID.randomUUID().toString())
-			.build();
-		JWKSet jwkSet = new JWKSet(rsaKey);
-		return new ImmutableJWKSet<>(jwkSet);
+	PasswordEncoder passwordEncoder() {
+		return PasswordEncoderFactories.createDelegatingPasswordEncoder();
 	}
 
-	private static KeyPair generateRsaKey() {
-		KeyPair keyPair;
-		try {
-			KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-			keyPairGenerator.initialize(2048);
-			keyPair = keyPairGenerator.generateKeyPair();
-		} catch (Exception ex) {
-			throw new IllegalStateException(ex);
+	@Bean
+	RegisteredClientRepository jdbcRegisteredClientRepository(JdbcTemplate template) {
+		return new JdbcRegisteredClientRepository(template);
+	}
+
+	@Bean
+	UserDetailsManager jdbcUserDetailsManager(DataSource dataSource) {
+		JdbcUserDetailsManager jdbcUserDetailsManager = new JdbcUserDetailsManager(dataSource);
+		UserDetails user = User.withDefaultPasswordEncoder()
+				.username("oidc-client")
+				.password("{noop}secret")
+				.roles("USER")
+				.build();
+
+		if (!jdbcUserDetailsManager.userExists(user.getUsername())) {
+			jdbcUserDetailsManager.createUser(user);
 		}
-		return keyPair;
+		return jdbcUserDetailsManager;
 	}
 
 	@Bean
-	public JwtDecoder jwtDecoder(JWKSource<SecurityContext> jwkSource) {
-		System.out.println("ping");
-		return OAuth2AuthorizationServerConfiguration.jwtDecoder(jwkSource);
+	OAuth2AuthorizationService jdbcOAuth2AuthorizationService(
+			JdbcOperations jdbcOperations,
+			RegisteredClientRepository registeredClientRepository) {
+
+		RegisteredClient registeredClient = RegisteredClient.withId(UUID.randomUUID().toString())
+				.clientId("dongjae-client")
+				.clientSecret("{noop}secret")
+				.clientName("dongjae-client-oidc")
+				.clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
+				.authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+				.authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
+				.authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
+				.redirectUri("http://localhost:8080/login/oauth2/code/dongjae-client-oidc")
+				.postLogoutRedirectUri("http://localhost:8080/")
+				.redirectUri("http://localhost:8080/oauth2/authorize")
+				.scope(OidcScopes.OPENID)
+				.scope(OidcScopes.PROFILE)
+				.scope("message.read")
+				.scope("message.write")
+				.clientSettings(ClientSettings.builder().requireAuthorizationConsent(true).build())
+				.build();
+
+		RegisteredClient deviceClient = RegisteredClient.withId(UUID.randomUUID().toString())
+				.clientId("device-messaging-client")
+				.clientAuthenticationMethod(ClientAuthenticationMethod.NONE)
+				.authorizationGrantType(AuthorizationGrantType.DEVICE_CODE)
+				.authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
+				.scope("message.read")
+				.scope("message.write")
+				.build();
+		if(registeredClientRepository.findByClientId("dongjae-client") == null){
+			registeredClientRepository.save(registeredClient);
+			registeredClientRepository.save(deviceClient);
+		}
+
+		return new JdbcOAuth2AuthorizationService(jdbcOperations, registeredClientRepository);
 	}
 
 	@Bean
-	public AuthorizationServerSettings authorizationServerSettings() {
-		return AuthorizationServerSettings.builder()
-			.build();
-	}
-
-	@Bean
-	public WebSecurityCustomizer webSecurityCustomizer() {
-		return web -> web.debug(false)
-			.ignoring()
-			.requestMatchers("/images/**", "/css/**", "/assets/**", "/favicon.ico");
-	}
-
-	@Bean
-	public PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
-	@Bean
-	public OAuth2TokenCustomizer<JwtEncodingContext> jwtTokenCustomizer(CustomUserDetailService userDetailsService) {
-		return (context) -> {
-			OAuth2TokenType tokenType = context.getTokenType();
-			if (OAuth2TokenType.ACCESS_TOKEN.equals(tokenType)) {
-				String username = context.getPrincipal().getName();
-				Member member = userDetailsService.getUserByUsername(username);
-				List<SimpleGrantedAuthority> authorities = member.getSimpleAuthorities();
-				context.getClaims().claims((claims) -> {
-					claims.put("id", member.getMemberId().intValue());
-					claims.put("authorities", authorities.stream().map(SimpleGrantedAuthority::getAuthority).collect(
-						Collectors.toList()));
-				});
-			}
-		};
+	OAuth2AuthorizationConsentService jdbcOAuth2AuthorizationConsentService(
+			JdbcOperations jdbcOperations,
+			RegisteredClientRepository registeredClientRepository) {
+		return new JdbcOAuth2AuthorizationConsentService(jdbcOperations, registeredClientRepository);
 	}
 
 }

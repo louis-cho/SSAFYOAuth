@@ -31,23 +31,28 @@ spring:
             authorization-grant-type: authorization_code
             scope: profile,email
 
-          oidc-client:
-            client-id: "oidc-client"
-            client-secret: "{noop}secret"
-            client-name: oidc-client
+          dongjae-client-oidc:
+            provider: spring
+            client-id: dongjae-client
+            client-secret: secret
+            client-name: dongjae-client-oidc
             authorization-grant-type: authorization_code
-            redirect-uri: http://localhost:3000/login/oauth2/code/oidc-client
+            redirect-uri: "http://localhost:8080/login/oauth2/code/{registrationId}"
             scope:
               - "openid"
               - "profile"
-
+          dongjae-client-authorization-code:
+            provider: spring
+            client-id: dongjae-client
+            client-secret: secret
+            authorization-grant-type: authorization_code
+            redirect-uri: "http://localhost:8080/oauth2/authorize"
+            scope: articles.read
+            client-name: dongjae-client-authorization-code
 
         provider:
-          oidc-client:
-            authorization-uri: http://localhost:8080/oauth2/authorize
-            token-uri: http://localhost:8080/oauth2/token
-            user-info-uri: http://localhost:8080/userinfo
-            user-name-attribute: id
+          spring :
+            issuer-uri: http://localhost:9000
 
           kakao:
             authorization-uri: https://kauth.kakao.com/oauth/authorize
