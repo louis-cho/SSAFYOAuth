@@ -1,4 +1,4 @@
-package com.ssafy.test.com.ssafy.authorization.developersettings.domain.service;
+package com.ssafy.test.com.ssafy.authorization.developersettings.redirect.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -10,14 +10,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 
 import com.ssafy.authorization.AuthorizationApplication;
-import com.ssafy.authorization.developersettings.domain.model.DomainEntity;
-import com.ssafy.authorization.developersettings.domain.service.DomainService;
+import com.ssafy.authorization.developersettings.redirect.model.RedirectEntity;
+import com.ssafy.authorization.developersettings.redirect.service.RedirectService;
 
 @SpringBootTest(classes = AuthorizationApplication.class)
-public class DomainServiceTest {
+public class RedirectServiceTest {
 
 	@Autowired
-	private DomainService domainService;
+	private RedirectService redirectService;
 
 	@Test
 	@DirtiesContext
@@ -25,22 +25,22 @@ public class DomainServiceTest {
 		// 동시에 여러 개의 도메인을 저장하는 테스트
 		UUID teamId = UUID.randomUUID();
 		UUID userId = UUID.randomUUID();
-		String domainUrl = "example.com";
+		String redirectUrl = "example.com";
 
 		for (int i = 0; i < 7; i++) {
-			domainService.insertDomain(new DomainEntity(teamId, userId, domainUrl + i));
+			redirectService.insertRedirect(new RedirectEntity(teamId, userId, redirectUrl + i));
 		}
 
 		// 저장된 도메인 개수 확인
-		int count = domainService.countDomainUrl(teamId);
+		int count = redirectService.countRedirectUrl(teamId);
 		// 최대 6개까지 저장되어야 함
 		assertTrue(count <= 6);
 
 		for (int i = 0; i < 7; i++) {
-			domainService.removeDomain(new DomainEntity(teamId, userId, domainUrl + i));
+			redirectService.removeRedirect(new RedirectEntity(teamId, userId, redirectUrl + i));
 		}
 
-		count = domainService.countDomainUrl(teamId);
+		count = redirectService.countRedirectUrl(teamId);
 
 		assertEquals(0, count);
 	}

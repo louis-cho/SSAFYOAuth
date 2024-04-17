@@ -26,46 +26,44 @@ public class DomainController {
 		this.domainEntityRepository = domainEntityRepository;
 	}
 
-	@PostMapping("/test")
-	public void regist() {
-		String domainDomain;
+	private DomainEntity parseDomainEntity(JsonNode jsonNode) {
+		JsonNode domainNode = null, teamNode = null, userNode = null;
+		String domain;
 		UUID teamId, userId;
-		domainDomain = "http://127.43.42.1/test";
-		teamId = UUID.randomUUID();
-		userId = UUID.randomUUID();
 
-		DomainEntity entity = new DomainEntity(teamId, userId, domainDomain);
-		domainEntityRepository.save(entity);
+		domainNode = jsonNode.get("domainUrl");
+		teamNode = jsonNode.get("teamId");
+		userNode = jsonNode.get("userId");
+
+		if (domainNode == null || teamNode == null || userNode == null) {
+			return null;
+		}
+		domain = domainNode.asText();
+		try {
+			teamId = UUID.fromString(teamNode.asText());
+			userId = UUID.fromString(userNode.asText());
+		} catch (IllegalArgumentException e) {
+			return null;
+		}
+
+		return new DomainEntity(teamId, userId, domain);
 	}
 
 	@PostMapping("/regist")
 	public int registDomain(@RequestBody JsonNode requestBody) {
-
-		JsonNode domainNode, teamNode, userNode;
-		String domain;
-		UUID teamId, userId;
-
-		domainNode = requestBody.get("domainUrl");
-		teamNode = requestBody.get("teamId");
-		userNode = requestBody.get("userId");
-
-		if (domainNode == null || teamNode == null || userNode == null) {
-			// Todo : Json 데이터 형식 에러 리턴
+		DomainEntity domainEntity = parseDomainEntity(requestBody);
+		if (domainEntity == null) {
 			return -1;
-		} else {
-			try {
-				domain = domainNode.asText();
-				teamId = UUID.fromString(teamNode.asText());
-				userId = UUID.fromString(userNode.asText());
-			} catch (NullPointerException e) {
-				// 에러 코드 응답
-				// Todo : Json 데이터 형식 에러 리턴
-				return -1;
-			}
 		}
+		return domainService.insertDomain(domainEntity);
+	}
 
-		DomainEntity domainEntity = new DomainEntity(teamId, userId, domain);
-
-		return domainService.saveDomain(domainEntity);
+	@PostMapping("/delete")
+	public int deleteDomain(@RequestBody JsonNode requestBody) {
+		DomainEntity domainEntity = parseDomainEntity(requestBody);
+		if (domainEntity == null) {
+			return -1;
+		}
+		return domainService.removeDomain(domainEntity);
 	}
 }

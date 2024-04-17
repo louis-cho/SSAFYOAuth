@@ -9,7 +9,9 @@ import com.ssafy.authorization.developersettings.domain.model.DomainEntity;
 @Service
 public interface DomainService {
 
-	int saveDomain(DomainEntity domainEntity);
+	int insertDomain(DomainEntity domainEntity);
 
+	int removeDomain(DomainEntity domainEntity);
+	
 	int countDomainUrl(UUID teamId);
 }
