@@ -9,9 +9,7 @@ import com.ssafy.authorization.developersettings.domain.model.DomainEntity;
 import com.ssafy.authorization.developersettings.domain.repository.DomainEntityRepository;
 
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.OptimisticLockException;
 import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -49,12 +47,9 @@ public class DomainServiceImpl implements DomainService {
 		return true; // 임시로 true 반환
 	}
 
-	private int countDomainUrl(UUID teamId) {
-		TypedQuery<Long> query = entityManager.createQuery(
-				"SELECT COUNT(r) FROM DomainEntity r WHERE r.teamId = :teamId", Long.class)
-			.setParameter("teamId", teamId);
-
-		return query.getSingleResult().intValue();
+	@Override
+	public int countDomainUrl(UUID teamId) {
+		return domainEntityRepository.countByTeamId(teamId);
 	}
 
 	private int countRedirectUrl(UUID teamId) {
@@ -67,12 +62,10 @@ public class DomainServiceImpl implements DomainService {
 			// 도메인 URL 개수가 6개 미만인 경우에만 URL 추가
 			if (count < 6) {
 				DomainEntity domainEntity = new DomainEntity(teamId, userId, domainUrl);
-				entityManager.persist(domainEntity);
+				domainEntityRepository.save(domainEntity);
 			}
-		} catch (OptimisticLockException e) {    // 동시성 문제
+		} catch (Exception e) {
 			return -1;
-		} catch (RuntimeException e) {    // 트랜잭션 실행 중 에러 발생
-			return -2;
 		}
 
 		return 1;

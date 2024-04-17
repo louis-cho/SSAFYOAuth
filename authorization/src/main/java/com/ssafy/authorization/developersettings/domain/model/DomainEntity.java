@@ -9,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 
 @Entity
 @Table(name = "domain_url", indexes = {@Index(columnList = "teamId")})
@@ -23,6 +24,9 @@ public class DomainEntity implements Serializable {
 	private UUID userId;
 
 	private String domain;
+
+	@Version
+	private Integer version;
 
 	// 생성자, 게터 및 세터, toString 등의 메서드는 필요에 따라 추가합니다.
 	// 생성자와 게터/세터는 롬복(Lombok) 등의 라이브러리를 사용하여 간편하게 생성할 수 있습니다.
