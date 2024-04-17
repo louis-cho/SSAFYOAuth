@@ -44,7 +44,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         else if (registrationId.equals("google")){
 
             oAuth2Response = new GoogleResponse(oAuth2User.getAttributes());
-        } else if (registrationId.equals("ssafy")) {
+        } else if (registrationId.equals("oidc-client")) {
             oAuth2Response = new SsafyResponse(oAuth2User.getAttributes());
         } else {
 

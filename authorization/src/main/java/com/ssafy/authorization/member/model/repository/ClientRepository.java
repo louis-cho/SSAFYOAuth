@@ -9,5 +9,5 @@ import com.ssafy.authorization.member.model.domain.Client;
 
 @Repository
 public interface ClientRepository extends JpaRepository<Client,String> {
-	Optional<Client> findByClientId(String clientId);
+	Optional<Client> findClientByClientId(String clientId);
 }

@@ -1,7 +1,11 @@
 logging:
   level:
-    org.springframework.security: DEBUG
+    org:
+      springframework:
+        web : DEBUG
+        security : DEBUG
     org.hibernate.SQL: DEBUG
+
 spring:
   application:
     name : authorization
@@ -22,3 +26,23 @@ spring:
     user:
       name: user
       password: password
+    oauth2:
+      authorizationserver:
+        client:
+          oidc-client:
+            registration:
+              client-id: "oidc-client"
+              client-secret: "secret"
+              client-authentication-methods:
+                - "client_secret_basic"
+              authorization-grant-types:
+                - "authorization_code"
+                - "refresh_token"
+              redirect-uris:
+                - "http://localhost:3000/login/oauth2/code/oidc-client"
+              post-logout-redirect-uris:
+                - "http://localhost:8080/logout"
+              scopes:
+                - "openid"
+                - "profile"
+            require-authorization-consent: true

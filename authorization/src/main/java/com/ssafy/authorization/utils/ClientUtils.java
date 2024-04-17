@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
+import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
 import org.springframework.stereotype.Component;
 
 import com.ssafy.authorization.member.model.domain.Client;
@@ -39,9 +40,8 @@ public class ClientUtils {
 			.redirectUris((uris) -> uris.addAll(redirectUris))
 			.postLogoutRedirectUris(uris -> uris.addAll(postLogoutUris))
 			.scopes((scopes) -> scopes.addAll(clientScopes))
-			.clientSettings(client.getClientSettings())
+			.clientSettings(ClientSettings.builder().requireAuthorizationConsent(false).build())
 			.tokenSettings(client.getTokenSettings());
-
 		return registeredClient.build();
 	}
 
