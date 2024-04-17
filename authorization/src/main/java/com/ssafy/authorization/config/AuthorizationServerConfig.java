@@ -73,10 +73,7 @@ public class AuthorizationServerConfig {
 	// 		.authorizeHttpRequests((authorize) -> authorize
 	// 			.requestMatchers("/h2/**").permitAll()
 	// 			.requestMatchers("/sign_up").permitAll()
-<<<<<<< Updated upstream
-=======
 	// 			.requestMatchers("/test").permitAll()
->>>>>>> Stashed changes
 	// 			.anyRequest().authenticated()
 	// 		)
 	// 		// Form login handles the redirect to the login page from the
