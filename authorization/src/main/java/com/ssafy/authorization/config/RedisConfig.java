@@ -1,4 +1,3 @@
-
 package com.ssafy.authorization.config;
 
 import org.springframework.cache.annotation.CachingConfigurer;
