@@ -37,6 +37,11 @@ public class TeamController {
 		return new ResponseEntity<Map>(teamService.addTeam(vo), HttpStatus.OK);
 	}
 
+	@GetMapping("/{team-seq}")
+	public ResponseEntity<Map> teamDetail(@PathVariable("team-seq") Integer teamSeq){
+		return new ResponseEntity<Map>(teamService.detailTeam(teamSeq), HttpStatus.OK);
+	}
+
 	@DeleteMapping("/{team-seq}")
 	public ResponseEntity<Map> teamDelete(@PathVariable("team-seq") Integer teamSeq){
 		return new ResponseEntity<Map>(teamService.deleteTeam(teamSeq), HttpStatus.OK);

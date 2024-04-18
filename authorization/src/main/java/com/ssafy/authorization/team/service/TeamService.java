@@ -13,4 +13,6 @@ public interface TeamService {
 	Map updateTeamName(Integer teamSeq, TeamNameUpdateVo vo);
 
 	Map listTeam();
+
+	Map detailTeam(Integer teamSeq);
 }

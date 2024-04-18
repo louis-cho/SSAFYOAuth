@@ -17,11 +17,15 @@ import com.ssafy.authorization.team.entity.DeveloperTeamEntity;
 import com.ssafy.authorization.team.entity.TeamListEntity;
 import com.ssafy.authorization.team.entity.TeamMemberEntity;
 import com.ssafy.authorization.team.entity.TeamMemberPK;
+import com.ssafy.authorization.team.entity.TeamMemberWithInfoEntity;
 import com.ssafy.authorization.team.repository.DeveloperTeamRepository;
 import com.ssafy.authorization.team.repository.TeamListRepository;
 import com.ssafy.authorization.team.repository.TeamMemberRepository;
+import com.ssafy.authorization.team.repository.TeamMemberWithInfoRepository;
 import com.ssafy.authorization.team.vo.TeamAddVo;
+import com.ssafy.authorization.team.vo.TeamDetailVo;
 import com.ssafy.authorization.team.vo.TeamListVo;
+import com.ssafy.authorization.team.vo.TeamMemberVo;
 import com.ssafy.authorization.team.vo.TeamNameUpdateVo;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -30,12 +34,13 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class TeamServiceImpl implements TeamService{
-
 	private final DeveloperTeamRepository developerTeamRepository;
 
 	private final TeamMemberRepository teamMemberRepository;
 
 	private final TeamListRepository teamListRepository;
+
+	private final TeamMemberWithInfoRepository teamMemberWithInfoRepository;
 
 	@Override
 	@Transactional
@@ -185,6 +190,47 @@ public class TeamServiceImpl implements TeamService{
 		}).collect(Collectors.toList());
 		data.put("msg", null);
 		data.put("list", vos);
+		return data;
+	}
+
+	@Override
+	public Map detailTeam(Integer teamSeq) {
+		Map<String, Object> data = new HashMap<>();
+		// 존재 하는 팀인지 확인
+		List<DeveloperTeamEntity> list = developerTeamRepository.findBySeqAndIsDeleteFalse(teamSeq);
+		if(list.size() != 1){
+			data.put("msg", "존재하지 않는 팀");
+			data.put("team_name", null);
+			return data;
+		}
+		// 요청을 한 사람이 팀 원인지 확인
+		Integer mySeq = 0;
+		Optional<TeamMemberEntity> member = teamMemberRepository.findById(new TeamMemberPK(teamSeq, mySeq));
+		if(member.isEmpty()){
+			data.put("msg", "팀을 볼 수 있는 권한이 없습니다.");
+			data.put("team_name", null);
+			return data;
+		}
+		// 정상 응답의 경우
+		DeveloperTeamEntity team = list.get(0);
+		TeamDetailVo vo = new TeamDetailVo();
+		vo.setTeamName(team.getTeamName());
+		vo.setServiceName(team.getServiceName());
+		vo.setServiceKey(team.getServiceKey());
+		List<TeamMemberVo> memberList = teamMemberWithInfoRepository.findAllByTeamSeq(teamSeq).stream().map(entity -> {
+			TeamMemberVo memberVo = new TeamMemberVo();
+			memberVo.setEmail(entity.getEmail());
+			memberVo.setName(entity.getName());
+			memberVo.setIsAccept(entity.getIsAccept());
+			memberVo.setIsLeader(entity.getMemberSeq() == team.getLeader() ? true : false);
+			return memberVo;
+		}).collect(Collectors.toList());
+		vo.setMembers(memberList);
+		// 도메인과 리디이렉트 url 셋팅
+
+		//응답
+		data.put("msg", null);
+		data.put("team", vo);
 		return data;
 	}
 }
