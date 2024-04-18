@@ -5,18 +5,20 @@ spring:
   application:
     name : authorization
   datasource:
-    driver-class-name: org.h2.Driver
-    url: jdbc:h2:mem:db;MODE=MYSQL
-    username: sa
-    password:
+    url: jdbc:postgresql://localhost:5432/ssafyauth
+    username: postgres
+    password: 1234
+    driver-class-name: org.postgresql.Driver
   h2:
     console:
       path: /h2
       enabled: true
   jpa:
-    generate-ddl: 'true'
+    generate-ddl: false
     hibernate:
-      ddl-auto: create
+      ddl-auto: none
+    database: postgresql
+    show-sql: true
   security:
     user:
       name: user
