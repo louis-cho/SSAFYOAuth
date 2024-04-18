@@ -17,17 +17,4 @@ public class AuthenticationController {
 	public String login() {
 		return "login";
 	}
-
-	@GetMapping("/test")
-	public String test() throws Exception {
-		// emailService.sendEmail("kdn1030@naver.com");
-		return "dana";
-	}
-
-	@GetMapping("/test2/{userCode}")
-	public String test2(@PathVariable String userCode) throws Exception {
-		System.out.println(emailService.certify(userCode));
-		return "dana";
-	}
-
 }
