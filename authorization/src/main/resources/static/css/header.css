@@ -1,4 +1,9 @@
 /* header.css */
+.header-main {
+
+    padding: 60px 0; /* 원하는 padding 값으로 조정 */
+}
+
 .navbar {
     border-radius: 0;
 }
@@ -8,6 +13,7 @@
     font-size: 1.5rem;
     /*color: #fff;*/
     color: #212121;
+    color: blue;
 }
 
 .navbar-toggler {

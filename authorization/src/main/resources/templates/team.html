@@ -11,24 +11,8 @@
 </head>
 <body>
 <div th:replace="~{layouts/header :: header}"></div>
-<div id="login-page">
-    <div class="login-form">
-        <h1>로그인하쇼</h1>
+<div id="team-page">
 
-        <div class="message error" th:if="${param.error}">
-            잘못된 입력입니다. 아이디 또는 비밀번호를 다시 확인하세요.
-        </div>
-        <form th:action="@{/login}" method="post">
-            <div>
-                <input type="text" name="username" placeholder="아이디"/>
-            </div>
-            <div>
-                <input type="password" name="password" placeholder="비밀번호"/>
-            </div>
-            <button type="submit">로그인</button>
-        </form>
-        <a th:href="@{/sign_up}">회원 가입</a>
-    </div>
 </div>
 <div th:replace="~{layouts/footer :: footer}"></div>
 </body>
