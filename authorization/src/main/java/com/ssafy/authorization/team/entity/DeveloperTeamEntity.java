@@ -7,6 +7,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -22,6 +24,7 @@ public class DeveloperTeamEntity {
 
 	@Id
 	@Column(name = "developer_team_seq", nullable = false)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer seq;
 
 	@Column(name = "team_name", nullable = false)
