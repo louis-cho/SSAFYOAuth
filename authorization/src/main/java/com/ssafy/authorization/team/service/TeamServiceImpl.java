@@ -88,7 +88,8 @@ public class TeamServiceImpl implements TeamService{
 
 		// 리다이렉트 url 등록
 
-
+		data.put("msg", null);
+		data.put("team_seq", teamSeq);
 		return data;
 	}
 }
