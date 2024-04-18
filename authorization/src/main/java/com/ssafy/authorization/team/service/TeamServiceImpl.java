@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.swing.text.html.parser.Entity;
 
@@ -13,11 +14,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.ssafy.authorization.team.dto.TeamAddDto;
 import com.ssafy.authorization.team.entity.DeveloperTeamEntity;
+import com.ssafy.authorization.team.entity.TeamListEntity;
 import com.ssafy.authorization.team.entity.TeamMemberEntity;
 import com.ssafy.authorization.team.entity.TeamMemberPK;
 import com.ssafy.authorization.team.repository.DeveloperTeamRepository;
+import com.ssafy.authorization.team.repository.TeamListRepository;
 import com.ssafy.authorization.team.repository.TeamMemberRepository;
 import com.ssafy.authorization.team.vo.TeamAddVo;
+import com.ssafy.authorization.team.vo.TeamListVo;
 import com.ssafy.authorization.team.vo.TeamNameUpdateVo;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -30,6 +34,8 @@ public class TeamServiceImpl implements TeamService{
 	private final DeveloperTeamRepository developerTeamRepository;
 
 	private final TeamMemberRepository teamMemberRepository;
+
+	private final TeamListRepository teamListRepository;
 
 	@Override
 	@Transactional
@@ -152,6 +158,33 @@ public class TeamServiceImpl implements TeamService{
 		entity = developerTeamRepository.save(entity);
 		data.put("msg", null);
 		data.put("team_name", entity.getTeamName());
+		return data;
+	}
+
+	@Override
+	public Map listTeam() {
+		Map<String, Object> data = new HashMap<>();
+		// 자신의 시퀀스 넘버를 확인
+		Integer mySeq = 0;
+		List<TeamListEntity> entities = teamListRepository.findByMemberSeq(mySeq);
+		if(entities.isEmpty()){
+			data.put("msg", "소속된 팀이 존재하지 않습니다.");
+			data.put("list", null);
+			return data;
+		}
+		List<TeamListVo> vos = entities.stream().map(entity ->{
+			TeamListVo vo = new TeamListVo();
+			vo.setTeamName(entity.getTeamName());
+			vo.setServiceName(entity.getServiceName());
+			vo.setTeamSeq(entity.getTeamSeq());
+			vo.setIsLeader(mySeq == entity.getLeader() ? true : false);
+			vo.setIsAccept(entity.getIsAccept());
+			vo.setCreateDate(entity.getCreateDate());
+			vo.setModifyDate(entity.getModifyDate());
+			return vo;
+		}).collect(Collectors.toList());
+		data.put("msg", null);
+		data.put("list", vos);
 		return data;
 	}
 }

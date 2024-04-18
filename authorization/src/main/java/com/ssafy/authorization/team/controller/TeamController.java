@@ -5,6 +5,7 @@ import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -25,6 +26,11 @@ import lombok.RequiredArgsConstructor;
 public class TeamController {
 
 	private final TeamService teamService;
+
+	@GetMapping
+	public ResponseEntity<Map> teamList(){
+		return new ResponseEntity<Map>(teamService.listTeam(), HttpStatus.OK);
+	}
 
 	@PostMapping
 	public ResponseEntity<Map> teamAdd(@RequestBody @Valid TeamAddVo vo){

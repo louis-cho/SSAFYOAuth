@@ -11,4 +11,6 @@ public interface TeamService {
 	Map deleteTeam(Integer teamSeq);
 
 	Map updateTeamName(Integer teamSeq, TeamNameUpdateVo vo);
+
+	Map listTeam();
 }
