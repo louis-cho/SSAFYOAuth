@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
 <head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link th:href="@{/css/login.css}" rel="stylesheet">
     <title>Hello Spring OAuth2</title>
     <link rel="stylesheet" th:href="@{/css/reset.css}">
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
+<div th:replace="layouts/header::header"></div>
 <div id="login-page">
     <div class="login-form">
         <h1>로그인하쇼</h1>
@@ -25,5 +28,6 @@
         <a th:href="@{/sign_up}">회원 가입</a>
     </div>
 </div>
+<div th:replace="layouts/footer::footer"></div>
 </body>
 </html>

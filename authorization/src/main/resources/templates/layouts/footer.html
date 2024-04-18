@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-
-</body>
+<html xmlns:th="http://www.thymeleaf.org">
+<!-- 다른 페이지에 포함시킬 영역을 th:fragment로 선언해준다.-->
+<div th:fragment="footer" class="footer">
+    <footer class="page-footer font-small cyan darken-3">
+        <div class="footer-copyright text-center py-3">
+            2024 SSAFY 자율 306 OAuth
+        </div>
+    </footer>
+</div>
 </html>
