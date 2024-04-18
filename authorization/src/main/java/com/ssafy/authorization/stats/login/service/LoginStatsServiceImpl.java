@@ -1,6 +1,5 @@
 package com.ssafy.authorization.stats.login.service;
 
-import java.time.Instant;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +29,7 @@ public class LoginStatsServiceImpl implements LoginStatsService {
 	}
 
 	@Override
-	public List<LoginStats> fetch(String userId, String teamId, Instant start) {
+	public List<LoginStats> fetch(String userId, String teamId) {
 		return loginStatsRepository.fetch(userId, teamId);
 	}
 }

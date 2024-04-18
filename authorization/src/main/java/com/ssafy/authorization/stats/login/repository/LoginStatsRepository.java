@@ -1,6 +1,5 @@
 package com.ssafy.authorization.stats.login.repository;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -33,7 +32,7 @@ public class LoginStatsRepository {
 	// 삭제
 
 	// 조회
-	public List<LoginStats> fetch(String userId, String teamId, Instant start, Instant end, boolean sucess) {
+	public List<LoginStats> fetch(String userId, String teamId) {
 
 		System.out.println("userId >> " + userId);
 		Criteria criteria = new Criteria("userId").is(UUID.fromString(userId));
