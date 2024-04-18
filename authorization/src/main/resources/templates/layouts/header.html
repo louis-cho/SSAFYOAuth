@@ -4,9 +4,9 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css"  th:href="@{/css/header.css}">
 </head>
-<div th:fragment="header">
-    <nav class="navbar navbar-expand-md bg-dark navbar-dark">
-        <a class="navbar-brand" href="/">SSAFY</a>
+<div th:fragment="header" >
+    <nav class="navbar navbar-expand-md navbar-dark" style="padding: 40px 10px 40px 10px; border-bottom: 1px solid #ddd; margin-left: 100px; margin-right: 100px">
+        <a class="navbar-brand" style="color: #212121;" href="/"><img src="/image/ssafy_logo2.png"></a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo03">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -14,23 +14,26 @@
         <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
             <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link" href="/admin/item/new">상품 등록</a>
+                    <a class="nav-link" style="color: #212121; font-size: 20px" href="/admin/item/new">상품 등록</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/admin/items">상품 관리</a>
+                    <a class="nav-link" style="color: #212121; font-size: 20px" href="/admin/items">상품 관리</a>
                 </li>
                 <li class="nav-item" th:if="${true}">
-                    <a class="nav-link" href="/members/login">로그인</a>
+                    <a class="nav-link" style="color: #212121; font-size: 20px" href="/">로그인</a>
                 </li>
 <!--                <li class="nav-item" th:if="${#httpServletRequest.remoteUser ne null}">-->
 <!--                    <a class="nav-link" href="/members/logout">로그아웃</a>-->
 <!--                </li>-->
             </ul>
-            <form class="form-inline my-2 my-lg-0 ml-auto" th:action="@{/}" method="get">
-                <input name="searchQuery" class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-            </form>
+<!--            <form class="form-inline my-2 my-lg-0 ml-auto" th:action="@{/}" method="get">-->
+<!--                <input name="searchQuery" class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">-->
+<!--                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>-->
+<!--            </form>-->
         </div>
     </nav>
 </div>
 </html>
+
+
+

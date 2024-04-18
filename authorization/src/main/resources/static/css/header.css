@@ -3,9 +3,11 @@
     border-radius: 0;
 }
 
+
 .navbar-brand {
     font-size: 1.5rem;
-    color: #fff;
+    /*color: #fff;*/
+    color: #212121;
 }
 
 .navbar-toggler {

@@ -20,7 +20,7 @@ public class AuthenticationController {
 
 	@GetMapping("/test")
 	public String test() throws Exception {
-		emailService.sendEmail("kdn1030@naver.com");
+		// emailService.sendEmail("kdn1030@naver.com");
 		return "dana";
 	}
 
