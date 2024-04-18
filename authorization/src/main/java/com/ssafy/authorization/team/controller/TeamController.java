@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.authorization.team.service.TeamService;
+import com.ssafy.authorization.team.vo.ServiceNameUpdateVo;
 import com.ssafy.authorization.team.vo.TeamAddVo;
 import com.ssafy.authorization.team.vo.TeamNameUpdateVo;
 
@@ -50,5 +52,10 @@ public class TeamController {
 	@PutMapping("/{team-seq}")
 	public ResponseEntity<Map> teamNameUpdate(@PathVariable("team-seq") Integer teamSeq, @RequestBody @Valid TeamNameUpdateVo vo){
 		return new ResponseEntity<Map>(teamService.updateTeamName(teamSeq, vo), HttpStatus.OK);
+	}
+
+	@PatchMapping("/{team-seq}")
+	public ResponseEntity<Map> ServiceNameUpdate(@PathVariable("team-seq") Integer teamSeq, @RequestBody @Valid ServiceNameUpdateVo vo){
+		return new ResponseEntity<Map>(teamService.updateServiceName(teamSeq, vo), HttpStatus.OK);
 	}
 }

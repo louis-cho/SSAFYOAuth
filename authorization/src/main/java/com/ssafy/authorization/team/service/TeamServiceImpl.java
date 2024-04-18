@@ -22,6 +22,7 @@ import com.ssafy.authorization.team.repository.DeveloperTeamRepository;
 import com.ssafy.authorization.team.repository.TeamListRepository;
 import com.ssafy.authorization.team.repository.TeamMemberRepository;
 import com.ssafy.authorization.team.repository.TeamMemberWithInfoRepository;
+import com.ssafy.authorization.team.vo.ServiceNameUpdateVo;
 import com.ssafy.authorization.team.vo.TeamAddVo;
 import com.ssafy.authorization.team.vo.TeamDetailVo;
 import com.ssafy.authorization.team.vo.TeamListVo;
@@ -111,6 +112,7 @@ public class TeamServiceImpl implements TeamService{
 	}
 
 	@Override
+	@Transactional
 	public Map deleteTeam(Integer teamSeq) {
 		Map<String, String> data = new HashMap<>();
 		// 요청된 팀이 존재하는지 확인
@@ -135,6 +137,7 @@ public class TeamServiceImpl implements TeamService{
 	}
 
 	@Override
+	@Transactional
 	public Map updateTeamName(Integer teamSeq, TeamNameUpdateVo vo) {
 		Map<String, String> data = new HashMap<>();
 
@@ -167,6 +170,7 @@ public class TeamServiceImpl implements TeamService{
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public Map listTeam() {
 		Map<String, Object> data = new HashMap<>();
 		// 자신의 시퀀스 넘버를 확인
@@ -194,6 +198,7 @@ public class TeamServiceImpl implements TeamService{
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public Map detailTeam(Integer teamSeq) {
 		Map<String, Object> data = new HashMap<>();
 		// 존재 하는 팀인지 확인
@@ -231,6 +236,35 @@ public class TeamServiceImpl implements TeamService{
 		//응답
 		data.put("msg", null);
 		data.put("team", vo);
+		return data;
+	}
+
+	@Override
+	@Transactional
+	public Map updateServiceName(Integer teamSeq, ServiceNameUpdateVo vo) {
+		Map<String, String> data = new HashMap<>();
+		// 팀이 존재 하는지 확인
+		List<DeveloperTeamEntity> list = developerTeamRepository.findBySeqAndIsDeleteFalse(teamSeq);
+		if(list.size() != 1){
+			data.put("msg", "존재하지 않는 팀");
+			data.put("team_name", null);
+			return data;
+		}
+		// 사용자가 팀의 멤버인지 확인
+		Integer mySeq = 0;
+		Optional<TeamMemberEntity> member = teamMemberRepository.findById(new TeamMemberPK(teamSeq, mySeq));
+		if(member.isEmpty()){
+			data.put("msg", "팀을 볼 수 있는 권한이 없습니다.");
+			data.put("team_name", null);
+			return data;
+		}
+		// 팀의 이름 변경
+		DeveloperTeamEntity team = list.get(0);
+		team.setServiceName(vo.getServiceName());
+		team = developerTeamRepository.save(team);
+		// 정상 응답
+		data.put("serviceName", team.getServiceName());
+		data.put("msg",null);
 		return data;
 	}
 }
