@@ -4,13 +4,18 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.ssafy.authorization.stats.login.model.LoginDocument;
+import com.ssafy.authorization.stats.login.model.LoginStats;
 
 @Service
 public interface LoginStatsService {
-	List<LoginDocument> findByUserId(String userId, String teamId);
 
-	List<LoginDocument> findByTeamId(String teamId);
+	// 생성
+	public void save(LoginStats loginStats);
 
-	int saveUserLogin(LoginDocument loginDocument);
+	// 삭제
+	public void delete(String userId, String teamId);
+
+	// 조회
+	public List<LoginStats> fetch(String userId, String teamId);
+
 }

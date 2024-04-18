@@ -1,29 +1,27 @@
 package com.ssafy.authorization.stats.login.model;
 
 import java.time.Instant;
-import java.util.UUID;
 
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
-import jakarta.persistence.Id;
+import lombok.Data;
 
+@Data
 @Document(indexName = "login_stats", createIndex = true)
-public class LoginDocument {
+public class LoginStats {
 
-	public LoginDocument(UUID userId, UUID teamId, Instant createdAt) {
-		this.userId = userId.toString();
-		this.teamId = teamId.toString();
+	public LoginStats(String userId, String teamId, Instant createdAt) {
+		this.userId = userId;
+		this.teamId = teamId;
 		this.createdAt = createdAt;
 	}
 
-	@Id
-	private Long id;
-	@Field(type = FieldType.Text, name = "userId")
+	@Field(type = FieldType.Keyword, name = "userId")
 	private String userId;
 
-	@Field(type = FieldType.Text, name = "userId")
+	@Field(type = FieldType.Keyword, name = "userId")
 	private String teamId;
 
 	@Field(type = FieldType.Date, name = "createdAt")
@@ -31,5 +29,4 @@ public class LoginDocument {
 
 	@Field(type = FieldType.Boolean, name = "success")
 	private Boolean success;
-
 }
