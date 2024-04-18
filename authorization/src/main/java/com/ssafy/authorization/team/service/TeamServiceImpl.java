@@ -14,9 +14,11 @@ import org.springframework.transaction.annotation.Transactional;
 import com.ssafy.authorization.team.dto.TeamAddDto;
 import com.ssafy.authorization.team.entity.DeveloperTeamEntity;
 import com.ssafy.authorization.team.entity.TeamMemberEntity;
+import com.ssafy.authorization.team.entity.TeamMemberPK;
 import com.ssafy.authorization.team.repository.DeveloperTeamRepository;
 import com.ssafy.authorization.team.repository.TeamMemberRepository;
 import com.ssafy.authorization.team.vo.TeamAddVo;
+import com.ssafy.authorization.team.vo.TeamNameUpdateVo;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -103,7 +105,8 @@ public class TeamServiceImpl implements TeamService{
 		// 요청된 팀이 존재하는지 확인
 		List<DeveloperTeamEntity> list = developerTeamRepository.findBySeqAndIsDeleteFalse(teamSeq);
 		if(list.size() != 1){
-			throw new EntityNotFoundException("존재하지 않는 팀");
+			data.put("msg", "존재 하지 않는 팀");
+			return data;
 		}
 		// 요청한 사람의 시퀀스 넘버 확인
 		Integer mySeq = 0;
@@ -118,5 +121,37 @@ public class TeamServiceImpl implements TeamService{
 		developerTeamRepository.save(entity);
 		data.put("msg", "삭제되었습니다.");
 ;		return data;
+	}
+
+	@Override
+	public Map updateTeamName(Integer teamSeq, TeamNameUpdateVo vo) {
+		Map<String, String> data = new HashMap<>();
+
+		// 요청된 팀이 존재 하는지 확인
+		List<DeveloperTeamEntity> list = developerTeamRepository.findBySeqAndIsDeleteFalse(teamSeq);
+		if(list.size() != 1){
+			data.put("msg", "존재하지 않는 팀");
+			data.put("team_name", null);
+			return data;
+		}
+
+		// 자신의 시퀀스 넘버 확인
+		Integer mySeq = 0;
+
+		// 자신이 요청한 팀의 팀원인지 확인
+		Optional<TeamMemberEntity> member = teamMemberRepository.findById(new TeamMemberPK(teamSeq, mySeq));
+		if(member.isEmpty()){
+			data.put("msg", "팀명을 수정할 수 있는 권한이 없습니다.");
+			data.put("team_name", null);
+			return data;
+		}
+
+		// 팀 명 수정
+		DeveloperTeamEntity entity = list.get(0);
+		entity.setTeamName(vo.getTeamName());
+		entity = developerTeamRepository.save(entity);
+		data.put("msg", null);
+		data.put("team_name", entity.getTeamName());
+		return data;
 	}
 }
