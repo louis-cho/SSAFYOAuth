@@ -1,7 +1,10 @@
 package com.ssafy.authorization.team.service;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.swing.text.html.parser.Entity;
 
@@ -15,6 +18,7 @@ import com.ssafy.authorization.team.repository.DeveloperTeamRepository;
 import com.ssafy.authorization.team.repository.TeamMemberRepository;
 import com.ssafy.authorization.team.vo.TeamAddVo;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -91,5 +95,28 @@ public class TeamServiceImpl implements TeamService{
 		data.put("msg", null);
 		data.put("team_seq", teamSeq);
 		return data;
+	}
+
+	@Override
+	public Map deleteTeam(Integer teamSeq) {
+		Map<String, String> data = new HashMap<>();
+		// 요청된 팀이 존재하는지 확인
+		List<DeveloperTeamEntity> list = developerTeamRepository.findBySeqAndIsDeleteFalse(teamSeq);
+		if(list.size() != 1){
+			throw new EntityNotFoundException("존재하지 않는 팀");
+		}
+		// 요청한 사람의 시퀀스 넘버 확인
+		Integer mySeq = 0;
+		// 요청한 사람이 팀의 리더 인지 파악
+		DeveloperTeamEntity entity = list.get(0);
+		if(entity.getLeader() != mySeq){
+			data.put("msg", "삭제 권한이 없습니다.");
+			return data;
+		}
+		entity.setIsDeleted(true);
+		entity.setDeleteDate(LocalDateTime.now());
+		developerTeamRepository.save(entity);
+		data.put("msg", "삭제되었습니다.");
+;		return data;
 	}
 }

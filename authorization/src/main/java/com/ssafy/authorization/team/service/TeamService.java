@@ -6,4 +6,6 @@ import com.ssafy.authorization.team.vo.TeamAddVo;
 
 public interface TeamService {
 	Map<String, Object> addTeam(TeamAddVo vo);
+
+	Map deleteTeam(Integer teamSeq);
 }

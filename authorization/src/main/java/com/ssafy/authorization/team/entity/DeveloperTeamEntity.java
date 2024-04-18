@@ -3,6 +3,7 @@ package com.ssafy.authorization.team.entity;
 import java.time.LocalDateTime;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -43,6 +44,7 @@ public class DeveloperTeamEntity {
 	private LocalDateTime deleteDate;
 
 	@Column(name = "modify_date")
+	@UpdateTimestamp
 	private LocalDateTime modifyDate;
 
 	@Column(name = "is_deleted", nullable = false)
