@@ -63,25 +63,25 @@ public class AuthorizationServerConfig {
 		return http.build();
 	}
 
-	@Bean
-	@Order(2)
-	public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http)
-		throws Exception {
-		http
-			.csrf(csrf -> csrf.ignoringRequestMatchers("/**"))
-			.headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin()))
-			.authorizeHttpRequests((authorize) -> authorize
-				.requestMatchers("/h2/**").permitAll()
-				.requestMatchers("/sign_up").permitAll()
-				.requestMatchers("/test").permitAll()
-				.anyRequest().authenticated()
-			)
-			// Form login handles the redirect to the login page from the
-			// authorization server filter chain
-			.formLogin(f -> f.loginPage("/login").permitAll());
-
-		return http.build();
-	}
+	// @Bean
+	// @Order(2)
+	// public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http)
+	// 	throws Exception {
+	// 	http
+	// 		.csrf(csrf -> csrf.ignoringRequestMatchers("/**"))
+	// 		.headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin()))
+	// 		.authorizeHttpRequests((authorize) -> authorize
+	// 			.requestMatchers("/h2/**").permitAll()
+	// 			.requestMatchers("/sign_up").permitAll()
+	// 			.requestMatchers("/test").permitAll()
+	// 			.anyRequest().authenticated()
+	// 		)
+	// 		// Form login handles the redirect to the login page from the
+	// 		// authorization server filter chain
+	// 		.formLogin(f -> f.loginPage("/login").permitAll());
+	//
+	// 	return http.build();
+	// }
 
 	@Bean
 	public UserDetailsService userDetailsService() {
