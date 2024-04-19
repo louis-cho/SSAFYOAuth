@@ -267,4 +267,25 @@ public class TeamServiceImpl implements TeamService{
 		data.put("msg",null);
 		return data;
 	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public Map searchDeveloper(Integer teamSeq, String email) {
+		Map<String, String> data = new HashMap<>();
+		return data;
+	}
+
+	@Override
+	@Transactional
+	public Map addMember(Integer teamSeq, String email) {
+		Map<String, String> data = new HashMap<>();
+		return data;
+	}
+
+	@Override
+	@Transactional
+	public Map deleteMember(Integer teamSeq, String email) {
+		Map<String, String> data = new HashMap<>();
+		return data;
+	}
 }

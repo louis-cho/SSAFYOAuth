@@ -18,4 +18,10 @@ public interface TeamService {
 	Map detailTeam(Integer teamSeq);
 
 	Map updateServiceName(Integer teamSeq, ServiceNameUpdateVo vo);
+
+	Map searchDeveloper(Integer teamSeq, String email);
+
+	Map addMember(Integer teamSeq, String email);
+
+	Map deleteMember(Integer teamSeq, String email);
 }

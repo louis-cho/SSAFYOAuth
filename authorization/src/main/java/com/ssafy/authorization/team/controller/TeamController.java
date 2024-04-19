@@ -30,32 +30,52 @@ public class TeamController {
 	private final TeamService teamService;
 
 	@GetMapping
-	public ResponseEntity<Map> teamList(){
+	public ResponseEntity<Map> teamList() {
 		return new ResponseEntity<Map>(teamService.listTeam(), HttpStatus.OK);
 	}
 
 	@PostMapping
-	public ResponseEntity<Map> teamAdd(@RequestBody @Valid TeamAddVo vo){
+	public ResponseEntity<Map> teamAdd(@RequestBody @Valid TeamAddVo vo) {
 		return new ResponseEntity<Map>(teamService.addTeam(vo), HttpStatus.OK);
 	}
 
 	@GetMapping("/{team-seq}")
-	public ResponseEntity<Map> teamDetail(@PathVariable("team-seq") Integer teamSeq){
+	public ResponseEntity<Map> teamDetail(@PathVariable("team-seq") Integer teamSeq) {
 		return new ResponseEntity<Map>(teamService.detailTeam(teamSeq), HttpStatus.OK);
 	}
 
 	@DeleteMapping("/{team-seq}")
-	public ResponseEntity<Map> teamDelete(@PathVariable("team-seq") Integer teamSeq){
+	public ResponseEntity<Map> teamDelete(@PathVariable("team-seq") Integer teamSeq) {
 		return new ResponseEntity<Map>(teamService.deleteTeam(teamSeq), HttpStatus.OK);
 	}
 
 	@PutMapping("/{team-seq}")
-	public ResponseEntity<Map> teamNameUpdate(@PathVariable("team-seq") Integer teamSeq, @RequestBody @Valid TeamNameUpdateVo vo){
+	public ResponseEntity<Map> teamNameUpdate(@PathVariable("team-seq") Integer teamSeq,
+		@RequestBody @Valid TeamNameUpdateVo vo) {
 		return new ResponseEntity<Map>(teamService.updateTeamName(teamSeq, vo), HttpStatus.OK);
 	}
 
 	@PatchMapping("/{team-seq}")
-	public ResponseEntity<Map> ServiceNameUpdate(@PathVariable("team-seq") Integer teamSeq, @RequestBody @Valid ServiceNameUpdateVo vo){
+	public ResponseEntity<Map> ServiceNameUpdate(@PathVariable("team-seq") Integer teamSeq,
+		@RequestBody @Valid ServiceNameUpdateVo vo) {
 		return new ResponseEntity<Map>(teamService.updateServiceName(teamSeq, vo), HttpStatus.OK);
+	}
+
+	@GetMapping("/{team-seq}/member/{email}")
+	public ResponseEntity<Map> developerSearch(@PathVariable("team-seq") Integer teamSeq,
+		@PathVariable("email") String email) {
+		return new ResponseEntity<Map>(teamService.searchDeveloper(teamSeq, email), HttpStatus.OK);
+	}
+
+	@PostMapping("/{team-seq}/member/{email}")
+	public ResponseEntity<Map> memberAdd(@PathVariable("team-seq") Integer teamSeq,
+		@PathVariable("email") String email) {
+		return new ResponseEntity<Map>(teamService.addMember(teamSeq, email), HttpStatus.OK);
+	}
+
+	@DeleteMapping("/{team-seq}/member/{email}")
+	public ResponseEntity<Map> memberDelete(@PathVariable("team-seq") Integer teamSeq,
+		@PathVariable("email") String email) {
+		return new ResponseEntity<Map>(teamService.deleteMember(teamSeq, email), HttpStatus.OK);
 	}
 }
