@@ -3,17 +3,14 @@ package com.ssafy.authorization.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.init.DataSourceInitializer;
-import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
@@ -35,7 +32,6 @@ import org.springframework.security.web.authentication.LoginUrlAuthenticationEnt
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
 
 import javax.sql.DataSource;
-
 import java.util.UUID;
 
 import static org.springframework.security.config.Customizer.withDefaults;
@@ -72,7 +68,7 @@ public class AuthorizationServerConfig {
 			throws Exception {
 		http
 				.authorizeHttpRequests((authorize) -> authorize
-						.requestMatchers("/css/**", "/favicon.ico", "/error", "/login").permitAll()
+						.requestMatchers("/css/**", "/favicon.ico", "/error", "/login",".well-known/jwks.json").permitAll()
 						.anyRequest().authenticated()
 				)
 				.formLogin(formLogin -> formLogin
@@ -83,7 +79,7 @@ public class AuthorizationServerConfig {
 
 	@Bean
 	PasswordEncoder passwordEncoder() {
-		return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+		return new BCryptPasswordEncoder();
 	}
 
 	@Bean
@@ -94,15 +90,14 @@ public class AuthorizationServerConfig {
 	@Bean
 	UserDetailsManager jdbcUserDetailsManager(DataSource dataSource) {
 		JdbcUserDetailsManager jdbcUserDetailsManager = new JdbcUserDetailsManager(dataSource);
-		UserDetails user = User.withDefaultPasswordEncoder()
-				.username("oidc-client")
-				.password("{noop}secret")
+		UserDetails user = User.builder()
+				.username("dongjae")
+				.password(passwordEncoder().encode("1234"))
 				.roles("USER")
 				.build();
 
-		if (!jdbcUserDetailsManager.userExists(user.getUsername())) {
-			jdbcUserDetailsManager.createUser(user);
-		}
+//			jdbcUserDetailsManager.createUser(user);
+
 		return jdbcUserDetailsManager;
 	}
 
@@ -112,35 +107,34 @@ public class AuthorizationServerConfig {
 			RegisteredClientRepository registeredClientRepository) {
 
 		RegisteredClient registeredClient = RegisteredClient.withId(UUID.randomUUID().toString())
-				.clientId("dongjae-client")
-				.clientSecret("{noop}secret")
-				.clientName("dongjae-client-oidc")
+				.clientId("client")
+				.clientName("client")
+				.clientSecret(passwordEncoder().encode("secret"))
 				.clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
 				.authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
 				.authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
 				.authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
-				.redirectUri("http://localhost:8080/login/oauth2/code/dongjae-client-oidc")
-				.postLogoutRedirectUri("http://localhost:8080/")
-				.redirectUri("http://localhost:8080/oauth2/authorize")
+				.redirectUri("http://localhost:8080/login/oauth2/code/client")
+				.postLogoutRedirectUri("http://localhost:8080/logged-out")
 				.scope(OidcScopes.OPENID)
 				.scope(OidcScopes.PROFILE)
-				.scope("message.read")
-				.scope("message.write")
+				.scope("read")
+				.scope("write")
 				.clientSettings(ClientSettings.builder().requireAuthorizationConsent(true).build())
 				.build();
 
 		RegisteredClient deviceClient = RegisteredClient.withId(UUID.randomUUID().toString())
-				.clientId("device-messaging-client")
+				.clientId("device-client")
 				.clientAuthenticationMethod(ClientAuthenticationMethod.NONE)
 				.authorizationGrantType(AuthorizationGrantType.DEVICE_CODE)
 				.authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
 				.scope("message.read")
 				.scope("message.write")
 				.build();
-		if(registeredClientRepository.findByClientId("dongjae-client") == null){
-			registeredClientRepository.save(registeredClient);
-			registeredClientRepository.save(deviceClient);
-		}
+
+//			registeredClientRepository.save(registeredClient);
+//			registeredClientRepository.save(deviceClient);
+
 
 		return new JdbcOAuth2AuthorizationService(jdbcOperations, registeredClientRepository);
 	}

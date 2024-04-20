@@ -14,7 +14,7 @@ public class SsafyResponse  implements OAuth2Response {
 	@Override
 	public String getProvider() {
 
-		return "oidc-client";
+		return "client";
 	}
 
 	@Override
