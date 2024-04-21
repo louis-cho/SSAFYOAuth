@@ -4,8 +4,8 @@ spring:
       client:
         registration:
           kakao:
-            client-id: 52d077cf5e47ef46b0bedeb883a86a15
-            client-secret: ureG7DX796KIHubTi8KZKfwbtwy9HmN0
+            client-id: 9b06a65a33c219609667ddfb7a5e623e
+            client-secret: 8VmZeG4HgMNjY5dLQd0ozWPy33ohFsch
             redirect-uri: http://localhost:8080/login/oauth2/code/kakao
             client-name: kakao
             authorization-grant-type: authorization_code
@@ -37,13 +37,16 @@ spring:
             client-secret: secret
             authorization-grant-type: authorization_code
             redirect-uri: "http://localhost:8080/login/oauth2/code/{registrationId}"
-            scope: openid, profile
+            scope: profile
             client-name: client
+
 
         provider:
           spring:
-            issuer-uri: http://localhost:9000
-
+            authorization-uri: http://127.0.0.1:9000/oauth2/authorize
+            token-uri: http://127.0.0.1:9000/oauth2/token
+            user-info-uri: http://127.0.0.1:8090/user/info
+            user-name-attribute: sub
           kakao:
             authorization-uri: https://kauth.kakao.com/oauth/authorize
             token-uri: https://kauth.kakao.com/oauth/token
