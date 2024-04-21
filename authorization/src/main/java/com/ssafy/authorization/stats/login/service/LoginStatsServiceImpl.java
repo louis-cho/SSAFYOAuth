@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ssafy.authorization.stats.login.model.LoginStats;
+import com.ssafy.authorization.stats.login.model.VO.LoginStatsFetchRequestVO;
 import com.ssafy.authorization.stats.login.repository.LoginStatsRepository;
 
 @Service
@@ -31,5 +32,10 @@ public class LoginStatsServiceImpl implements LoginStatsService {
 	@Override
 	public List<LoginStats> fetch(String userId, String teamId) {
 		return loginStatsRepository.fetch(userId, teamId);
+	}
+
+	@Override
+	public List<LoginStats> fetch2(LoginStatsFetchRequestVO requestVO) {
+		return null;
 	}
 }
