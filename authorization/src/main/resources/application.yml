@@ -1,47 +1,43 @@
 logging:
   level:
-    org.springframework.security: DEBUG
+    org:
+      springframework:
+        web : DEBUG
+        security : DEBUG
+    org.hibernate.SQL: DEBUG
+
 spring:
   application:
-    name: authorization
+    name : authorization
   datasource:
-    driver-class-name: org.h2.Driver
-    url: jdbc:h2:mem:db;MODE=MYSQL
-    username: sa
-    password:
-  h2:
-    console:
-      path: /h2
-      enabled: true
-  jpa:
-    generate-ddl: 'true'
-    hibernate:
-      ddl-auto: create
-  security:
-    user:
-      name: user
-      password: password
-    oauth2:
-      authorizationserver:
-        client:
-          oidc-client:
-            registration:
-              client-id: "oidc-client"
-              client-secret: "{noop}secret"
-              client-authentication-methods:
-                - "client_secret_basic"
-              authorization-grant-types:
-                - "authorization_code"
-                - "refresh_token"
-              redirect-uris:
-                - "http://127.0.0.1:8080/login/oauth2/code/oidc-client"
-              post-logout-redirect-uris:
-                - "http://127.0.0.1:8080/"
-              scopes:
-                - "openid"
-                - "profile"
-            require-authorization-consent: true
+    url: jdbc:mysql://localhost:3306/oauth3
+    username: root
+    password: 1234
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
   data:
     redis:
       host: localhost
       port: 6379
+  main:
+    allow-bean-definition-overriding: true
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: kimssafy1030@gmail.com
+    password: vzxkizmiaqcjrknm
+    properties:
+      mail:
+        smtp:
+          starttls:
+            enable: true
+          auth: true
+
+
+jwt:
+  encryptor:
+    password: password
+    salt: 626F6F746966756C
+server:
+  port: 9000
+  address: 0.0.0.0
