@@ -3,6 +3,7 @@ package com.ssafy.authorization.member.model.service;
 import java.util.Optional;
 
 
+import org.hibernate.Hibernate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -33,8 +34,6 @@ public class CustomMemberManager implements UserDetailsManager {
 		Member member = (Member) user;
 		member.changePassword(passwordEncoder.encode(member.getPassword()));
 		memberRepository.save(member);
-		Authority roleUser = Authority.createAuthority(member, "ROLE_USER");
-		authorityRepository.save(roleUser);
 	}
 
 	@Override

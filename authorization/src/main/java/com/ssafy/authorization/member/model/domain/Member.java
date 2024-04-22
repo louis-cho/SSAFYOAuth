@@ -1,29 +1,25 @@
 package com.ssafy.authorization.member.model.domain;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 @Getter
 @Entity
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonIgnoreProperties(value = { "authorities" })
 public class Member implements UserDetails {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,11 +27,14 @@ public class Member implements UserDetails {
 
 	@Column(unique = true)
 	private String username;
-	private String password;
 
 	@JsonIgnore
-	@OneToMany(mappedBy = "member")
-	private List<Authority> authorities = new ArrayList<>();
+	private String password;
+
+	@Column(nullable = false)
+	@Enumerated(value = EnumType.STRING)
+	private MemberRoleEnum role;
+
 	private Boolean accountNonExpired;
 	private Boolean accountNonLocked;
 	private Boolean credentialsNonExpired;
@@ -61,22 +60,31 @@ public class Member implements UserDetails {
 		return this.enabled;
 	}
 
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		MemberRoleEnum role = this.getRole();
+		String authority = role.getAuthority();
+
+		SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority("ROLE_"+authority);
+		Collection<GrantedAuthority> authorities = new ArrayList<>();
+		authorities.add(simpleGrantedAuthority);
+
+		return authorities;
+	}
+
+	public void changePassword(String newPassword) {
+		this.password = newPassword;
+	}
 	public static Member create(String username, String password) {
 		return Member.builder()
-			.username(username)
-			.password(password)
-			.accountNonExpired(true)
-			.accountNonLocked(true)
-			.credentialsNonExpired(true)
-			.enabled(true)
-			.build();
-	}
-
-	public List<SimpleGrantedAuthority> getSimpleAuthorities() {
-		return this.authorities.stream().map(authority -> new SimpleGrantedAuthority(authority.getAuthority())).toList();
-	}
-
-	public void changePassword(String password){
-		this.password = password;
+				.username(username)
+				.password(password)
+				.accountNonExpired(true)
+				.accountNonLocked(true)
+				.credentialsNonExpired(true)
+				.enabled(true)
+				.role(MemberRoleEnum.USER)
+				.build();
 	}
 }
+

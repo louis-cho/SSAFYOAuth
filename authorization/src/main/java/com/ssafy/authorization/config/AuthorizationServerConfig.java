@@ -121,8 +121,8 @@ public class AuthorizationServerConfig {
 				.scope("message.write")
 				.build();
 
-			// registeredClientRepository.save(registeredClient);
-			// registeredClientRepository.save(deviceClient);
+//			 registeredClientRepository.save(registeredClient);
+//			 registeredClientRepository.save(deviceClient);
 
 
 		return new JdbcOAuth2AuthorizationService(jdbcOperations, registeredClientRepository);
