@@ -37,4 +37,11 @@ public class Authority implements GrantedAuthority {
 		this.authority = authority;
 		this.member = member;
 	}
+
+	public static Authority createAuthority(Member member, String authority) {
+		return Authority.builder()
+			.member(member)
+			.authority(authority)
+			.build();
+	}
 }

@@ -75,4 +75,8 @@ public class Member implements UserDetails {
 	public List<SimpleGrantedAuthority> getSimpleAuthorities() {
 		return this.authorities.stream().map(authority -> new SimpleGrantedAuthority(authority.getAuthority())).toList();
 	}
+
+	public void changePassword(String password){
+		this.password = password;
+	}
 }

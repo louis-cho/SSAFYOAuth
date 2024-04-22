@@ -68,7 +68,9 @@ public class AuthorizationServerConfig {
 			throws Exception {
 		http
 				.authorizeHttpRequests((authorize) -> authorize
-						.requestMatchers("/css/**", "/favicon.ico", "/error", "/login",".well-known/jwks.json").permitAll()
+						.requestMatchers("/css/**", "/favicon.ico", "/error",
+							"/test/**","/login","/sign_up"
+							,".well-known/jwks.json").permitAll()
 						.anyRequest().authenticated()
 				)
 				.formLogin(formLogin -> formLogin
@@ -85,20 +87,6 @@ public class AuthorizationServerConfig {
 	@Bean
 	RegisteredClientRepository jdbcRegisteredClientRepository(JdbcTemplate template) {
 		return new JdbcRegisteredClientRepository(template);
-	}
-
-	@Bean
-	UserDetailsManager jdbcUserDetailsManager(DataSource dataSource) {
-		JdbcUserDetailsManager jdbcUserDetailsManager = new JdbcUserDetailsManager(dataSource);
-		UserDetails user = User.builder()
-				.username("user")
-				.password(passwordEncoder().encode("pw"))
-				.roles("USER")
-				.build();
-
-			// jdbcUserDetailsManager.createUser(user);
-
-		return jdbcUserDetailsManager;
 	}
 
 	@Bean
