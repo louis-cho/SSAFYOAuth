@@ -1,52 +1,20 @@
 logging:
   level:
-    org.springframework.security: DEBUG
+    org:
+      springframework:
+        web : DEBUG
+        security : DEBUG
+    org.hibernate.SQL: DEBUG
+
 spring:
   application:
-    name: authorization
-  #  datasource:
-  #    driver-class-name: org.h2.Driver
-  #    url: jdbc:h2:mem:db;MODE=MYSQL
-  #    username: sa
-  #    password
+    name : authorization
   datasource:
-    url: jdbc:postgresql://localhost:5432/postgres
-    username: postgres
+    url: jdbc:mysql://localhost:3306/oauth3
+    username: root
     password: 1234
-    driver-class-name: org.postgresql.Driver
-  h2:
-    console:
-      path: /h2
-      enabled: true
-  jpa:
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
-    generate-ddl: 'true'
-    hibernate:
-      ddl-auto: create
-  security:
-    user:
-      name: user
-      password: password
-    oauth2:
-      authorizationserver:
-        client:
-          oidc-client:
-            registration:
-              client-id: "oidc-client"
-              client-secret: "{noop}secret"
-              client-authentication-methods:
-                - "client_secret_basic"
-              authorization-grant-types:
-                - "authorization_code"
-                - "refresh_token"
-              redirect-uris:
-                - "http://127.0.0.1:8080/login/oauth2/code/oidc-client"
-              post-logout-redirect-uris:
-                - "http://127.0.0.1:8080/"
-              scopes:
-                - "openid"
-                - "profile"
-            require-authorization-consent: true
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
   data:
     redis:
       host: localhost
@@ -65,10 +33,11 @@ spring:
             enable: true
           auth: true
 
-  thymeleaf:
-    prefix: classpath:/templates/
-    suffix: .html
-    mode: HTML
-    encoding: UTF-8
-    check-template-location: true
-    cache: false
+
+jwt:
+  encryptor:
+    password: password
+    salt: 626F6F746966756C
+server:
+  port: 9000
+  address: 0.0.0.0

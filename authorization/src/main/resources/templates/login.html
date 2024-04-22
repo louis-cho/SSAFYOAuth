@@ -1,28 +1,30 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
 <head>
-    <title>Hello Spring OAuth2</title>
-    <link rel="stylesheet" th:href="@{/css/reset.css}">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Spring Boot Tutorial - Please Log In</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
-<div id="login-page">
-    <div class="login-form">
-        <h1>로그인하쇼</h1>
-
-        <div class="message error" th:if="${param.error}">
-            잘못된 입력입니다. 아이디 또는 비밀번호를 다시 확인하세요.
-        </div>
-        <form th:action="@{/login}" method="post">
+<div class="login-page">
+    <div class="form">
+        <h1>Spring Boot Tutorial</h1>
+        <h2>Please Log In</h2>
+        <div class="error" th:if="${param.error}">
+            Invalid username and password.</div>
+        <div class="error" th:if="${param.logout}">
+            You have been logged out.</div>
+        <form  class="login-form" th:action="@{/login}" method="post">
             <div>
-                <input type="text" name="username" placeholder="아이디"/>
+                <input type="text" name="username" placeholder="Username" required autofocus />
             </div>
             <div>
-                <input type="password" name="password" placeholder="비밀번호"/>
+                <input type="password" name="password" placeholder="Password" required />
             </div>
-            <button type="submit">로그인</button>
+            <input class="button" type="submit" value="Log in" />
         </form>
-        <a th:href="@{/sign_up}">회원 가입</a>
+        <p>Willy De Keyser</p>
     </div>
 </div>
 </body>

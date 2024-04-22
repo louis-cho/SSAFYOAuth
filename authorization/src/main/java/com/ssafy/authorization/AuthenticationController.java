@@ -13,10 +13,6 @@ public class AuthenticationController {
 	@Autowired
 	EmailService emailService;
 
-	@GetMapping("/login")
-	public String login() {
-		return "login";
-	}
 
 	@GetMapping("/test")
 	public String test() throws Exception {
