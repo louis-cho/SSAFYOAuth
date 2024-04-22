@@ -20,7 +20,6 @@ public class MetricBroadcastService {
 
 	@Scheduled(fixedRate = 1000)
 	public void broadcastMetrics() {
-		System.out.println("boardcastMetrics");
 		template.convertAndSend("/topic/metrics",
 			new Metric(systemMetricsService.getCpuLoad(), systemMetricsService.getMemoryUsage()));
 	}
