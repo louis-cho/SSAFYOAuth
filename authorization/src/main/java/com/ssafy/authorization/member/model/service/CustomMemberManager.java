@@ -3,7 +3,6 @@ package com.ssafy.authorization.member.model.service;
 import java.util.Optional;
 
 
-import org.hibernate.Hibernate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -11,9 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
 
-import com.ssafy.authorization.member.model.domain.Authority;
 import com.ssafy.authorization.member.model.domain.Member;
-import com.ssafy.authorization.member.model.repository.AuthorityRepository;
 import com.ssafy.authorization.member.model.repository.MemberRepository;
 
 import jakarta.transaction.Transactional;
@@ -27,7 +24,6 @@ public class CustomMemberManager implements UserDetailsManager {
 
 	private final MemberRepository memberRepository;
 	private final PasswordEncoder passwordEncoder;
-	private final AuthorityRepository authorityRepository;
 	@Override
 	@Transactional
 	public void createUser(UserDetails user) {

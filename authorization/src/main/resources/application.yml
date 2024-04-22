@@ -17,7 +17,7 @@ spring:
   application:
     name : authorization
   datasource:
-    url: jdbc:postgresql://k10a306.p.ssafy.io:5432/dongjae_test
+    url: jdbc:postgresql://k10a306.p.ssafy.io:5432/postgres
     username: postgres
     password: ssafy
     driver-class-name: org.postgresql.Driver
