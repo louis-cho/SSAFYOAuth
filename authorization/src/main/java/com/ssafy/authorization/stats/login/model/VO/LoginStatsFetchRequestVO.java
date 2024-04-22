@@ -1,6 +1,8 @@
 package com.ssafy.authorization.stats.login.model.VO;
 
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeParseException;
 import java.util.UUID;
 
@@ -25,7 +27,7 @@ public class LoginStatsFetchRequestVO {
 	public Instant endTime = null;
 	public Boolean success = null;
 
-	LoginStatsFetchRequestVO(JsonNode requestBody) {
+	public LoginStatsFetchRequestVO(JsonNode requestBody) {
 		JsonNode userNode, teamNode, startNode, endNode, successNode;
 
 		userNode = requestBody.get("userId");
@@ -53,7 +55,10 @@ public class LoginStatsFetchRequestVO {
 		}
 		if (startNode != null) {
 			try {
-				startTime = Instant.parse(startNode.asText());
+				// LocalDate로 날짜를 파싱합니다.
+				LocalDate localDate = LocalDate.parse(startNode.asText());
+				// LocalDate를 Instant로 변환합니다. 여기서는 날짜만 있으므로, 해당 날짜의 시작 시간으로 설정됩니다.
+				Instant startTime = localDate.atStartOfDay().toInstant(ZoneOffset.UTC);
 				this.setStartTime(startTime);
 			} catch (DateTimeParseException e) {
 				startTime = null;
@@ -61,7 +66,10 @@ public class LoginStatsFetchRequestVO {
 		}
 		if (endNode != null) {
 			try {
-				endTime = Instant.parse(endNode.asText());
+				// LocalDate로 날짜를 파싱합니다.
+				LocalDate localDate = LocalDate.parse(endNode.asText());
+				// LocalDate를 Instant로 변환합니다. 여기서는 날짜만 있으므로, 해당 날짜의 시작 시간으로 설정됩니다.
+				Instant endTime = localDate.atStartOfDay().toInstant(ZoneOffset.UTC);
 				this.setEndTime(endTime);
 			} catch (DateTimeParseException e) {
 				endTime = null;

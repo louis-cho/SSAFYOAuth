@@ -2,6 +2,7 @@ package com.ssafy.authorization.stats.login.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.ssafy.authorization.stats.login.model.LoginStats;
@@ -17,8 +18,6 @@ public interface LoginStatsService {
 	public void delete(String userId, String teamId);
 
 	// 조회
-	public List<LoginStats> fetch(String userId, String teamId);
-
-	public List<LoginStats> fetch2(LoginStatsFetchRequestVO requestVO);
+	public List<LoginStats> fetch(LoginStatsFetchRequestVO requestVO, Pageable pageable);
 
 }

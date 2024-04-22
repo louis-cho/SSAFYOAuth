@@ -21,7 +21,7 @@ public class LoginStats {
 	@Field(type = FieldType.Keyword, name = "userId")
 	private String userId;
 
-	@Field(type = FieldType.Keyword, name = "userId")
+	@Field(type = FieldType.Keyword, name = "teamId")
 	private String teamId;
 
 	@Field(type = FieldType.Date, name = "createdAt")

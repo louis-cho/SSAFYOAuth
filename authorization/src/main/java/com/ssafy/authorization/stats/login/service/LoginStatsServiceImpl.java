@@ -3,6 +3,7 @@ package com.ssafy.authorization.stats.login.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.ssafy.authorization.stats.login.model.LoginStats;
@@ -30,12 +31,7 @@ public class LoginStatsServiceImpl implements LoginStatsService {
 	}
 
 	@Override
-	public List<LoginStats> fetch(String userId, String teamId) {
-		return loginStatsRepository.fetch(userId, teamId);
-	}
-
-	@Override
-	public List<LoginStats> fetch2(LoginStatsFetchRequestVO requestVO) {
-		return null;
+	public List<LoginStats> fetch(LoginStatsFetchRequestVO requestVO, Pageable pageable) {
+		return loginStatsRepository.fetch(requestVO, pageable);
 	}
 }

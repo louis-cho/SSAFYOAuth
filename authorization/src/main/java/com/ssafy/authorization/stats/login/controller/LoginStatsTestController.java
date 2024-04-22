@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.ssafy.authorization.stats.login.model.LoginStats;
+import com.ssafy.authorization.stats.login.model.VO.LoginStatsFetchRequestVO;
 import com.ssafy.authorization.stats.login.service.LoginStatsService;
 
 @RestController
@@ -41,13 +44,16 @@ public class LoginStatsTestController {
 
 	@PostMapping("/fetch")
 	public String testFetch(@RequestBody JsonNode requestBody) {
-		String temaId = requestBody.get("teamId").asText();
-		String userId = requestBody.get("userId").asText();
 
-		Instant createdAt = Instant.now();
+		LoginStatsFetchRequestVO requestVO = new LoginStatsFetchRequestVO(requestBody);
+		Pageable pageable = null;
+		if (requestBody.get("page") != null & requestBody.get("size") != null) {
+			pageable = PageRequest.of(requestBody.get("page").asInt(0), requestBody.get("size").asInt(30));
+		}
+		
 		List<LoginStats> list = null;
 		try {
-			list = loginStatsService.fetch(userId, temaId);
+			list = loginStatsService.fetch(requestVO, pageable);
 		} catch (Exception e) {
 			return null;
 		}
@@ -56,7 +62,6 @@ public class LoginStatsTestController {
 			ret.append(loginStats.toString());
 		}
 		return ret.toString();
-
 	}
 
 }
