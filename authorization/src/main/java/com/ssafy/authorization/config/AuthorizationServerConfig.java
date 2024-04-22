@@ -91,12 +91,12 @@ public class AuthorizationServerConfig {
 	UserDetailsManager jdbcUserDetailsManager(DataSource dataSource) {
 		JdbcUserDetailsManager jdbcUserDetailsManager = new JdbcUserDetailsManager(dataSource);
 		UserDetails user = User.builder()
-				.username("dongjae")
-				.password(passwordEncoder().encode("1234"))
+				.username("user")
+				.password(passwordEncoder().encode("pw"))
 				.roles("USER")
 				.build();
 
-//			jdbcUserDetailsManager.createUser(user);
+			// jdbcUserDetailsManager.createUser(user);
 
 		return jdbcUserDetailsManager;
 	}
@@ -133,8 +133,8 @@ public class AuthorizationServerConfig {
 				.scope("message.write")
 				.build();
 
-//			registeredClientRepository.save(registeredClient);
-//			registeredClientRepository.save(deviceClient);
+			// registeredClientRepository.save(registeredClient);
+			// registeredClientRepository.save(deviceClient);
 
 
 		return new JdbcOAuth2AuthorizationService(jdbcOperations, registeredClientRepository);
