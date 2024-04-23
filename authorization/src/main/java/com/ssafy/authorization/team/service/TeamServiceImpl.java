@@ -338,10 +338,40 @@ public class TeamServiceImpl implements TeamService{
 	public Map deleteMember(Integer teamSeq, String email) {
 		Map<String, Object> data = new HashMap<>();
 		// 팀에 멤버를 삭제할 권한이 있는지 확인
+		Integer mySeq = 0;
+		Optional<TeamMemberEntity> isMember = teamMemberRepository.findById(new TeamMemberPK(teamSeq, mySeq));
+		if(isMember.isEmpty()){
+			data.put("msg", "팀 멤버를 수정할 권한이 없습니다");
+			return data;
+		}
+		// 해당 이메일의 멤버가
 		// 팀에 포함된 멤버인지 확인
+		List<TeamMemberWithInfoEntity> list = teamMemberWithInfoRepository.findAllByTeamSeqAndEmail(teamSeq, email);
+		if(list.isEmpty()){
+			data.put("msg", "해당 이메일의 개발자는  팀 멤버가 아닙니다.");
+			return data;
+		}
 		// 팀의 리더인지 확인 -> 리더는 삭제 될 수 없음
-		// 해당 멤버의 시퀀스 넘버 확인
+		Optional<DeveloperTeamEntity> teamOptional = developerTeamRepository.findById(teamSeq);
+		if(teamOptional.isEmpty()){
+			data.put("msg", "팀이 존재하지 않습니다.");
+			return data;
+		}
+		DeveloperTeamEntity team = teamOptional.get();
+		Integer leaderSeq = team.getLeader();
+		Optional<DeveloperMemberEntity> dmOptional = developerMemberRepository.findById(leaderSeq);
+		if(!dmOptional.isEmpty()) {
+			DeveloperMemberEntity dm = dmOptional.get();
+			if (dm.getEmail() == email) {
+				data.put("msg", "팀 리더는 삭제할 수 없습니다.");
+				return data;
+			}
+		}
+		// 삭제할 멤버의 시퀀스 넘버 확인
+		Integer memberSeq = list.get(0).getMemberSeq();
 		// 팀에서 삭제
+		teamMemberRepository.deleteById(new TeamMemberPK(teamSeq, memberSeq));
+		data.put("msg", "정상 삭제 되었습니다.");
 		return data;
 	}
 }
