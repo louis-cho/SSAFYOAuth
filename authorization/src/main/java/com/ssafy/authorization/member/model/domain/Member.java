@@ -2,6 +2,7 @@ package com.ssafy.authorization.member.model.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ssafy.authorization.common.domain.BaseTimeEntity;
 import com.ssafy.authorization.member.model.dto.SignUpRequestDto;
 
@@ -30,6 +31,7 @@ public class Member extends BaseTimeEntity implements UserDetails {
 	private Long memberId;
 
 	@Column(unique = true)
+	@JsonProperty("username")
 	private String email;
 
 	@JsonIgnore
@@ -92,6 +94,10 @@ public class Member extends BaseTimeEntity implements UserDetails {
 	@Override
 	public boolean isEnabled() {
 		return this.enabled;
+	}
+	@JsonProperty("username")  // 이제 getUsername() 호출 시 JSON에서는 "username"으로 표현
+	public String getEmail() {
+		return email;
 	}
 
 	@Override
