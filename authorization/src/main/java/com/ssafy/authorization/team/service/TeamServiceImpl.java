@@ -294,14 +294,54 @@ public class TeamServiceImpl implements TeamService{
 	@Override
 	@Transactional
 	public Map addMember(Integer teamSeq, String email) {
-		Map<String, String> data = new HashMap<>();
+		Map<String, Object> data = new HashMap<>();
+		// 팀에 멤버를 추가할 권한이 있는지 확인
+		Integer mySeq = 0;
+		Optional<TeamMemberEntity> isMember = teamMemberRepository.findById(new TeamMemberPK(teamSeq, mySeq));
+		if(isMember.isEmpty()){
+			data.put("msg", "팀에 멤버를 추가할 권한이 없습니다");
+			data.put("member", null);
+			return data;
+		}
+		// 팀에 이미 추가된 멤버인지 확인
+		List<TeamMemberWithInfoEntity> isTeamMember = teamMemberWithInfoRepository.findAllByTeamSeqAndEmail(teamSeq, email);
+		if(!isTeamMember.isEmpty()){
+			data.put("msg", "이미 팀에 멤버로 추가된 개발자 입니다.");
+			data.put("member", null);
+			return data;
+		}
+		// 팀에 멤버를 추가 할 수 있는 자리가 있는지 확인
+		Integer cnt = teamMemberRepository.countByTeamSeq(teamSeq);
+		if(cnt >= 6){
+			data.put("msg", "한 팀에 멤버는 최대 6명 입니다. 멤버를 추가 하려면 기존 멤버를 지워 주세요");
+			data.put("member", null);
+			return data;
+		}
+		// 해당 개발자의 시퀀스 넘버 확인
+		List<DeveloperMemberEntity> dm = developerMemberRepository.findAllByEmail(email);
+		if(dm.isEmpty()){
+			data.put("msg", "개발자로 등록된 이메일이 아닙니다.");
+			data.put("member", null);
+			return data;
+		}
+		Integer memberSeq = dm.get(0).getMemberSeq();
+		// 팀에 멤버 추가
+		TeamMemberEntity teamMemberEntity = teamMemberRepository.save(new TeamMemberEntity(teamSeq, memberSeq, false));
+		DeveloperMemberEntity e = dm.get(0);
+		data.put("msg", null);
+		data.put("member", new DeveloperSearchVo(e.getEmail(), e.getName(), e.getIamge()));
 		return data;
 	}
 
 	@Override
 	@Transactional
 	public Map deleteMember(Integer teamSeq, String email) {
-		Map<String, String> data = new HashMap<>();
+		Map<String, Object> data = new HashMap<>();
+		// 팀에 멤버를 삭제할 권한이 있는지 확인
+		// 팀에 포함된 멤버인지 확인
+		// 팀의 리더인지 확인 -> 리더는 삭제 될 수 없음
+		// 해당 멤버의 시퀀스 넘버 확인
+		// 팀에서 삭제
 		return data;
 	}
 }

@@ -11,4 +11,6 @@ import com.ssafy.authorization.team.entity.TeamMemberWithInfoPK;
 @Repository
 public interface TeamMemberWithInfoRepository extends JpaRepository<TeamMemberWithInfoEntity, TeamMemberWithInfoPK> {
 	List<TeamMemberWithInfoEntity> findAllByTeamSeq(Integer teamSeq);
+
+	List<TeamMemberWithInfoEntity> findAllByTeamSeqAndEmail(Integer teamSeq, String email);
 }

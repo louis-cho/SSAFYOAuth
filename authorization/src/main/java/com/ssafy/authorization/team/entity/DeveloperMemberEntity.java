@@ -19,7 +19,7 @@ public class DeveloperMemberEntity {
 
 	@Id
 	@Column(name = "member_seq")
-	private Integer member;
+	private Integer MemberSeq;
 
 	@Column(name = "id")
 	private String id;
