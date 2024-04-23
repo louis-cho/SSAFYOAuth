@@ -43,7 +43,8 @@ dependencies {
     implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-redis', version: '3.2.4'  // redis
     implementation 'org.postgresql:postgresql'
-
+    implementation 'org.springframework.security:spring-security-cas'
+    
     implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
     implementation group: 'org.springframework.data', name: 'spring-data-elasticsearch', version: '5.2.5'
 
