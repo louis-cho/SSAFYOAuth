@@ -50,8 +50,8 @@ public class DeveloperTeamEntity {
 	@UpdateTimestamp
 	private LocalDateTime modifyDate;
 
-	@Column(name = "is_deleted", nullable = false)
-	private Boolean isDeleted;
+	@Column(name = "is_delete", nullable = false)
+	private Boolean isDelete;
 
 	@Column(name = "leader_member_seq", nullable = false)
 	private Integer leader;
