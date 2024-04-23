@@ -2,6 +2,9 @@ package com.ssafy.authorization.member.model.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.ssafy.authorization.common.domain.BaseTimeEntity;
+import com.ssafy.authorization.member.model.dto.SignUpRequestDto;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,6 +14,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -20,13 +24,13 @@ import java.util.Collection;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(value = { "authorities" })
-public class Member implements UserDetails {
+public class Member extends BaseTimeEntity implements UserDetails {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long memberId;
 
 	@Column(unique = true)
-	private String username;
+	private String email;
 
 	@JsonIgnore
 	private String password;
@@ -34,6 +38,36 @@ public class Member implements UserDetails {
 	@Column(nullable = false)
 	@Enumerated(value = EnumType.STRING)
 	private MemberRoleEnum role;
+
+	@Column
+	private String phoneNumber;
+
+	@Column
+	private String studentId;
+
+	@Column
+	private Integer grade;
+
+	@Column
+	private String track;
+
+	@Column
+	private String name;
+
+	@Column
+	private LocalDateTime deleteDate;
+
+	@Column
+	private Boolean isDeleted;
+
+	@Column
+	private String image;
+
+	@Column
+	private Short gender;
+
+
+
 
 	private Boolean accountNonExpired;
 	private Boolean accountNonLocked;
@@ -72,19 +106,30 @@ public class Member implements UserDetails {
 		return authorities;
 	}
 
+	@Override
+	public String getUsername() {
+		return this.email;
+	}
+
 	public void changePassword(String newPassword) {
 		this.password = newPassword;
 	}
-	public static Member create(String username, String password) {
+	public static Member create(SignUpRequestDto dto) {
 		return Member.builder()
-				.username(username)
-				.password(password)
-				.accountNonExpired(true)
-				.accountNonLocked(true)
-				.credentialsNonExpired(true)
-				.enabled(true)
-				.role(MemberRoleEnum.USER)
-				.build();
+			.email(dto.getUserEmail())
+			.name(dto.getUserName())
+			.grade(1)
+			.password(dto.getPassword())
+			.gender(Short.parseShort(dto.getGender()))
+			.phoneNumber(dto.getPhoneNumber())
+			.studentId(dto.getStudentId())
+			.accountNonExpired(true)
+			.accountNonLocked(true)
+			.credentialsNonExpired(true)
+			.enabled(true)
+			.role(MemberRoleEnum.USER)
+			.isDeleted(false)
+			.build();
 	}
 }
 

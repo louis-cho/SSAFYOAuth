@@ -25,7 +25,7 @@ public class ElasticCleanUpTask {
 	}
 
 	// @Scheduled(cron = "0 0 1 * * ?") // 매달 첫째 날 새벽 1시에 실행
-	@Scheduled(cron = "*/1 * * * * ?") // 매 초마다 실행
+	// @Scheduled(cron = "*/1 * * * * ?") // 매 초마다 실행
 
 	public void cleanupOldData() {
 		// 현재 날짜에서 한 달을 빼서 계산
