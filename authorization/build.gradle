@@ -60,6 +60,8 @@ dependencies {
     // mail
     implementation 'org.springframework.boot:spring-boot-starter-mail'
     implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'
+
+    implementation 'org.springframework.security:spring-security-cas'
 }
 
 tasks.named('test') {
