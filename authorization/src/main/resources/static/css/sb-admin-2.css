@@ -1840,7 +1840,7 @@ pre code {
   background-color: #fff;
   background-clip: padding-box;
   border: 1px solid #d1d3e2;
-  border-radius: 0.35rem;
+  /*border-radius: 0.35rem;*/
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 
@@ -1963,7 +1963,7 @@ select.form-control:focus::-ms-value {
   padding: 0.25rem 0.5rem;
   font-size: 0.875rem;
   line-height: 1.5;
-  border-radius: 0.2rem;
+  /*border-radius: 0.2rem;*/
 }
 
 .form-control-lg {
@@ -1971,7 +1971,7 @@ select.form-control:focus::-ms-value {
   padding: 0.5rem 1rem;
   font-size: 1.25rem;
   line-height: 1.5;
-  border-radius: 0.3rem;
+  /*border-radius: 0.3rem;*/
 }
 
 select.form-control[size], select.form-control[multiple] {
@@ -4877,7 +4877,7 @@ a.badge:hover, a.badge:focus {
 .badge-pill {
   padding-right: 0.6em;
   padding-left: 0.6em;
-  border-radius: 10rem;
+  /*border-radius: 10rem;*/
 }
 
 .badge-primary {
@@ -10888,13 +10888,13 @@ form.user .custom-checkbox.small label {
 
 form.user .form-control-user {
   font-size: 0.8rem;
-  border-radius: 10rem;
+  /*border-radius: 10rem;*/
   padding: 1.5rem 1rem;
 }
 
 form.user .btn-user {
   font-size: 0.8rem;
-  border-radius: 10rem;
+  /*border-radius: 10rem;*/
   padding: 0.75rem 1rem;
 }
 
