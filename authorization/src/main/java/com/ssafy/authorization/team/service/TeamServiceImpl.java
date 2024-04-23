@@ -134,7 +134,7 @@ public class TeamServiceImpl implements TeamService{
 			data.put("msg", "삭제 권한이 없습니다.");
 			return data;
 		}
-		entity.setIsDeleted(true);
+		entity.setIsDelete(true);
 		entity.setDeleteDate(LocalDateTime.now());
 		developerTeamRepository.save(entity);
 		data.put("msg", "삭제되었습니다.");
@@ -277,7 +277,7 @@ public class TeamServiceImpl implements TeamService{
 	@Transactional(readOnly = true)
 	public Map searchDeveloper(String email) {
 		Map<String, Object> data = new HashMap<>();
-		List<DeveloperMemberEntity> list = developerTeamRepository.findAllByEmailContains(email);
+		List<DeveloperMemberEntity> list = developerMemberRepository.findAllByEmailContains(email);
 		if(list.size() == 0){
 			data.put("list", null);
 			data.put("msg", "검색 결과 없음");

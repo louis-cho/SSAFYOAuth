@@ -12,5 +12,4 @@ import com.ssafy.authorization.team.entity.DeveloperTeamEntity;
 public interface DeveloperTeamRepository extends JpaRepository<DeveloperTeamEntity, Integer> {
 	List<DeveloperTeamEntity> findBySeqAndIsDeleteFalse(Integer teamSeq);
 
-	List<DeveloperMemberEntity> findAllByEmailContains(String email);
 }

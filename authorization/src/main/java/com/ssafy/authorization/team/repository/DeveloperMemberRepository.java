@@ -10,4 +10,6 @@ import com.ssafy.authorization.team.entity.DeveloperMemberEntity;
 @Repository
 public interface DeveloperMemberRepository extends JpaRepository<DeveloperMemberEntity, Integer> {
 	List<DeveloperMemberEntity> findAllByEmail(String email);
+
+	List<DeveloperMemberEntity> findAllByEmailContains(String email);
 }
