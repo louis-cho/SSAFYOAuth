@@ -24,5 +24,10 @@ public class TestController {
 	public String main(){
 		return "main";
 	}
+
+	@GetMapping("/myteaminfopage")
+	public String myteaminfopage(){
+		return "myteaminfopage";
+	}
 }
 
