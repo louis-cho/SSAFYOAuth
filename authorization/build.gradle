@@ -39,6 +39,10 @@ dependencies {
     implementation 'org.springframework:spring-context'
     implementation 'org.springframework:spring-webmvc'
 
+    //S3
+    implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.1.RELEASE'
+
+
 
     implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-redis', version: '3.2.4'  // redis

@@ -43,7 +43,7 @@ public class CustomMemberManager implements UserDetailsManager {
 	@Override
 	@Transactional
 	public void deleteUser(String username) {
-		memberRepository.deleteByUsername(username);
+		memberRepository.deleteByEmail(username);
 	}
 
 	@Override
@@ -63,12 +63,12 @@ public class CustomMemberManager implements UserDetailsManager {
 
 	@Override
 	public boolean userExists(String username) {
-		return memberRepository.findByUsername(username).isPresent();
+		return memberRepository.findByEmail(username).isPresent();
 	}
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		Optional<Member> member = memberRepository.findByUsername(username);
+		Optional<Member> member = memberRepository.findByEmail(username);
 		if (member.isPresent()) {
 			log.info("member {} : ", member);
 			return member.get();

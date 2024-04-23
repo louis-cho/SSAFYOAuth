@@ -4,6 +4,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
+import org.springframework.web.multipart.MultipartFile;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -27,6 +28,13 @@ public class SignUpRequestDto {
 	@Pattern(regexp = "^\\d{2,3}-\\d{3,4}-\\d{4}$", message = "핸드폰의 양식과 맞지 않습니다. xxx-xxxx-xxxx")
 	private String phoneNumber;
 
+	private String gender;
+
+	@Pattern(regexp = "^[0-9]+$", message = "학번은 숫자만 입력 가능합니다.")
+	private String studentId;
+
+	private MultipartFile profileImage;  // 프로필 이미지 파일
+
 	@Override
 	public String toString() {
 		return "SignUpRequestDto{" +
@@ -34,6 +42,9 @@ public class SignUpRequestDto {
 			", password='" + password + '\'' +
 			", userName='" + userName + '\'' +
 			", phoneNumber='" + phoneNumber + '\'' +
+			", gender=" + gender +
+			", studentId='" + studentId + '\'' +
+			", profileImageFileName=" + (profileImage != null ? profileImage.getOriginalFilename() : "None") +
 			'}';
 	}
 }

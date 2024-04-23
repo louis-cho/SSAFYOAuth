@@ -10,6 +10,6 @@ import com.ssafy.authorization.member.model.domain.Member;
 
 @Repository
 public interface MemberRepository extends JpaRepository<Member, Long> {
-	Optional<Member> findByUsername(@Param("username") String username);
-	void deleteByUsername(String username);
+	Optional<Member> findByEmail(@Param("email") String email);
+	void deleteByEmail(String email);
 }
