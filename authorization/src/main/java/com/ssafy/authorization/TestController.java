@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-// @RequestMapping("test")
+@RequestMapping("test")
 public class TestController {
 	@GetMapping("/temp")
 	public String temp() {
@@ -18,6 +18,11 @@ public class TestController {
 	public String test() throws Exception {
 		// emailService.sendEmail("kdn1030@naver.com");
 		return "register";
+	}
+
+	@GetMapping("/main")
+	public String main(){
+		return "main";
 	}
 }
 

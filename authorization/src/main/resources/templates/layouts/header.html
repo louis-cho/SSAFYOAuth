@@ -5,7 +5,7 @@
 
 </head>
 <div th:fragment="header" >
-    <nav class="navbar navbar-expand-md navbar-dark" style="padding: 40px 10px 40px 10px; border-bottom: 1px solid #ddd; margin-left: 100px; margin-right: 100px">
+    <nav class="navbar navbar-expand-md navbar-dark" style="padding: 1rem 1rem 1rem 1rem; border-bottom: 1px solid #ddd;">
         <a class="navbar-brand" style="color: #212121;" href="/"><img src="/image/ssafy_logo2.png"></a>
 
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo03">
@@ -14,12 +14,12 @@
 
         <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
             <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
-                <li class="nav-item">
-                    <a class="nav-link" style="color: #212121; font-size: 20px" href="/admin/item/new">상품 등록</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" style="color: #212121; font-size: 20px" href="/admin/items">상품 관리</a>
-                </li>
+<!--                <li class="nav-item">-->
+<!--                    <a class="nav-link" style="color: #212121; font-size: 20px" href="/admin/item/new">상품 등록</a>-->
+<!--                </li>-->
+<!--                <li class="nav-item">-->
+<!--                    <a class="nav-link" style="color: #212121; font-size: 20px" href="/admin/items">상품 관리</a>-->
+<!--                </li>-->
                 <li class="nav-item" th:if="${true}">
                     <a class="nav-link" style="color: #212121; font-size: 20px" href="/">로그인</a>
                 </li>
