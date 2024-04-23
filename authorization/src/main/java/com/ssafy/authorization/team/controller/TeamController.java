@@ -61,10 +61,9 @@ public class TeamController {
 		return new ResponseEntity<Map>(teamService.updateServiceName(teamSeq, vo), HttpStatus.OK);
 	}
 
-	@GetMapping("/{team-seq}/member/{email}")
-	public ResponseEntity<Map> developerSearch(@PathVariable("team-seq") Integer teamSeq,
-		@PathVariable("email") String email) {
-		return new ResponseEntity<Map>(teamService.searchDeveloper(teamSeq, email), HttpStatus.OK);
+	@GetMapping("/member/{email}")
+	public ResponseEntity<Map> developerSearch(@PathVariable("email") String email) {
+		return new ResponseEntity<Map>(teamService.searchDeveloper(email), HttpStatus.OK);
 	}
 
 	@PostMapping("/{team-seq}/member/{email}")

@@ -19,7 +19,7 @@ public interface TeamService {
 
 	Map updateServiceName(Integer teamSeq, ServiceNameUpdateVo vo);
 
-	Map searchDeveloper(Integer teamSeq, String email);
+	Map searchDeveloper(String email);
 
 	Map addMember(Integer teamSeq, String email);
 

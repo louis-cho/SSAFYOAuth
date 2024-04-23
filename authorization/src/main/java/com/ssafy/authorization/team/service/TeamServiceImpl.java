@@ -13,15 +13,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ssafy.authorization.team.dto.TeamAddDto;
+import com.ssafy.authorization.team.entity.DeveloperMemberEntity;
 import com.ssafy.authorization.team.entity.DeveloperTeamEntity;
 import com.ssafy.authorization.team.entity.TeamListEntity;
 import com.ssafy.authorization.team.entity.TeamMemberEntity;
 import com.ssafy.authorization.team.entity.TeamMemberPK;
 import com.ssafy.authorization.team.entity.TeamMemberWithInfoEntity;
+import com.ssafy.authorization.team.repository.DeveloperMemberRepository;
 import com.ssafy.authorization.team.repository.DeveloperTeamRepository;
 import com.ssafy.authorization.team.repository.TeamListRepository;
 import com.ssafy.authorization.team.repository.TeamMemberRepository;
 import com.ssafy.authorization.team.repository.TeamMemberWithInfoRepository;
+import com.ssafy.authorization.team.vo.DeveloperSearchVo;
 import com.ssafy.authorization.team.vo.ServiceNameUpdateVo;
 import com.ssafy.authorization.team.vo.TeamAddVo;
 import com.ssafy.authorization.team.vo.TeamDetailVo;
@@ -42,6 +45,8 @@ public class TeamServiceImpl implements TeamService{
 	private final TeamListRepository teamListRepository;
 
 	private final TeamMemberWithInfoRepository teamMemberWithInfoRepository;
+
+	private final DeveloperMemberRepository developerMemberRepository;
 
 	@Override
 	@Transactional
@@ -270,8 +275,19 @@ public class TeamServiceImpl implements TeamService{
 
 	@Override
 	@Transactional(readOnly = true)
-	public Map searchDeveloper(Integer teamSeq, String email) {
-		Map<String, String> data = new HashMap<>();
+	public Map searchDeveloper(String email) {
+		Map<String, Object> data = new HashMap<>();
+		List<DeveloperMemberEntity> list = developerTeamRepository.findAllByEmailContains(email);
+		if(list.size() == 0){
+			data.put("list", null);
+			data.put("msg", "검색 결과 없음");
+			return data;
+		}
+		List<DeveloperSearchVo> vos = list.stream().map(entity -> {
+			return new DeveloperSearchVo(entity.getEmail(), entity.getName(), entity.getIamge());
+		}).collect(Collectors.toList());
+		data.put("msg", null);
+		data.put("list", vos);
 		return data;
 	}
 
