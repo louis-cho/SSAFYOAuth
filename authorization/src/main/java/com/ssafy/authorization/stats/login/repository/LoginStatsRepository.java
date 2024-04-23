@@ -18,7 +18,7 @@ import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.stereotype.Repository;
 
 import com.ssafy.authorization.stats.login.model.LoginStats;
-import com.ssafy.authorization.stats.login.model.VO.LoginStatsFetchRequestVO;
+import com.ssafy.authorization.stats.login.model.vo.LoginStatsFetchRequestVO;
 
 @Repository
 public class LoginStatsRepository {

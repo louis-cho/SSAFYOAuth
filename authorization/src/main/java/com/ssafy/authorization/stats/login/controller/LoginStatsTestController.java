@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.ssafy.authorization.stats.login.model.LoginStats;
-import com.ssafy.authorization.stats.login.model.VO.LoginStatsFetchRequestVO;
+import com.ssafy.authorization.stats.login.model.vo.LoginStatsFetchRequestVO;
 import com.ssafy.authorization.stats.login.service.LoginStatsService;
 import com.sun.management.OperatingSystemMXBean;
 
@@ -94,7 +94,7 @@ public class LoginStatsTestController {
 
 		// CPU 사용률 가져오기 (0.0 ~ 1.0 사이의 값)
 		double cpuUsage = osBean.getCpuLoad();
-		
+
 		// CPU 사용률을 백분율로 변환하여 출력
 		double cpuUsagePercentage = cpuUsage * 100;
 		System.out.println("CPU 사용률: " + cpuUsagePercentage + "%");

@@ -1,4 +1,4 @@
-package com.ssafy.authorization.stats.login.model.VO;
+package com.ssafy.authorization.stats.login.model.vo;
 
 import java.time.Instant;
 import java.util.UUID;

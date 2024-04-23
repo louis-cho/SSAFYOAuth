@@ -7,7 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.ssafy.authorization.stats.login.model.LoginStats;
-import com.ssafy.authorization.stats.login.model.VO.LoginStatsFetchRequestVO;
+import com.ssafy.authorization.stats.login.model.vo.LoginStatsFetchRequestVO;
 import com.ssafy.authorization.stats.login.repository.LoginStatsRepository;
 
 @Service
