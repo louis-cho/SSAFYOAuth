@@ -4,6 +4,7 @@ import com.ssafy.authorization.member.model.domain.Member;
 import com.ssafy.authorization.member.model.dto.SignUpRequestDto;
 import com.ssafy.authorization.member.model.service.CustomMemberManager;
 
+import com.ssafy.authorization.member.model.service.MemberService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 @Slf4j
 @RequiredArgsConstructor
 public class MemberController {
-	private final CustomMemberManager customMemberManager;
+	private final MemberService memberService;
 	@GetMapping("/sign_up")
 	public String signUp() {
 		return "sign_up";
@@ -32,7 +33,7 @@ public class MemberController {
 			return "sign_up";
 		} else {
 			Member member = Member.create(dto);
-			customMemberManager.createUser(member);
+			memberService.save(member, dto);
 			return "login";
 		}
 	}

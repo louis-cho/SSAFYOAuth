@@ -120,6 +120,10 @@ public class Member extends BaseTimeEntity implements UserDetails {
 	public void changePassword(String newPassword) {
 		this.password = newPassword;
 	}
+
+	public void changeProfile(String imageUrl) {
+		this.image = imageUrl;
+	}
 	public static Member create(SignUpRequestDto dto) {
 		return Member.builder()
 			.email(dto.getUserEmail())
