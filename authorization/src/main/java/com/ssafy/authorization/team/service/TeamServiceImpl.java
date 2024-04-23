@@ -277,7 +277,7 @@ public class TeamServiceImpl implements TeamService{
 	@Transactional(readOnly = true)
 	public Map searchDeveloper(String email) {
 		Map<String, Object> data = new HashMap<>();
-		List<DeveloperMemberEntity> list = developerTeamRepository.findAllByEmailContains(email);
+		List<DeveloperMemberEntity> list = developerMemberRepository.findAllByEmailContains(email);
 		if(list.size() == 0){
 			data.put("list", null);
 			data.put("msg", "검색 결과 없음");
