@@ -31,6 +31,14 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+    // JMX를 사용하기 위한 의존성
+    implementation 'org.springframework:spring-context'
+    implementation 'org.springframework:spring-webmvc'
+
+    
     implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-redis', version: '3.2.4'  // redis
     implementation 'org.postgresql:postgresql'

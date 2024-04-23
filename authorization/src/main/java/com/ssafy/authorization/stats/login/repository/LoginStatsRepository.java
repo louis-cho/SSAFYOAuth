@@ -89,6 +89,7 @@ public class LoginStatsRepository {
 		SearchHits<LoginStats> searchHits = elasticsearchOperations.search(query, LoginStats.class);
 
 		// 검색 결과를 List<LoginStats> 형태로 변환하여 반환합니다.
+
 		List<LoginStats> loginStatsList = searchHits.getSearchHits().stream()
 			.map(SearchHit::getContent)
 			.collect(Collectors.toList());
