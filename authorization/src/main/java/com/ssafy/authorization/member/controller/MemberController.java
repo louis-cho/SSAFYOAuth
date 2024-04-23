@@ -2,8 +2,6 @@ package com.ssafy.authorization.member.controller;
 
 import com.ssafy.authorization.member.model.domain.Member;
 import com.ssafy.authorization.member.model.dto.SignUpRequestDto;
-import com.ssafy.authorization.member.model.service.CustomMemberManager;
-
 import com.ssafy.authorization.member.model.service.MemberService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
