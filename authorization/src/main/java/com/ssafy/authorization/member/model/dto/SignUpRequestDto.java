@@ -1,6 +1,9 @@
 package com.ssafy.authorization.member.model.dto;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Pattern;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,12 +12,19 @@ import lombok.Setter;
 @Setter
 @Builder
 public class SignUpRequestDto {
-	@NotEmpty
+	@NotBlank(message = "이메일은 필수 입력 값입니다.")
+	@Email(message = "이메일 입력이 올바르지 않습니다.")
 	private String userEmail;
-	@NotEmpty
+
+	@NotBlank(message = "비밀번호는 필수 입력 값입니다.")
+	@Pattern(regexp="(?=.*[0-9])(?=.*[a-zA-Z])(?=.*\\W)(?=\\S+$).{8,20}",
+		message = "비밀번호는 영문 대,소문자와 숫자, 특수기호가 적어도 1개 이상씩 포함된 8자 ~ 20자의 비밀번호여야 합니다.")
 	private String password;
+
+	@NotEmpty(message = "유저명은 필수입니다.")
 	private String userName;
-	private String gender;
+
+	@Pattern(regexp = "^\\d{2,3}-\\d{3,4}-\\d{4}$", message = "핸드폰의 양식과 맞지 않습니다. xxx-xxxx-xxxx")
 	private String phoneNumber;
 
 	@Override
@@ -23,7 +33,6 @@ public class SignUpRequestDto {
 			"userEmail='" + userEmail + '\'' +
 			", password='" + password + '\'' +
 			", userName='" + userName + '\'' +
-			", gender='" + gender + '\'' +
 			", phoneNumber='" + phoneNumber + '\'' +
 			'}';
 	}

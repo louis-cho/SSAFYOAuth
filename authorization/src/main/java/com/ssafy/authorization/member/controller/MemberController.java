@@ -28,7 +28,7 @@ public class MemberController {
 	public String signUpPost(@Valid @ModelAttribute SignUpRequestDto dto, BindingResult bindingResult, Model model) {
 		log.info("Post Data : {} ", dto);
 		if (bindingResult.hasErrors()) {
-			model.addAttribute("errMessage", bindingResult.getAllErrors());
+			model.addAttribute("errMessage", bindingResult.getFieldError());
 			return "sign_up";
 		} else {
 			Member member = Member.create(dto.getUserEmail(), dto.getPassword());

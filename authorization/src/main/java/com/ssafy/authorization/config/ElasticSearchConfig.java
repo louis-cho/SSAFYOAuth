@@ -11,7 +11,7 @@ public class ElasticSearchConfig extends ElasticsearchConfiguration {
 	public ClientConfiguration clientConfiguration() {
 
 		return ClientConfiguration.builder()
-			.connectedTo("localhost:9200")
+			.connectedTo("k10a306.p.ssafy.io:3000")
 			.build();
 	}
 }
