@@ -2,7 +2,6 @@ package com.ssafy.authorization;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
@@ -10,14 +9,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class TestController {
 	@GetMapping("/temp")
 	public String temp() {
-		return "temp";
+		return "login";
 	}
 
 
 	@GetMapping("/signup")
 	public String test() throws Exception {
 		// emailService.sendEmail("kdn1030@naver.com");
-		return "register";
+		return "signup";
 	}
 	@GetMapping("/my_team_member")
 	public String my_team_member() throws Exception {
@@ -37,6 +36,11 @@ public class TestController {
 	@GetMapping("/my_team_agree")
 	public String my_team_agree(){
 		return "my_team_agree";
+	}
+
+	@GetMapping("/login")
+	public String login(){
+		return "login";
 	}
 }
 

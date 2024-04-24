@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.authorization.team.model.domain.SignUpDevelopDto;
 
@@ -23,7 +22,7 @@ public class DevelopController {
 	@GetMapping("/team")
 	public String team(){
 
-		return "team";
+		return "login";
 	}
 
 

@@ -27,7 +27,7 @@ public class MemberController {
 			model.addAttribute("errMessage", bindingResult.getAllErrors());
 			return "sign_up";
 		} else {
-			return "login";
+			return "tmp_login";
 		}
 	}
 
