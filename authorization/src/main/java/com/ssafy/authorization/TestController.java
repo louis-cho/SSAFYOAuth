@@ -19,6 +19,11 @@ public class TestController {
 		// emailService.sendEmail("kdn1030@naver.com");
 		return "register";
 	}
+	@GetMapping("/my_team_member")
+	public String my_team_member() throws Exception {
+		// emailService.sendEmail("kdn1030@naver.com");
+		return "my_team_member";
+	}
 
 	@GetMapping("/main")
 	public String main(){
@@ -26,8 +31,12 @@ public class TestController {
 	}
 
 	@GetMapping("/myteaminfopage")
-	public String myteaminfopage(){
+	public String myteaminfopage() {
 		return "myteaminfopage";
+	}
+	@GetMapping("/my_team_agree")
+	public String my_team_agree(){
+		return "my_team_agree";
 	}
 }
 

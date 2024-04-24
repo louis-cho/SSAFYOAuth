@@ -22,9 +22,12 @@
     <link rel="stylesheet" type="text/css" th:href="@{/css/header.css}">
     <link th:href="@{/css/sb-admin-2.min.css}" rel="stylesheet">
 
+
 </head>
 
 <body id="page-top" th:class="${bodyClass}">
+<script th:src="@{/js/demo/chart-area-demo.js}"></script>
+<div th:replace="~{layouts/header :: header}"></div>
 
 <!-- Page Wrapper -->
 <div id="wrapper">
@@ -342,8 +345,7 @@
             <!--            </nav>-->
 
 
-            <div th:replace="~{layouts/header :: header}"></div>
-            <!-- End of Topbar -->
+             <!-- End of Topbar -->
 
 
             <!-- Begin Page Content -->
@@ -612,7 +614,6 @@
         <!-- End of Main Content -->
 
         <!-- Footer -->
-        <div th:replace="~{layouts/footer :: footer}"></div>
         <!--        <footer class="sticky-footer bg-white">-->
         <!--            <div class="container my-auto">-->
         <!--                <div class="text-center my-auto">-->
@@ -627,6 +628,7 @@
 
 </div>
 <!-- End of Page Wrapper -->
+<div th:replace="~{layouts/footer :: footer}"></div>
 
 <!-- Scroll to Top Button-->
 <a class="scroll-to-top rounded" href="#page-top">
