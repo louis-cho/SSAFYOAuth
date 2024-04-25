@@ -1,4 +1,4 @@
-FROM openjdk:21-alpine
+FROM FROM openjdk:21-jdk
 
 ADD ./build/libs/*.jar app.jar
 
