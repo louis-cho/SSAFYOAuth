@@ -11027,7 +11027,7 @@ a:focus {
 }
 
 .bg-password-image {
-    background: url(https://source.unsplash.com/oWTW-jNGl9I/600x800);
+    background: url('/image/signup_moongchi.jpg');
     background-position: center;
     background-size: cover
 }
