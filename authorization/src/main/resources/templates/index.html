@@ -29,6 +29,7 @@
 
 <body id="page-top" th:class="${bodyClass}">
 <div class="header" th:replace="~{layouts/header :: header}"></div>
+
 <!-- Page Wrapper -->
 <div id="wrapper">
     <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
@@ -169,33 +170,59 @@
 
     </ul>
 
-
     <!-- Content Wrapper -->
-    <div id="content-wrapper" class="d-flex flex-column">
-
+    <div id="content-wrapper" class="d-flex flex-column">c
         <!-- Main Content -->
         <div id="content">
 
             <!-- Begin Page Content -->
-            <div class="container-fluid col-lg-9 mb-4">
-                <div class="d-flex align-items-center">
-                    <h1 class="h3 text-gray-800">나의 팀 </h1>
-                    <!-- 팀 수를 표시하는 부분입니다. 처음에는 0으로 설정됩니다 -->
-                    <p class="h3 text-gray-800"><span id="teamCount">  (0)</span></p>
-                </div>
-
-                <!-- Page Heading -->
-                <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                    <div class="team-card">
-                        <div class="card shadow h-100 add-team-card" style="cursor:pointer;">
-                            <div class="card-body d-flex align-items-center">
-                                <!-- "+" 아이콘 추가. FontAwesome 라이브러리를 사용합니다. -->
-                                <i class="fas fa-plus-circle fa-2x"></i>
-                                <h5 class="card-title ml-3">팀 추가하기</h5>
+            <div class="container-fluid mb-4" style="max-width: 100%; padding-top: 60px; padding-left: 50px; padding-right: 50px;">
+                <div class="row">
+                    <div class="col-lg-12 mb-4">
+                        <div style="margin-bottom: 30px;">
+                            <h1 class="h3 text-gray-800">개쩌는 팀1</h1>
+                        </div>
+                        <div class="card border-left-primary shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                            서비스 이름
+                                        </div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">내가 만든 개쩌는 서비스</div>
+                                    </div>
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                            서비스 키
+                                        </div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">asjedwkohrfsaikuedwolfhjsakdfhkjl</div>
+                                    </div>
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                            앱 ID
+                                        </div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">dfcgh nesujfycntghrkujdshcgnyjdirfm</div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
+                <!-- Page Heading -->
+                <!--                <div class="d-sm-flex align-items-center justify-content-between mb-4">-->
+                <!--                    <div class="team-card">-->
+                <!--                        <div class="card shadow h-100 add-team-card" style="cursor:pointer;">-->
+                <!--                            <div class="card-body d-flex align-items-center">-->
+                <!--                                &lt;!&ndash; "+" 아이콘 추가. FontAwesome 라이브러리를 사용합니다. &ndash;&gt;-->
+                <!--                                <i class="fas fa-plus-circle fa-2x"></i>-->
+                <!--                                <h5 class="card-title ml-3">팀 추가하기</h5>-->
+                <!--                            </div>-->
+                <!--                        </div>-->
+                <!--                    </div>-->
+                <!--                </div>-->
 
                 <!-- Team List -->
                 <div class="align-items-center mb-4">
@@ -268,33 +295,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 <script th:inline="javascript">
-    document.querySelector('.add-team-card').addEventListener('click', function () {
-        $('#teamAddModal').modal('show');
-    });
 
-    function addTeam() {
-        var teamName = document.getElementById('teamName').value;
-        var serviceName = document.getElementById('serviceName').value;
-        var email = document.getElementById('email').value;
-        var domainUrl = document.getElementById('domainUrl').value;
-        var redirectUrl = document.getElementById('redirectUrl').value;
-
-        var teamList = document.getElementById('teamList');
-        var teamCard = document.createElement('div');
-        teamCard.classList.add('col-md-4', 'mb-4', 'team-card');
-        teamCard.innerHTML = `<div class="card shadow h-100">
-            <div class="card-body">
-                <h5 class="card-title">${teamName}</h5>
-                <p class="card-text">서비스: ${serviceName}</p>
-                <p class="card-text">이메일: ${email}</p>
-                <p class="card-text">도메인: ${domainUrl}</p>
-                <p class="card-text">리다이렉트: ${redirectUrl}</p>
-            </div>
-        </div>`;
-        teamList.appendChild(teamCard);
-        $('#teamAddModal').modal('hide');
-        document.getElementById('teamForm').reset();
-    }
 </script>
 
 </body>
