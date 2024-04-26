@@ -21,7 +21,7 @@ public class DeveloperMemberEntity {
 	@Column(name = "member_seq")
 	private Integer MemberSeq;
 
-	@Column(name = "id")
+	@Column(name = "student_id")
 	private String id;
 
 	@Column(name = "password")
@@ -51,7 +51,7 @@ public class DeveloperMemberEntity {
 	@Column(name = "create_date")
 	private LocalDateTime createDate;
 
-	@Column(name = "modify_date")
+	@Column(name = "update_date")
 	private LocalDateTime modifyDate;
 
 	@Column(name = "delete_date")
