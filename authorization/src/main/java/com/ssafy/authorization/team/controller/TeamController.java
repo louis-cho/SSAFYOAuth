@@ -2,6 +2,7 @@ package com.ssafy.authorization.team.controller;
 
 import java.util.Map;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -33,8 +34,8 @@ public class TeamController {
 	private final TeamService teamService;
 
 	@GetMapping
-	public String teamList(Model model) {
-		Map data = teamService.listTeam();
+	public String teamList(Model model, Authentication authentication) {
+		Map data = teamService.listTeam(authentication);
 		model.addAllAttributes(data);
 		return "team/list";
 	}
@@ -46,38 +47,38 @@ public class TeamController {
 
 	@PostMapping
 	@ResponseBody
-	public Map teamAdd(@RequestBody @Valid TeamAddVo vo) {
-		Map data = teamService.addTeam(vo);
+	public Map teamAdd(@RequestBody @Valid TeamAddVo vo, Authentication authentication) {
+		Map data = teamService.addTeam(vo, authentication);
 		return data;
 	}
 
 	@GetMapping("/{team-seq}")
-	public String teamDetail(@PathVariable("team-seq") Integer teamSeq, Model model) {
-		Map data = teamService.detailTeam(teamSeq);
+	public String teamDetail(@PathVariable("team-seq") Integer teamSeq, Model model, Authentication authentication) {
+		Map data = teamService.detailTeam(teamSeq, authentication);
 		model.addAllAttributes(data);
 		return "team/detail";
 	}
 
 	@DeleteMapping("/{team-seq}")
 	@ResponseBody
-	public Map teamDelete(@PathVariable("team-seq") Integer teamSeq) {
-		Map data = teamService.deleteTeam(teamSeq);
+	public Map teamDelete(@PathVariable("team-seq") Integer teamSeq, Authentication authentication) {
+		Map data = teamService.deleteTeam(teamSeq, authentication);
 		return data;
 	}
 
 	@PutMapping("/{team-seq}")
 	@ResponseBody
 	public Map teamNameUpdate(@PathVariable("team-seq") Integer teamSeq,
-		@RequestBody @Valid TeamNameUpdateVo vo) {
-		Map data = teamService.updateTeamName(teamSeq, vo);
+		@RequestBody @Valid TeamNameUpdateVo vo, Authentication authentication) {
+		Map data = teamService.updateTeamName(teamSeq, vo, authentication);
 		return data;
 	}
 
 	@PatchMapping("/{team-seq}")
 	@ResponseBody
 	public Map ServiceNameUpdate(@PathVariable("team-seq") Integer teamSeq,
-		@RequestBody @Valid ServiceNameUpdateVo vo) {
-		Map data = teamService.updateServiceName(teamSeq, vo);
+		@RequestBody @Valid ServiceNameUpdateVo vo, Authentication authentication) {
+		Map data = teamService.updateServiceName(teamSeq, vo, authentication);
 		return data;
 	}
 
@@ -90,15 +91,15 @@ public class TeamController {
 	@PostMapping("/{team-seq}/member/{email}")
 	@ResponseBody
 	public Map memberAdd(@PathVariable("team-seq") Integer teamSeq,
-		@PathVariable("email") String email) {
-		return teamService.addMember(teamSeq, email);
+		@PathVariable("email") String email, Authentication authentication) {
+		return teamService.addMember(teamSeq, email, authentication);
 	}
 
 	@DeleteMapping("/{team-seq}/member/{email}")
 	@ResponseBody
 	public Map memberDelete(@PathVariable("team-seq") Integer teamSeq,
-		@PathVariable("email") String email) {
-		return teamService.deleteMember(teamSeq, email);
+		@PathVariable("email") String email, Authentication authentication) {
+		return teamService.deleteMember(teamSeq, email, authentication);
 	}
 
 	@PostMapping("/image")
@@ -109,15 +110,15 @@ public class TeamController {
 
 	@DeleteMapping("/{team-seq}/image")
 	@ResponseBody
-	public Map teamImageDelete(@PathVariable("team-seq") Integer teamSeq){
-		Map data = teamService.deleteTeamImage(teamSeq);
+	public Map teamImageDelete(@PathVariable("team-seq") Integer teamSeq, Authentication authentication){
+		Map data = teamService.deleteTeamImage(teamSeq, authentication);
 		return data;
 	}
 
 	@PostMapping("/{team-seq}/image")
 	@ResponseBody
-	public Map teamImageModify(@RequestParam("team-seq") Integer teamSeq, @RequestBody @Valid TeamImageVo vo){
-		Map data = teamService.modifyTeamImage(teamSeq, vo);
+	public Map teamImageModify(@RequestParam("team-seq") Integer teamSeq, @RequestBody @Valid TeamImageVo vo, Authentication authentication){
+		Map data = teamService.modifyTeamImage(teamSeq, vo, authentication);
 		return data;
 	}
 }
