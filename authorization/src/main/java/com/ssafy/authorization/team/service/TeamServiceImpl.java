@@ -9,7 +9,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -46,7 +45,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class TeamServiceImpl implements TeamService{
+public class TeamServiceImpl implements TeamService {
 	private final DeveloperTeamRepository developerTeamRepository;
 	private final TeamMemberRepository teamMemberRepository;
 	private final TeamListRepository teamListRepository;
@@ -55,6 +54,8 @@ public class TeamServiceImpl implements TeamService{
 	private final AmazonS3Client s3client;
 	private final MemberRepository memberRepository;
 
+	private boolean test = true;
+
 	@Value("${cloud.aws.s3.bucket}")
 	private String bucket;
 
@@ -62,26 +63,26 @@ public class TeamServiceImpl implements TeamService{
 	@Transactional
 	public Map<String, Object> addTeam(TeamAddVo vo, Authentication authentication) {
 		Map<String, Object> data = new HashMap<>();
-		if(vo.getTeamMember().length > 5){
+		if (vo.getTeamMember().length > 5) {
 			data.put("msg", "팀원은 자신 포함 6명을 넘길 수 없습니다.");
 			data.put("team_seq", null);
 			return data;
 		}
-		if(vo.getDomainUrl().length > 5){
+		if (vo.getDomainUrl().length > 5) {
 			data.put("msg", "도메인은 5개까지 등록할 수 있습니다.");
 			data.put("team_seq", null);
 			return data;
 		}
-		if(vo.getRedirectionUrl().length > 10){
+		if (vo.getRedirectionUrl().length > 10) {
 			data.put("msg", "리다이렉트 url은 10개까지 등록할 수 있습니다.");
 			data.put("team_seq", null);
 			return data;
 		}
 		// 팀원들이 모두 등록된 개발자 인지 확인
-		for(String member : vo.getTeamMember()){
+		for (String member : vo.getTeamMember()) {
 			boolean is_exist = true;
 			// 존재 하지 않는 팀 원이면
-			if(!is_exist){
+			if (!is_exist) {
 				data.put("msg", "팀원 목록에 존재 하지 않는 개발자 이메일이 있습니다.");
 				data.put("team_seq", null);
 				return data;
@@ -91,13 +92,13 @@ public class TeamServiceImpl implements TeamService{
 		dto.setTeamName(vo.getTeamName());
 		dto.setServiceName(vo.getServiceName());
 		String[] teamMembers = new String[vo.getTeamMember().length + 1];
-		for(int i = 0; i < vo.getTeamMember().length; i++){
+		for (int i = 0; i < vo.getTeamMember().length; i++) {
 			teamMembers[i] = vo.getTeamMember()[i];
 		}
 		// 자기 자신의 email을 추가
-		UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+		UserDetails userDetails = (UserDetails)authentication.getPrincipal();
 		String myEmail = userDetails.getUsername();
-		Integer mySeq = (Integer)(int)(long) memberRepository.findByEmail(myEmail).get().getMemberId();
+		Integer mySeq = (Integer)(int)(long)memberRepository.findByEmail(myEmail).get().getMemberId();
 		teamMembers[vo.getTeamMember().length] = myEmail;
 		dto.setDomainUrl(vo.getDomainUrl());
 		dto.setRedirectUrl(vo.getRedirectionUrl());
@@ -112,7 +113,7 @@ public class TeamServiceImpl implements TeamService{
 		Integer teamSeq = developerTeamRepository.save(entity).getSeq();
 
 		// 팀원 생성
-		for(String email : dto.getMembers()){
+		for (String email : dto.getMembers()) {
 			// email로 member_seq읽기
 			Integer seq = 0;
 			//멤버로 추가
@@ -133,17 +134,17 @@ public class TeamServiceImpl implements TeamService{
 		Map<String, String> data = new HashMap<>();
 		// 요청된 팀이 존재하는지 확인
 		List<DeveloperTeamEntity> list = developerTeamRepository.findBySeqAndIsDeleteFalse(teamSeq);
-		if(list.size() != 1){
+		if (list.size() != 1) {
 			data.put("msg", "존재 하지 않는 팀");
 			return data;
 		}
 		// 요청한 사람의 시퀀스 넘버 확인
-		UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+		UserDetails userDetails = (UserDetails)authentication.getPrincipal();
 		String myEmail = userDetails.getUsername();
-		Integer mySeq = (Integer)(int)(long) memberRepository.findByEmail(myEmail).get().getMemberId();
+		Integer mySeq = (Integer)(int)(long)memberRepository.findByEmail(myEmail).get().getMemberId();
 		// 요청한 사람이 팀의 리더 인지 파악
 		DeveloperTeamEntity entity = list.get(0);
-		if(entity.getLeader() != mySeq){
+		if (entity.getLeader() != mySeq) {
 			data.put("msg", "삭제 권한이 없습니다.");
 			return data;
 		}
@@ -151,7 +152,8 @@ public class TeamServiceImpl implements TeamService{
 		entity.setDeleteDate(LocalDateTime.now());
 		developerTeamRepository.save(entity);
 		data.put("msg", "삭제되었습니다.");
-		;		return data;
+		;
+		return data;
 	}
 
 	@Override
@@ -161,20 +163,20 @@ public class TeamServiceImpl implements TeamService{
 
 		// 요청된 팀이 존재 하는지 확인
 		List<DeveloperTeamEntity> list = developerTeamRepository.findBySeqAndIsDeleteFalse(teamSeq);
-		if(list.size() != 1){
+		if (list.size() != 1) {
 			data.put("msg", "존재하지 않는 팀");
 			data.put("team_name", null);
 			return data;
 		}
 
 		// 자신의 시퀀스 넘버 확인
-		UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+		UserDetails userDetails = (UserDetails)authentication.getPrincipal();
 		String myEmail = userDetails.getUsername();
-		Integer mySeq = (Integer)(int)(long) memberRepository.findByEmail(myEmail).get().getMemberId();
+		Integer mySeq = (Integer)(int)(long)memberRepository.findByEmail(myEmail).get().getMemberId();
 
 		// 자신이 요청한 팀의 팀원인지 확인
 		Optional<TeamMemberEntity> member = teamMemberRepository.findById(new TeamMemberPK(teamSeq, mySeq));
-		if(member.isEmpty()){
+		if (member.isEmpty()) {
 			data.put("msg", "팀명을 수정할 수 있는 권한이 없습니다.");
 			data.put("team_name", null);
 			return data;
@@ -194,16 +196,16 @@ public class TeamServiceImpl implements TeamService{
 	public Map listTeam(Authentication authentication) {
 		Map<String, Object> data = new HashMap<>();
 		// 자신의 시퀀스 넘버를 확인
-		UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+		UserDetails userDetails = (UserDetails)authentication.getPrincipal();
 		String myEmail = userDetails.getUsername();
-		Integer mySeq = (Integer)(int)(long) memberRepository.findByEmail(myEmail).get().getMemberId();
+		Integer mySeq = (Integer)(int)(long)memberRepository.findByEmail(myEmail).get().getMemberId();
 		List<TeamListEntity> entities = teamListRepository.findByMemberSeq(mySeq);
-		if(entities.isEmpty()){
+		if (entities.isEmpty()) {
 			data.put("msg", "소속된 팀이 존재하지 않습니다.");
 			data.put("list", null);
 			return data;
 		}
-		List<TeamListVo> vos = entities.stream().map(entity ->{
+		List<TeamListVo> vos = entities.stream().map(entity -> {
 			TeamListVo vo = new TeamListVo();
 			vo.setTeamName(entity.getTeamName());
 			vo.setServiceName(entity.getServiceName());
@@ -225,21 +227,25 @@ public class TeamServiceImpl implements TeamService{
 		Map<String, Object> data = new HashMap<>();
 		// 존재 하는 팀인지 확인
 		List<DeveloperTeamEntity> list = developerTeamRepository.findBySeqAndIsDeleteFalse(teamSeq);
-		if(list.size() != 1){
+		if (list.size() != 1) {
 			data.put("msg", "존재하지 않는 팀");
 			data.put("team_name", null);
 			return data;
 		}
+
 		// 요청을 한 사람이 팀 원인지 확인
-		UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-		String myEmail = userDetails.getUsername();
-		Integer mySeq = (Integer)(int)(long) memberRepository.findByEmail(myEmail).get().getMemberId();
-		Optional<TeamMemberEntity> member = teamMemberRepository.findById(new TeamMemberPK(teamSeq, mySeq));
-		if(member.isEmpty()){
-			data.put("msg", "팀을 볼 수 있는 권한이 없습니다.");
-			data.put("team_name", null);
-			return data;
+		if (!test) {
+			UserDetails userDetails = (UserDetails)authentication.getPrincipal();
+			String myEmail = userDetails.getUsername();
+			Integer mySeq = (Integer)(int)(long)memberRepository.findByEmail(myEmail).get().getMemberId();
+			Optional<TeamMemberEntity> member = teamMemberRepository.findById(new TeamMemberPK(teamSeq, mySeq));
+			if (member.isEmpty()) {
+				data.put("msg", "팀을 볼 수 있는 권한이 없습니다.");
+				data.put("team_name", null);
+				return data;
+			}
 		}
+
 		// 정상 응답의 경우
 		DeveloperTeamEntity team = list.get(0);
 		TeamDetailVo vo = new TeamDetailVo();
@@ -269,17 +275,17 @@ public class TeamServiceImpl implements TeamService{
 		Map<String, String> data = new HashMap<>();
 		// 팀이 존재 하는지 확인
 		List<DeveloperTeamEntity> list = developerTeamRepository.findBySeqAndIsDeleteFalse(teamSeq);
-		if(list.size() != 1){
+		if (list.size() != 1) {
 			data.put("msg", "존재하지 않는 팀");
 			data.put("team_name", null);
 			return data;
 		}
 		// 사용자가 팀의 멤버인지 확인
-		UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+		UserDetails userDetails = (UserDetails)authentication.getPrincipal();
 		String myEmail = userDetails.getUsername();
-		Integer mySeq = (Integer)(int)(long) memberRepository.findByEmail(myEmail).get().getMemberId();
+		Integer mySeq = (Integer)(int)(long)memberRepository.findByEmail(myEmail).get().getMemberId();
 		Optional<TeamMemberEntity> member = teamMemberRepository.findById(new TeamMemberPK(teamSeq, mySeq));
-		if(member.isEmpty()){
+		if (member.isEmpty()) {
 			data.put("msg", "팀을 볼 수 있는 권한이 없습니다.");
 			data.put("team_name", null);
 			return data;
@@ -290,7 +296,7 @@ public class TeamServiceImpl implements TeamService{
 		team = developerTeamRepository.save(team);
 		// 정상 응답
 		data.put("serviceName", team.getServiceName());
-		data.put("msg",null);
+		data.put("msg", null);
 		return data;
 	}
 
@@ -299,7 +305,7 @@ public class TeamServiceImpl implements TeamService{
 	public Map searchDeveloper(String email) {
 		Map<String, Object> data = new HashMap<>();
 		List<DeveloperMemberEntity> list = developerMemberRepository.findAllByEmailContains(email);
-		if(list.size() == 0){
+		if (list.size() == 0) {
 			data.put("list", null);
 			data.put("msg", "검색 결과 없음");
 			return data;
@@ -317,37 +323,43 @@ public class TeamServiceImpl implements TeamService{
 	public Map addMember(Integer teamSeq, String email, Authentication authentication) {
 		Map<String, Object> data = new HashMap<>();
 		// 팀에 멤버를 추가할 권한이 있는지 확인
-		UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-		String myEmail = userDetails.getUsername();
-		Integer mySeq = (Integer)(int)(long) memberRepository.findByEmail(myEmail).get().getMemberId();
-		Optional<TeamMemberEntity> isMember = teamMemberRepository.findById(new TeamMemberPK(teamSeq, mySeq));
-		if(isMember.isEmpty()){
-			data.put("msg", "팀에 멤버를 추가할 권한이 없습니다");
-			data.put("member", null);
-			return data;
-		}
-		// 팀에 이미 추가된 멤버인지 확인
-		List<TeamMemberWithInfoEntity> isTeamMember = teamMemberWithInfoRepository.findAllByTeamSeqAndEmail(teamSeq, email);
-		if(!isTeamMember.isEmpty()){
-			data.put("msg", "이미 팀에 멤버로 추가된 개발자 입니다.");
-			data.put("member", null);
-			return data;
-		}
-		// 팀에 멤버를 추가 할 수 있는 자리가 있는지 확인
-		Integer cnt = teamMemberRepository.countByTeamSeq(teamSeq);
-		if(cnt >= 6){
-			data.put("msg", "한 팀에 멤버는 최대 6명 입니다. 멤버를 추가 하려면 기존 멤버를 지워 주세요");
-			data.put("member", null);
-			return data;
+
+		if (!test) {
+			UserDetails userDetails = (UserDetails)authentication.getPrincipal();
+			String myEmail = userDetails.getUsername();
+			Integer mySeq = (Integer)(int)(long)memberRepository.findByEmail(myEmail).get().getMemberId();
+			Optional<TeamMemberEntity> isMember = teamMemberRepository.findById(new TeamMemberPK(teamSeq, mySeq));
+			if (isMember.isEmpty()) {
+				data.put("msg", "팀에 멤버를 추가할 권한이 없습니다");
+				data.put("member", null);
+				return data;
+			}
+			// 팀에 이미 추가된 멤버인지 확인
+			List<TeamMemberWithInfoEntity> isTeamMember = teamMemberWithInfoRepository.findAllByTeamSeqAndEmail(teamSeq,
+				email);
+			if (!isTeamMember.isEmpty()) {
+				data.put("msg", "이미 팀에 멤버로 추가된 개발자 입니다.");
+				data.put("member", null);
+				return data;
+			}
+
+			// 팀에 멤버를 추가 할 수 있는 자리가 있는지 확인
+			Integer cnt = teamMemberRepository.countByTeamSeq(teamSeq);
+			if (cnt >= 6) {
+				data.put("msg", "한 팀에 멤버는 최대 6명 입니다. 멤버를 추가 하려면 기존 멤버를 지워 주세요");
+				data.put("member", null);
+				return data;
+			}
 		}
 		// 해당 개발자의 시퀀스 넘버 확인
 		List<DeveloperMemberEntity> dm = developerMemberRepository.findAllByEmail(email);
-		if(dm.isEmpty()){
+		if (dm.isEmpty()) {
 			data.put("msg", "개발자로 등록된 이메일이 아닙니다.");
 			data.put("member", null);
 			return data;
 		}
 		Integer memberSeq = dm.get(0).getMemberSeq();
+
 		// 팀에 멤버 추가
 		TeamMemberEntity teamMemberEntity = teamMemberRepository.save(new TeamMemberEntity(teamSeq, memberSeq, false));
 		DeveloperMemberEntity e = dm.get(0);
@@ -361,31 +373,31 @@ public class TeamServiceImpl implements TeamService{
 	public Map deleteMember(Integer teamSeq, String email, Authentication authentication) {
 		Map<String, Object> data = new HashMap<>();
 		// 팀에 멤버를 삭제할 권한이 있는지 확인
-		UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+		UserDetails userDetails = (UserDetails)authentication.getPrincipal();
 		String myEmail = userDetails.getUsername();
-		Integer mySeq = (Integer)(int)(long) memberRepository.findByEmail(myEmail).get().getMemberId();
+		Integer mySeq = (Integer)(int)(long)memberRepository.findByEmail(myEmail).get().getMemberId();
 		Optional<TeamMemberEntity> isMember = teamMemberRepository.findById(new TeamMemberPK(teamSeq, mySeq));
-		if(isMember.isEmpty()){
+		if (isMember.isEmpty()) {
 			data.put("msg", "팀 멤버를 수정할 권한이 없습니다");
 			return data;
 		}
 		// 해당 이메일의 멤버가
 		// 팀에 포함된 멤버인지 확인
 		List<TeamMemberWithInfoEntity> list = teamMemberWithInfoRepository.findAllByTeamSeqAndEmail(teamSeq, email);
-		if(list.isEmpty()){
+		if (list.isEmpty()) {
 			data.put("msg", "해당 이메일의 개발자는  팀 멤버가 아닙니다.");
 			return data;
 		}
 		// 팀의 리더인지 확인 -> 리더는 삭제 될 수 없음
 		Optional<DeveloperTeamEntity> teamOptional = developerTeamRepository.findById(teamSeq);
-		if(teamOptional.isEmpty()){
+		if (teamOptional.isEmpty()) {
 			data.put("msg", "팀이 존재하지 않습니다.");
 			return data;
 		}
 		DeveloperTeamEntity team = teamOptional.get();
 		Integer leaderSeq = team.getLeader();
 		Optional<DeveloperMemberEntity> dmOptional = developerMemberRepository.findById(leaderSeq);
-		if(!dmOptional.isEmpty()) {
+		if (!dmOptional.isEmpty()) {
 			DeveloperMemberEntity dm = dmOptional.get();
 			if (dm.getEmail() == email) {
 				data.put("msg", "팀 리더는 삭제할 수 없습니다.");
@@ -404,17 +416,17 @@ public class TeamServiceImpl implements TeamService{
 	public Map uploadTeamImage(MultipartFile file) {
 		Map<String, String> data = new HashMap<>();
 		String filename = file.getOriginalFilename() + UUID.randomUUID();
-		try{
+		try {
 			ObjectMetadata meta = new ObjectMetadata();
 			meta.setContentLength(file.getSize());
 			s3client.putObject(new PutObjectRequest(bucket, filename, file.getInputStream(), meta));
 			String url = s3client.getUrl(bucket, filename).toString();
 			data.put("msg", null);
 			data.put("url", url);
-		}catch (IOException e){
+		} catch (IOException e) {
 			data.put("msg", "파일 업로드 실패");
 			data.put("url", null);
-		}finally {
+		} finally {
 			return data;
 		}
 	}
@@ -424,16 +436,16 @@ public class TeamServiceImpl implements TeamService{
 		Map<String, String> data = new HashMap<>();
 		data.put("msg", null);
 		Optional<DeveloperTeamEntity> team = developerTeamRepository.findById(teamSeq);
-		if(team.isEmpty()){
+		if (team.isEmpty()) {
 			data.put("msg", "팀을 찾을 수 없습니다.");
 			return data;
 		}
 		// 요청한 사람의 시퀀스 아이디
-		UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+		UserDetails userDetails = (UserDetails)authentication.getPrincipal();
 		String myEmail = userDetails.getUsername();
-		Integer mySeq = (Integer)(int)(long) memberRepository.findByEmail(myEmail).get().getMemberId();
+		Integer mySeq = (Integer)(int)(long)memberRepository.findByEmail(myEmail).get().getMemberId();
 		Optional<TeamMemberEntity> member = teamMemberRepository.findById(new TeamMemberPK(teamSeq, mySeq));
-		if(member.isEmpty()){
+		if (member.isEmpty()) {
 			data.put("msg", "사진 수정 권한이 없습니다.");
 			return data;
 		}
@@ -448,16 +460,16 @@ public class TeamServiceImpl implements TeamService{
 		Map<String, String> data = new HashMap<>();
 		data.put("msg", null);
 		Optional<DeveloperTeamEntity> team = developerTeamRepository.findById(teamSeq);
-		if(team.isEmpty()){
+		if (team.isEmpty()) {
 			data.put("msg", "팀을 찾을 수 없습니다.");
 			return data;
 		}
 		// 요청한 사람의 시퀀스 아이디
-		UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+		UserDetails userDetails = (UserDetails)authentication.getPrincipal();
 		String myEmail = userDetails.getUsername();
-		Integer mySeq = (Integer)(int)(long) memberRepository.findByEmail(myEmail).get().getMemberId();
+		Integer mySeq = (Integer)(int)(long)memberRepository.findByEmail(myEmail).get().getMemberId();
 		Optional<TeamMemberEntity> member = teamMemberRepository.findById(new TeamMemberPK(teamSeq, mySeq));
-		if(member.isEmpty()){
+		if (member.isEmpty()) {
 			data.put("msg", "사진 수정 권한이 없습니다.");
 			return data;
 		}

@@ -1,22 +1,67 @@
-spring:
-  application:
-    name : client
-  thymeleaf:
-    cache: false
-  config:
-    import:
-      - application-oauth.yml
-      - application-jwt.yml
-
-
-server:
-  port: 8080
-  forward-headers-strategy: framework
 logging:
   level:
-    root: INFO
     org:
       springframework:
-        web : DEBUG
-        security : DEBUG
-        RestTemplate : DEBUG
+        web: DEBUG
+        security: DEBUG
+    org.hibernate.SQL: DEBUG
+
+spring:
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    mode: HTML
+    encoding: UTF-8
+    check-template-location: true
+    cache: false
+  application:
+    name: authorization
+  datasource:
+    url: jdbc:postgresql://k10a306.p.ssafy.io:5432/postgres
+    username: postgres
+    password: ssafy
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    generate-ddl: false
+    show-sql: true
+    hibernate:
+      ddl-auto: validate
+  data:
+    redis:
+      host: k10a306.p.ssafy.io
+      port: 6379
+  main:
+    allow-bean-definition-overriding: true
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: kimssafy1030@gmail.com
+    password: vzxkizmiaqcjrknm
+    properties:
+      mail:
+        smtp:
+          starttls:
+            enable: true
+          auth: true
+
+jwt:
+  encryptor:
+    password: password
+    salt: 626F6F746966756C
+server:
+  port: 9000
+  address: 0.0.0.0
+
+cloud:
+  aws:
+    s3:
+      bucket: dagak
+    region:
+      static: ap-northeast-2
+      auto: false
+    stack:
+      auto: false
+    credentials:
+      access-key: AKIA4PE75RA3RF4YKTN4
+      secret-key: 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

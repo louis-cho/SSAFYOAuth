@@ -6,8 +6,51 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>SSAFY Auth - Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/lodash/lodash.min.js"></script>
     <link rel="stylesheet" th:href="@{/css/sb-admin-2.min.css}">
     <link th:href="@{/vendor/fontawesome-free/css/all.min.css}" rel="stylesheet" type="text/css">
+    <style>
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0, 0, 0);
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .user-results {
+            margin-top: 20px;
+            height: 300px;
+            overflow-y: auto;
+        }
+    </style>
     <!-- Other links for CSS and fonts -->
 </head>
 
@@ -35,6 +78,15 @@
         <!-- Other menu items -->
     </ul>
 
+    <!-- 팀원 초대 모달 -->
+    <div id="inviteModal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <input type="text" id="userSearchInput" placeholder="이메일로 검색..." autofocus>
+            <div id="userResults" class="user-results"></div>
+        </div>
+    </div>
+
     <!-- Begin Page Content -->
     <div class="container-fluid">
         <!-- Page Heading -->
@@ -60,7 +112,10 @@
                 <td>user1@example.com</td>
                 <td>Admin</td>
                 <td>Active</td>
-                <td><button class="btn btn-info">Edit</button> <button class="btn btn-danger">Remove</button></td>
+                <td>
+                    <button class="btn btn-info">Edit</button>
+                    <button class="btn btn-danger">Remove</button>
+                </td>
             </tr>
             <!-- Additional rows here -->
             </tbody>
@@ -78,6 +133,175 @@
         </div>
     </div>
 </div>
+<script>
 
+    var myTeamMembers = [];
+    var myTeamSeq = 1;
+
+    document.querySelector('.btn-primary').addEventListener('click', function () {
+        document.getElementById('inviteModal').style.display = 'block';
+    });
+
+    document.querySelector('.close').addEventListener('click', function () {
+        document.getElementById('inviteModal').style.display = 'none';
+    });
+
+    let userSearchInput = document.getElementById('userSearchInput');
+    userSearchInput.addEventListener('input', _.debounce(function () {
+        console.log("Searching for:", userSearchInput.value);
+        fetchUsers(myTeamSeq, userSearchInput.value);
+    }, 300));
+    let userResults = document.getElementById('userResults');
+    let nextPage = 1;
+    let fetching = false;
+
+    userResults.addEventListener('scroll', function () {
+        if (userResults.scrollHeight - userResults.scrollTop === userResults.clientHeight) {
+            if (!fetching) {
+                fetchUsers(userSearchInput.value);
+            }
+        }
+    });
+
+
+    function updateTable(newData) {
+        const tableBody = document.querySelector('.table tbody');
+        // 기존 테이블의 내용을 클리어합니다.
+        tableBody.innerHTML = '';
+
+        // 새로운 데이터로 테이블 행을 생성합니다.
+        newData.forEach(item => {
+            const row = tableBody.insertRow();
+
+            // Email 열
+            const emailCell = row.insertCell();
+            emailCell.textContent = item.email;
+
+            // Permission 열
+            const permissionCell = row.insertCell();
+            permissionCell.textContent = item.isLeader ? "TeamLeader" : "TeamMember";
+
+            // Status 열
+            const statusCell = row.insertCell();
+            statusCell.textContent = item.isAccept ? "활성" : "비활성";
+
+            // Manage 열
+            const manageCell = row.insertCell();
+            manageCell.innerHTML = `<button class="btn btn-info">Edit</button> <button class="btn btn-danger">Remove</button>`;
+        });
+    }
+
+
+    function fetchUsers(teamseq = null, email = null) {
+        if (teamseq && email) {
+            fetch(`http://localhost:9000/api/team/member/${email}`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Team member data:', data);
+                    // 데이터를 화면에 표시
+                    if (data.list) {
+                        displayUsers(data.list);  // 가정한 함수, 'members'는 서버로부터 받은 데이터 구조에 따라 변경해야 할 수 있습니다.
+                        displayMemberList(teamseq);
+                    } else
+                        userResults.innerHTML = '';
+                })
+                .catch(error => {
+                    console.error('Error fetching member:', error);
+                });
+        }
+    }
+
+    function displayMemberList(teamseq = null) {
+        if (teamseq == null)
+            return;
+
+        fetchMemberList(teamseq);
+        updateTable(myTeamMembers);
+    }
+
+    function fetchMemberList(teamseq = null) {
+        if (teamseq == null)
+            return;
+
+        fetch(`http://localhost:9000/api/team/${teamseq}`)
+            .then(response => response.json())
+            .then(data => {
+                console.log('Team members >> ', data);
+                if (data.team.members) {
+                    myTeamMembers = data.team.members;
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching team member list: ', error);
+            });
+    }
+
+    function addUser(teamseq = null, email = null) {
+        console.log("addUser");
+        if (teamseq && email) {
+            fetch(`http://localhost:9000/api/team/${teamseq}/member/${email}`, {
+                method: 'POST',  // 요청 메소드를 POST로 설정
+                headers: {
+                    'Content-Type': 'application/json',  // 내용 유형을 JSON으로 설정
+                },
+                body: JSON.stringify({teamseq: teamseq, email: email})  // 바디에 JSON 문자열로 데이터 포함
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Team member data:', data);
+                    // 데이터를 화면에 표시
+                    if (data.member) {
+                        myTeamMembers.add(data.member);  // 가정한 함수, 'members'는 서버로부터 받은 데이터 구조에 따라 변경해야 할 수 있습니다.
+                        displayMemberList(myTeamSeq);
+                    } else
+                        userResults.innerHTML = '';
+                })
+                .catch(error => {
+                    console.error('Error fetching team member:', error);
+                });
+        }
+
+    }
+
+
+    function displayUsers(members) {
+        userResults.innerHTML = '';  // 기존 목록을 초기화
+        members.forEach(member => {
+            let userElement = document.createElement('div');
+            userElement.innerHTML = `<span>${member.email}</span>`;
+            // 멤버십 여부에 따라 버튼 추가
+            if (member.isMember) {
+                userElement.innerHTML += `<button class="btn btn-danger" id="remove_${member.email}">제거</button>`;
+            } else {
+                userElement.innerHTML += `<button class="btn btn-info" onclick="addUser(${myTeamSeq}, '${member.email}')">추가</button>`;
+            }
+            userResults.appendChild(userElement);
+        });
+    }
+
+    // function fetchUsers(searchQuery = '') {
+    //     fetching = true;
+    //     fetch(`/api/users?search=${searchQuery}&page=${nextPage}`)
+    //         .then(response => response.json())
+    //         .then(data => {
+    //             data.users.forEach(user => {
+    //                 let userElement = document.createElement('div');
+    //                 userElement.innerHTML = `<img src="${user.profileImage}" alt="프로필 이미지"><span>${user.email}</span>`;
+    //                 if (user.isMember) {
+    //                     userElement.innerHTML += `<button class="btn btn-danger">제거</button>`;
+    //                 } else {
+    //                     userElement.innerHTML += `<button class="btn btn-info">추가</button>`;
+    //                 }
+    //                 userResults.appendChild(userElement);
+    //             });
+    //             nextPage++;
+    //             fetching = false;
+    //         })
+    //         .catch(error => {
+    //             console.error('유저 정보를 가져오는 중 에러 발생:', error);
+    //             fetching = false;
+    //         });
+    // }
+</script>
 </body>
 </html>
