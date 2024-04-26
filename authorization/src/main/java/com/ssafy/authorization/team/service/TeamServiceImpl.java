@@ -9,12 +9,10 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import javax.swing.text.html.parser.Entity;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,7 +20,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.ssafy.authorization.config.S3Config;
 import com.ssafy.authorization.member.model.repository.MemberRepository;
 import com.ssafy.authorization.team.dto.TeamAddDto;
 import com.ssafy.authorization.team.entity.DeveloperMemberEntity;
@@ -45,7 +42,6 @@ import com.ssafy.authorization.team.vo.TeamListVo;
 import com.ssafy.authorization.team.vo.TeamMemberVo;
 import com.ssafy.authorization.team.vo.TeamNameUpdateVo;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 
 @Service
