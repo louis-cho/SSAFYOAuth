@@ -1,0 +1,35 @@
+/* footer.css */
+
+footer {
+    background-color: rgb(36, 41, 44);
+    color: #fff;
+    margin: 0;
+    padding: 20px;
+}
+.footer{
+
+    margin: 0;
+}
+.footer-content {
+    display: flex;
+    justify-content: center; /* 내용을 가운데 정렬 */
+    align-items: center;
+
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.logo img {
+    width: 100px; /* 로고 이미지 크기 조절 */
+    height: auto;
+}
+
+.copy {
+    font-size: 12px;
+}
+.kor {
+    font-size: 12px;
+    color: rgb(140 153 148);
+    margin-top: 15px;
+    margin-bottom: 15px;
+}

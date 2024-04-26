@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>SSAFY Auth - Dashboard</title>
+    <link rel="stylesheet" th:href="@{/css/sb-admin-2.min.css}">
+    <link th:href="@{/vendor/fontawesome-free/css/all.min.css}" rel="stylesheet" type="text/css">
+    <!-- Other links for CSS and fonts -->
+</head>
+
+<body id="page-top" th:class="${bodyClass}">
+<div th:replace="~{layouts/header :: header}"></div>
+<!-- Page Wrapper -->
+<div id="wrapper">
+    <!-- Sidebar -->
+    <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+        <!-- Sidebar - Brand -->
+        <a class="sidebar-brand d-flex align-items-center justify-content-center" th:href="@{/static}">
+            <div class="sidebar-brand-icon rotate-n-15">
+                <i class="fas fa-laugh-wink"></i>
+            </div>
+            <div class="sidebar-brand-text mx-3">SSAFY Auth<sup>306</sup></div>
+        </a>
+        <!-- Divider -->
+        <hr class="sidebar-divider my-0">
+        <!-- Nav Item - Dashboard -->
+        <li class="nav-item active">
+            <a class="nav-link" th:href="@{/static}">
+                <i class="fas fa-fw fa-tachometer-alt"></i>
+                <span>나의 팀</span></a>
+        </li>
+        <!-- Other menu items -->
+    </ul>
+
+    <!-- Begin Page Content -->
+    <div class="container-fluid">
+        <!-- Page Heading -->
+        <h1 class="h3 mb-4 text-gray-800">나의 팀</h1>
+
+        <!-- Invite Team Member Button -->
+        <div class="mb-4">
+            <button class="btn btn-primary" type="button">팀원 초대</button>
+        </div>
+
+        <!-- Team Members Table -->
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Email</th>
+                <th>Permission</th>
+                <th>Status</th>
+                <th>Manage</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>user1@example.com</td>
+                <td>Admin</td>
+                <td>Active</td>
+                <td><button class="btn btn-info">Edit</button> <button class="btn btn-danger">Remove</button></td>
+            </tr>
+            <!-- Additional rows here -->
+            </tbody>
+        </table>
+
+        <!-- Permission Descriptions -->
+        <div>
+            <h4>권한 설명:</h4>
+            <ul>
+                <li><strong>Admin</strong> - 플랫폼의 모든 접근 권한, 팀 역할 및 설정 관리 가능.</li>
+                <li><strong>Editor</strong> - 내용 수정 가능, 팀 설정 변경 불가.</li>
+                <li><strong>Viewer</strong> - 내용 및 통계 보기만 가능, 수정 권한 없음.</li>
+                <li><strong>Custom</strong> - 팀원별로 사용자 정의 권한 설정 가능.</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

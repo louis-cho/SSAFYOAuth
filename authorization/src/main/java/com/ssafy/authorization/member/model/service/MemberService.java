@@ -17,9 +17,12 @@ public class MemberService {
     @SneakyThrows
     @Transactional
     public void save(Member member, SignUpRequestDto dto) {
-        String s = s3Uploader.uploadFile(dto.getProfileImage());
-        member.changeProfile(s);
+        String s;
+        if (!dto.getProfileImage().isEmpty())
+        {
+            s = s3Uploader.uploadFile(dto.getProfileImage());
+            member.changeProfile(s);
+        }
         customMemberManager.createUser(member);
-
     }
 }

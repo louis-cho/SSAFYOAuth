@@ -68,6 +68,7 @@ public class CustomMemberManager implements UserDetailsManager {
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+		System.out.println(username);
 		Optional<Member> member = memberRepository.findByEmail(username);
 		if (member.isPresent()) {
 			log.info("member {} : ", member);
