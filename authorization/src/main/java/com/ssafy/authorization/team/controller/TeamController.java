@@ -12,11 +12,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.ssafy.authorization.team.service.TeamService;
 import com.ssafy.authorization.team.vo.ServiceNameUpdateVo;
 import com.ssafy.authorization.team.vo.TeamAddVo;
+import com.ssafy.authorization.team.vo.TeamImageVo;
 import com.ssafy.authorization.team.vo.TeamNameUpdateVo;
 
 import jakarta.validation.Valid;
@@ -96,5 +99,25 @@ public class TeamController {
 	public Map memberDelete(@PathVariable("team-seq") Integer teamSeq,
 		@PathVariable("email") String email) {
 		return teamService.deleteMember(teamSeq, email);
+	}
+
+	@PostMapping("/image")
+	@ResponseBody
+	public Map teamImageUpload(@RequestParam("image")MultipartFile file){
+		return teamService.uploadTeamImage(file);
+	}
+
+	@DeleteMapping("/{team-seq}/image")
+	@ResponseBody
+	public Map teamImageDelete(@PathVariable("team-seq") Integer teamSeq){
+		Map data = teamService.deleteTeamImage(teamSeq);
+		return data;
+	}
+
+	@PostMapping("/{team-seq}/image")
+	@ResponseBody
+	public Map teamImageModify(@RequestParam("team-seq") Integer teamSeq, @RequestBody @Valid TeamImageVo vo){
+		Map data = teamService.modifyTeamImage(teamSeq, vo);
+		return data;
 	}
 }
