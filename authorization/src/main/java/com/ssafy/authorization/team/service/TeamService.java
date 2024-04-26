@@ -2,8 +2,11 @@ package com.ssafy.authorization.team.service;
 
 import java.util.Map;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.ssafy.authorization.team.vo.ServiceNameUpdateVo;
 import com.ssafy.authorization.team.vo.TeamAddVo;
+import com.ssafy.authorization.team.vo.TeamImageVo;
 import com.ssafy.authorization.team.vo.TeamNameUpdateVo;
 
 public interface TeamService {
@@ -24,4 +27,10 @@ public interface TeamService {
 	Map addMember(Integer teamSeq, String email);
 
 	Map deleteMember(Integer teamSeq, String email);
+
+	Map uploadTeamImage(MultipartFile file);
+
+	Map deleteTeamImage(Integer teamSeq);
+
+	Map modifyTeamImage(Integer teamSeq, TeamImageVo vo);
 }
