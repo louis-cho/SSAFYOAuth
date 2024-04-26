@@ -64,7 +64,7 @@ public class AuthorizationServerConfig {
 	// 	http
 	// 			.authorizeHttpRequests((authorize) -> authorize
 	// 					.requestMatchers("/css/**", "/favicon.ico", "/error",
-	// 						"/test/**","/login","/sign_up"
+	// 						"/test/**","/login","/signup"
 	// 						,".well-known/jwks.json").permitAll()
 	// 					.anyRequest().authenticated()
 	// 			)
