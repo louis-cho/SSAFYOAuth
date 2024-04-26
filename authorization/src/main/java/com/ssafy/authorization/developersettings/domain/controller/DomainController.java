@@ -1,7 +1,5 @@
 package com.ssafy.authorization.developersettings.domain.controller;
 
-import java.util.UUID;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,7 +27,7 @@ public class DomainController {
 	private DomainEntity parseDomainEntity(JsonNode jsonNode) {
 		JsonNode domainNode = null, teamNode = null, userNode = null;
 		String domain;
-		UUID teamId, userId;
+		int teamId, userId;
 
 		domainNode = jsonNode.get("domainUrl");
 		teamNode = jsonNode.get("teamId");
@@ -40,8 +38,8 @@ public class DomainController {
 		}
 		domain = domainNode.asText();
 		try {
-			teamId = UUID.fromString(teamNode.asText());
-			userId = UUID.fromString(userNode.asText());
+			teamId = Integer.parseInt(teamNode.asText());
+			userId = Integer.parseInt(userNode.asText());
 		} catch (IllegalArgumentException e) {
 			return null;
 		}

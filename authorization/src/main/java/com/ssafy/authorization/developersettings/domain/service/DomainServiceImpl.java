@@ -1,7 +1,5 @@
 package com.ssafy.authorization.developersettings.domain.service;
 
-import java.util.UUID;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,8 +27,8 @@ public class DomainServiceImpl implements DomainService {
 	@Override
 	@Transactional
 	public int insertDomain(DomainEntity domain) {
-		UUID teamId = domain.getTeamId();
-		UUID userId = domain.getUserId();
+		int teamId = domain.getTeamId();
+		int userId = domain.getUserId();
 		String domainUrl = domain.getDomain();
 
 		if (!isTeamMember(teamId, userId)) {
@@ -55,8 +53,8 @@ public class DomainServiceImpl implements DomainService {
 	@Override
 	@Transactional
 	public int removeDomain(DomainEntity domain) {
-		UUID teamId = domain.getTeamId();
-		UUID userId = domain.getUserId();
+		int teamId = domain.getTeamId();
+		int userId = domain.getUserId();
 		String domainUrl = domain.getDomain();
 
 		if (!isTeamMember(teamId, userId)) {
@@ -73,18 +71,18 @@ public class DomainServiceImpl implements DomainService {
 		return 1;
 	}
 
-	private boolean isTeamMember(UUID teamId, UUID userId) {
+	private boolean isTeamMember(int teamId, int userId) {
 		// ToDO: 팀원 판별 기능 호출하기
 		return true; // 임시로 true 반환
 	}
 
 	@Override
 	@Transactional(readOnly = true)
-	public int countDomainUrl(UUID teamId) {
+	public int countDomainUrl(int teamId) {
 		return domainEntityRepository.countByTeamId(teamId);
 	}
 
-	private int countRedirectUrl(UUID teamId) {
+	private int countRedirectUrl(int teamId) {
 		return 0;
 	}
 }

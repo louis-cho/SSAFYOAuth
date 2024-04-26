@@ -1,7 +1,6 @@
 package com.ssafy.authorization.developersettings.domain.model;
 
 import java.io.Serializable;
-import java.util.UUID;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -21,9 +20,9 @@ import lombok.Setter;
 @IdClass(DomainEntityId.class)
 public class DomainEntity implements Serializable {
 	@Id
-	private UUID teamId;
+	private int teamId;
 	@Id
-	private UUID userId;
+	private int userId;
 	@Id
 	private String domain;
 
@@ -35,7 +34,7 @@ public class DomainEntity implements Serializable {
 	}
 
 	// 모든 필드를 사용하는 생성자
-	public DomainEntity(UUID teamId, UUID userId, String domain) {
+	public DomainEntity(int teamId, int userId, String domain) {
 		this.teamId = teamId;
 		this.userId = userId;
 		this.domain = domain;

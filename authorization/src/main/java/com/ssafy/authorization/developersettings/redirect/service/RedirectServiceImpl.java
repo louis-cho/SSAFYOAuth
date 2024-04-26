@@ -1,7 +1,5 @@
 package com.ssafy.authorization.developersettings.redirect.service;
 
-import java.util.UUID;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,8 +27,8 @@ public class RedirectServiceImpl implements RedirectService {
 	@Override
 	@Transactional
 	public int insertRedirect(RedirectEntity redirect) {
-		UUID teamId = redirect.getTeamId();
-		UUID userId = redirect.getUserId();
+		int teamId = redirect.getTeamId();
+		int userId = redirect.getUserId();
 		String redirectUrl = redirect.getRedirect();
 
 		if (!isTeamMember(teamId, userId)) {
@@ -55,8 +53,8 @@ public class RedirectServiceImpl implements RedirectService {
 	@Override
 	@Transactional
 	public int removeRedirect(RedirectEntity redirect) {
-		UUID teamId = redirect.getTeamId();
-		UUID userId = redirect.getUserId();
+		int teamId = redirect.getTeamId();
+		int userId = redirect.getUserId();
 		String redirectUrl = redirect.getRedirect();
 
 		if (!isTeamMember(teamId, userId)) {
@@ -73,14 +71,14 @@ public class RedirectServiceImpl implements RedirectService {
 		return 1;
 	}
 
-	private boolean isTeamMember(UUID teamId, UUID userId) {
+	private boolean isTeamMember(int teamId, int userId) {
 		// ToDO: 팀원 판별 기능 호출하기
 		return true; // 임시로 true 반환
 	}
 
 	@Override
 	@Transactional(readOnly = true)
-	public int countRedirectUrl(UUID teamId) {
+	public int countRedirectUrl(int teamId) {
 		return redirectEntityRepository.countByTeamId(teamId);
 	}
 }

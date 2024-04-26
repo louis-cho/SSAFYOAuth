@@ -1,7 +1,6 @@
 package com.ssafy.authorization.developersettings.redirect.model;
 
 import java.io.Serializable;
-import java.util.UUID;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -15,7 +14,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @EqualsAndHashCode
 public class RedirectEntityId implements Serializable {
-	private UUID teamId;
-	private UUID userId;
+	private int teamId;
+	private int userId;
 	private String redirect;
 }

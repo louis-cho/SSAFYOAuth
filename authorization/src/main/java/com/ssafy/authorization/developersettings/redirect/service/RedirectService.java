@@ -1,7 +1,5 @@
 package com.ssafy.authorization.developersettings.redirect.service;
 
-import java.util.UUID;
-
 import org.springframework.stereotype.Service;
 
 import com.ssafy.authorization.developersettings.redirect.model.RedirectEntity;
@@ -13,5 +11,5 @@ public interface RedirectService {
 
 	int removeRedirect(RedirectEntity redirectEntity);
 
-	int countRedirectUrl(UUID teamId);
+	int countRedirectUrl(int teamId);
 }
