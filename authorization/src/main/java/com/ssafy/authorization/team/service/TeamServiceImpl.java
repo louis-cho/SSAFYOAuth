@@ -21,6 +21,8 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.ssafy.authorization.member.model.repository.MemberRepository;
+import com.ssafy.authorization.redirect.model.RedirectEntity;
+import com.ssafy.authorization.redirect.service.RedirectService;
 import com.ssafy.authorization.team.dto.TeamAddDto;
 import com.ssafy.authorization.team.entity.DeveloperMemberEntity;
 import com.ssafy.authorization.team.entity.DeveloperTeamEntity;
@@ -54,6 +56,7 @@ public class TeamServiceImpl implements TeamService{
 	private final DeveloperMemberRepository developerMemberRepository;
 	private final AmazonS3Client s3client;
 	private final MemberRepository memberRepository;
+	private final RedirectService redirectService;
 
 	@Value("${cloud.aws.s3.bucket}")
 	private String bucket;
@@ -62,25 +65,29 @@ public class TeamServiceImpl implements TeamService{
 	@Transactional
 	public Map<String, Object> addTeam(TeamAddVo vo, Authentication authentication) {
 		Map<String, Object> data = new HashMap<>();
-		if(vo.getTeamMember().length > 5){
+		if(vo.getTeamMember() != null && vo.getTeamMember().length > 5){
 			data.put("msg", "팀원은 자신 포함 6명을 넘길 수 없습니다.");
 			data.put("team_seq", null);
 			return data;
 		}
-		if(vo.getDomainUrl().length > 5){
+		if(vo.getDomainUrl() != null && vo.getDomainUrl().length > 5){
 			data.put("msg", "도메인은 5개까지 등록할 수 있습니다.");
 			data.put("team_seq", null);
 			return data;
 		}
-		if(vo.getRedirectionUrl().length > 10){
+		if(vo.getRedirectionUrl() != null && vo.getRedirectionUrl().length > 10){
 			data.put("msg", "리다이렉트 url은 10개까지 등록할 수 있습니다.");
 			data.put("team_seq", null);
 			return data;
 		}
 		// 팀원들이 모두 등록된 개발자 인지 확인
-		for(String member : vo.getTeamMember()){
+		if(vo.getTeamMember() != null) for(String member : vo.getTeamMember()){
 			boolean is_exist = true;
 			// 존재 하지 않는 팀 원이면
+			List<DeveloperMemberEntity> l = developerMemberRepository.findAllByEmail(member);
+			if(l.isEmpty()){
+				is_exist = false;
+			}
 			if(!is_exist){
 				data.put("msg", "팀원 목록에 존재 하지 않는 개발자 이메일이 있습니다.");
 				data.put("team_seq", null);
@@ -90,15 +97,15 @@ public class TeamServiceImpl implements TeamService{
 		TeamAddDto dto = new TeamAddDto();
 		dto.setTeamName(vo.getTeamName());
 		dto.setServiceName(vo.getServiceName());
-		String[] teamMembers = new String[vo.getTeamMember().length + 1];
-		for(int i = 0; i < vo.getTeamMember().length; i++){
+		String[] teamMembers = new String[vo.getTeamMember()==null? 1 : vo.getTeamMember().length + 1];
+		for(int i = 0; i < (vo.getTeamMember()==null? 0: vo.getTeamMember().length); i++){
 			teamMembers[i] = vo.getTeamMember()[i];
 		}
 		// 자기 자신의 email을 추가
 		UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 		String myEmail = userDetails.getUsername();
 		Integer mySeq = (Integer)(int)(long) memberRepository.findByEmail(myEmail).get().getMemberId();
-		teamMembers[vo.getTeamMember().length] = myEmail;
+		teamMembers[vo.getTeamMember()== null ? 0 : vo.getTeamMember().length] = myEmail;
 		dto.setDomainUrl(vo.getDomainUrl());
 		dto.setRedirectUrl(vo.getRedirectionUrl());
 		// 자기 자신의 seq를 team leader seq로 지정
@@ -109,18 +116,28 @@ public class TeamServiceImpl implements TeamService{
 		entity.setServiceName(dto.getServiceName());
 		entity.setTeamName(dto.getTeamName());
 		entity.setServiceName(dto.getServiceName());
+		entity.setIsDelete(false);
+		entity.setLeader(mySeq);
+		System.out.println(entity);
 		Integer teamSeq = developerTeamRepository.save(entity).getSeq();
 
 		// 팀원 생성
-		for(String email : dto.getMembers()){
+		if(dto.getMembers() != null) for(String email : dto.getMembers()){
 			// email로 member_seq읽기
-			Integer seq = 0;
+			Integer seq = developerMemberRepository.findAllByEmail(email).get(0).getMemberSeq();
 			//멤버로 추가
 			teamMemberRepository.save(new TeamMemberEntity(teamSeq, seq, seq == mySeq ? true : false));
 		}
-		// 도메인 등록
+
+		// 도메인 url 등록
 
 		// 리다이렉트 url 등록
+		for(int i = 0; i < (dto.getRedirectUrl()==null?0:dto.getRedirectUrl().length); i++) {
+			RedirectEntity e = new RedirectEntity();
+			e.setTeamId(teamSeq);
+			e.setRedirect(dto.getRedirectUrl()[i]);
+			redirectService.insertRedirect(e);
+		}
 
 		data.put("msg", null);
 		data.put("team_seq", teamSeq);
