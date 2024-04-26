@@ -43,6 +43,7 @@ public class MemberController {
 
 	@PostMapping("/sendemail")
 	public void sendEmail(@RequestBody String userEmail) throws Exception {
+		log.info("{} tttttttttttt",userEmail);
 		emailService.sendEmail(userEmail);
 	}
 

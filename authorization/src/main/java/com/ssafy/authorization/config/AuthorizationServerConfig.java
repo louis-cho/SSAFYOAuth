@@ -57,22 +57,23 @@ public class AuthorizationServerConfig {
 		return http.build();
 	}
 
-	// @Bean
-	// @Order(2)
-	// SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http)
-	// 		throws Exception {
-	// 	http
-	// 			.authorizeHttpRequests((authorize) -> authorize
-	// 					.requestMatchers("/css/**", "/favicon.ico", "/error",
-	// 						"/test/**","/login","/signup"
-	// 						,".well-known/jwks.json").permitAll()
-	// 					.anyRequest().authenticated()
-	// 			)
-	// 			.formLogin(formLogin -> formLogin
-	// 					.loginPage("/login")
-	// 			);
-	// 	return http.build();
-	// }
+	@Bean
+	@Order(2)
+	SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http)
+			throws Exception {
+		http.csrf(csrf -> csrf.disable());
+		http
+				.authorizeHttpRequests((authorize) -> authorize
+						.requestMatchers("/css/**", "/favicon.ico", "/error",
+							"/test/**","/login","/signup", "/sendemail","/certify","/forgot_password"
+							,".well-known/jwks.json").permitAll()
+						.anyRequest().authenticated()
+				)
+				.formLogin(formLogin -> formLogin
+						.loginPage("/login")
+				);
+		return http.build();
+	}
 
 	@Bean
 	PasswordEncoder passwordEncoder() {
