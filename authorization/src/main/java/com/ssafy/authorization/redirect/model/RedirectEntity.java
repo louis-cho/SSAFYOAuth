@@ -1,7 +1,6 @@
-package com.ssafy.authorization.developersettings.redirect.model;
+package com.ssafy.authorization.redirect.model;
 
 import java.io.Serializable;
-import java.util.UUID;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -21,9 +20,9 @@ import lombok.Setter;
 @IdClass(RedirectEntityId.class)
 public class RedirectEntity implements Serializable {
 	@Id
-	private UUID teamId;
+	private int teamId;
 	@Id
-	private UUID userId;
+	private int userId;
 	@Id
 	private String redirect;
 
@@ -35,7 +34,7 @@ public class RedirectEntity implements Serializable {
 	}
 
 	// 모든 필드를 사용하는 생성자
-	public RedirectEntity(UUID teamId, UUID userId, String redirect) {
+	public RedirectEntity(int teamId, int userId, String redirect) {
 		this.teamId = teamId;
 		this.userId = userId;
 		this.redirect = redirect;

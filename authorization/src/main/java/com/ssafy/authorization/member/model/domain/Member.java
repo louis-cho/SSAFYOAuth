@@ -27,6 +27,7 @@ import java.util.Collection;
 @JsonIgnoreProperties(value = { "authorities" })
 public class Member extends BaseTimeEntity implements UserDetails {
 	@Id
+	@Column(name = "member_seq")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long memberId;
 

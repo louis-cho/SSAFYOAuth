@@ -10,8 +10,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 
 import com.ssafy.authorization.AuthorizationApplication;
-import com.ssafy.authorization.developersettings.redirect.model.RedirectEntity;
-import com.ssafy.authorization.developersettings.redirect.service.RedirectService;
+import com.ssafy.authorization.redirect.model.RedirectEntity;
+import com.ssafy.authorization.redirect.service.RedirectService;
 
 @SpringBootTest(classes = AuthorizationApplication.class)
 public class RedirectServiceTest {
