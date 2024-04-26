@@ -73,7 +73,7 @@ public class AuthorizationServerConfig {
 	// 			);
 	// 	return http.build();
 	// }
-
+	
 	@Bean
 	PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();

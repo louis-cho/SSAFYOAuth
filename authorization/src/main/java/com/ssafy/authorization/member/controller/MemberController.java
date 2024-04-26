@@ -30,9 +30,7 @@ public class MemberController {
 			model.addAttribute("errMessage", bindingResult.getFieldError());
 			return "sign_up";
 		} else {
-			Member member = Member.create(dto);
-			memberService.save(member, dto);
-			return "login";
+			return "tmp_login";
 		}
 	}
 
