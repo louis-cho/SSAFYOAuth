@@ -1,17 +1,25 @@
 package com.ssafy.authorization.team.service;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.swing.text.html.parser.Entity;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.ssafy.authorization.config.S3Config;
 import com.ssafy.authorization.team.dto.TeamAddDto;
 import com.ssafy.authorization.team.entity.DeveloperMemberEntity;
 import com.ssafy.authorization.team.entity.DeveloperTeamEntity;
@@ -28,6 +36,7 @@ import com.ssafy.authorization.team.vo.DeveloperSearchVo;
 import com.ssafy.authorization.team.vo.ServiceNameUpdateVo;
 import com.ssafy.authorization.team.vo.TeamAddVo;
 import com.ssafy.authorization.team.vo.TeamDetailVo;
+import com.ssafy.authorization.team.vo.TeamImageVo;
 import com.ssafy.authorization.team.vo.TeamListVo;
 import com.ssafy.authorization.team.vo.TeamMemberVo;
 import com.ssafy.authorization.team.vo.TeamNameUpdateVo;
@@ -47,6 +56,11 @@ public class TeamServiceImpl implements TeamService{
 	private final TeamMemberWithInfoRepository teamMemberWithInfoRepository;
 
 	private final DeveloperMemberRepository developerMemberRepository;
+
+	private final AmazonS3Client s3client;
+
+	@Value("${cloud.aws.s3.bucket}")
+	private String bucket;
 
 	@Override
 	@Transactional
@@ -138,7 +152,7 @@ public class TeamServiceImpl implements TeamService{
 		entity.setDeleteDate(LocalDateTime.now());
 		developerTeamRepository.save(entity);
 		data.put("msg", "삭제되었습니다.");
-;		return data;
+		;		return data;
 	}
 
 	@Override
@@ -372,6 +386,69 @@ public class TeamServiceImpl implements TeamService{
 		// 팀에서 삭제
 		teamMemberRepository.deleteById(new TeamMemberPK(teamSeq, memberSeq));
 		data.put("msg", "정상 삭제 되었습니다.");
+		return data;
+	}
+
+	@Override
+	public Map uploadTeamImage(MultipartFile file) {
+		Map<String, String> data = new HashMap<>();
+		String filename = file.getOriginalFilename() + UUID.randomUUID();
+		try{
+			ObjectMetadata meta = new ObjectMetadata();
+			meta.setContentLength(file.getSize());
+			s3client.putObject(new PutObjectRequest(bucket, filename, file.getInputStream(), meta));
+			String url = s3client.getUrl(bucket, filename).toString();
+			data.put("msg", null);
+			data.put("url", url);
+		}catch (IOException e){
+			data.put("msg", "파일 업로드 실패");
+			data.put("url", null);
+		}finally {
+			return data;
+		}
+	}
+
+	@Override
+	public Map deleteTeamImage(Integer teamSeq) {
+		Map<String, String> data = new HashMap<>();
+		data.put("msg", null);
+		Optional<DeveloperTeamEntity> team = developerTeamRepository.findById(teamSeq);
+		if(team.isEmpty()){
+			data.put("msg", "팀을 찾을 수 없습니다.");
+			return data;
+		}
+		// 요청한 사람의 시퀀스 아이디
+		Integer mySeq = 0;
+		Optional<TeamMemberEntity> member = teamMemberRepository.findById(new TeamMemberPK(teamSeq, mySeq));
+		if(member.isEmpty()){
+			data.put("msg", "사진 수정 권한이 없습니다.");
+			return data;
+		}
+		DeveloperTeamEntity e = team.get();
+		e.setServiceImage(null);
+		developerTeamRepository.save(e);
+		return data;
+	}
+
+	@Override
+	public Map modifyTeamImage(Integer teamSeq, TeamImageVo vo) {
+		Map<String, String> data = new HashMap<>();
+		data.put("msg", null);
+		Optional<DeveloperTeamEntity> team = developerTeamRepository.findById(teamSeq);
+		if(team.isEmpty()){
+			data.put("msg", "팀을 찾을 수 없습니다.");
+			return data;
+		}
+		// 요청한 사람의 시퀀스 아이디
+		Integer mySeq = 0;
+		Optional<TeamMemberEntity> member = teamMemberRepository.findById(new TeamMemberPK(teamSeq, mySeq));
+		if(member.isEmpty()){
+			data.put("msg", "사진 수정 권한이 없습니다.");
+			return data;
+		}
+		DeveloperTeamEntity e = team.get();
+		e.setServiceImage(vo.getUrl());
+		developerTeamRepository.save(e);
 		return data;
 	}
 }
