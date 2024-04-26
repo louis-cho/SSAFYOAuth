@@ -1,4 +1,4 @@
-package com.ssafy.authorization.developersettings.domain.model;
+package com.ssafy.authorization.redirect.model;
 
 import java.io.Serializable;
 
@@ -12,40 +12,40 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name = "domain_url", indexes = {@Index(columnList = "teamId")}, uniqueConstraints = {
-	@UniqueConstraint(columnNames = {"domain", "teamId", "userId"})
+@Table(name = "redirect_url", indexes = {@Index(columnList = "teamId")}, uniqueConstraints = {
+	@UniqueConstraint(columnNames = {"redirect", "teamId", "userId"})
 })
 @Getter
 @Setter
-@IdClass(DomainEntityId.class)
-public class DomainEntity implements Serializable {
+@IdClass(RedirectEntityId.class)
+public class RedirectEntity implements Serializable {
 	@Id
 	private int teamId;
 	@Id
 	private int userId;
 	@Id
-	private String domain;
+	private String redirect;
 
 	// 생성자, 게터 및 세터, toString 등의 메서드는 필요에 따라 추가합니다.
 	// 생성자와 게터/세터는 롬복(Lombok) 등의 라이브러리를 사용하여 간편하게 생성할 수 있습니다.
 
 	// 기본 생성자
-	public DomainEntity() {
+	public RedirectEntity() {
 	}
 
 	// 모든 필드를 사용하는 생성자
-	public DomainEntity(int teamId, int userId, String domain) {
+	public RedirectEntity(int teamId, int userId, String redirect) {
 		this.teamId = teamId;
 		this.userId = userId;
-		this.domain = domain;
+		this.redirect = redirect;
 	}
 
 	@Override
 	public String toString() {
-		return "DomainEntity{" +
+		return "RedirectEntity{" +
 			" teamId=" + teamId +
 			", userId=" + userId +
-			", domain='" + domain + '\'' +
+			", redirect='" + redirect + '\'' +
 			'}';
 	}
 }

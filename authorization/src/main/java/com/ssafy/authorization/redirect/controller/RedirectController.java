@@ -1,6 +1,4 @@
-package com.ssafy.authorization.developersettings.redirect.controller;
-
-import java.util.UUID;
+package com.ssafy.authorization.redirect.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -9,9 +7,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.ssafy.authorization.developersettings.redirect.model.RedirectEntity;
-import com.ssafy.authorization.developersettings.redirect.repository.RedirectEntityRepository;
-import com.ssafy.authorization.developersettings.redirect.service.RedirectService;
+import com.ssafy.authorization.redirect.model.RedirectEntity;
+import com.ssafy.authorization.redirect.repository.RedirectEntityRepository;
+import com.ssafy.authorization.redirect.service.RedirectService;
 
 @RestController
 @RequestMapping("/api/team/redirect")
@@ -29,7 +27,7 @@ public class RedirectController {
 	private RedirectEntity parseRedirectEntity(JsonNode jsonNode) {
 		JsonNode redirectNode = null, teamNode = null, userNode = null;
 		String redirect;
-		UUID teamId, userId;
+		int teamId, userId;
 
 		redirectNode = jsonNode.get("redirectUrl");
 		teamNode = jsonNode.get("teamId");
@@ -40,8 +38,8 @@ public class RedirectController {
 		}
 		redirect = redirectNode.asText();
 		try {
-			teamId = UUID.fromString(teamNode.asText());
-			userId = UUID.fromString(userNode.asText());
+			teamId = Integer.parseInt(teamNode.asText());
+			userId = Integer.parseInt(userNode.asText());
 		} catch (IllegalArgumentException e) {
 			return null;
 		}

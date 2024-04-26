@@ -1,8 +1,8 @@
-package com.ssafy.authorization.developersettings.redirect.service;
+package com.ssafy.authorization.redirect.service;
 
 import org.springframework.stereotype.Service;
 
-import com.ssafy.authorization.developersettings.redirect.model.RedirectEntity;
+import com.ssafy.authorization.redirect.model.RedirectEntity;
 
 @Service
 public interface RedirectService {

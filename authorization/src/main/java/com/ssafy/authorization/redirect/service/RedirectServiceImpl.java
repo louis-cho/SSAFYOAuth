@@ -1,11 +1,11 @@
-package com.ssafy.authorization.developersettings.redirect.service;
+package com.ssafy.authorization.redirect.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.ssafy.authorization.developersettings.redirect.model.RedirectEntity;
-import com.ssafy.authorization.developersettings.redirect.repository.RedirectEntityRepository;
+import com.ssafy.authorization.redirect.model.RedirectEntity;
+import com.ssafy.authorization.redirect.repository.RedirectEntityRepository;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;

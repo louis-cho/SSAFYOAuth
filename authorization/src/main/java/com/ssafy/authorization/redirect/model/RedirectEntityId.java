@@ -1,4 +1,4 @@
-package com.ssafy.authorization.developersettings.redirect.model;
+package com.ssafy.authorization.redirect.model;
 
 import java.io.Serializable;
 
