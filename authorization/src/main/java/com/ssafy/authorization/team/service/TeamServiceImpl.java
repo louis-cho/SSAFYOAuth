@@ -373,6 +373,7 @@ public class TeamServiceImpl implements TeamService {
 	public Map deleteMember(Integer teamSeq, String email, Authentication authentication) {
 		Map<String, Object> data = new HashMap<>();
 		// 팀에 멤버를 삭제할 권한이 있는지 확인
+
 		UserDetails userDetails = (UserDetails)authentication.getPrincipal();
 		String myEmail = userDetails.getUsername();
 		Integer mySeq = (Integer)(int)(long)memberRepository.findByEmail(myEmail).get().getMemberId();

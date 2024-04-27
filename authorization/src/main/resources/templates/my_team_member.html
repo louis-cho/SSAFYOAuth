@@ -135,41 +135,68 @@
 </div>
 <script>
 
-    var myTeamMembers = [];
-    var myTeamSeq = 1;
-
-    document.querySelector('.btn-primary').addEventListener('click', function () {
-        document.getElementById('inviteModal').style.display = 'block';
-    });
-
-    document.querySelector('.close').addEventListener('click', function () {
-        document.getElementById('inviteModal').style.display = 'none';
-    });
-
-    let userSearchInput = document.getElementById('userSearchInput');
-    userSearchInput.addEventListener('input', _.debounce(function () {
-        console.log("Searching for:", userSearchInput.value);
-        fetchUsers(myTeamSeq, userSearchInput.value);
-    }, 300));
-    let userResults = document.getElementById('userResults');
-    let nextPage = 1;
+    let myTeamMembers = [];
+    let searchResult = [];
+    let myTeamSeq = 1;
+    let nextPage = 0;
+    let fetchAmount = 10;
     let fetching = false;
 
-    userResults.addEventListener('scroll', function () {
-        if (userResults.scrollHeight - userResults.scrollTop === userResults.clientHeight) {
-            if (!fetching) {
-                fetchUsers(userSearchInput.value);
+    init();
+
+
+
+
+
+
+    function init() {
+
+        // 팀원 초대 다이얼로그 이벤트 핸들러
+        document.querySelector('.btn-primary').addEventListener('click', function () {
+            document.getElementById('inviteModal').style.display = 'block';
+        });
+
+        document.querySelector('.close').addEventListener('click', function () {
+            document.getElementById('inviteModal').style.display = 'none';
+        });
+
+
+        let userSearchInput = document.getElementById('userSearchInput');
+        userSearchInput.addEventListener('input', _.debounce(async function () {
+            console.log("Searching for:", userSearchInput.value);
+
+            nextPage = 0;
+            searchResult = [];
+
+            await fetchUsers(userSearchInput.value, nextPage++, fetchAmount);
+            updateSearchDialogDisplay();
+        }, 300));
+
+
+        let userResults = document.getElementById('userResults');
+        let nextPage = 1;
+        let fetching = false;
+
+
+        // 페이지네이션 추가
+        userResults.addEventListener('scroll', function () {
+            if (parseInt(userResults.scrollHeight - userResults.scrollTop) - 5 <= parseInt(userResults.clientHeight)) {
+                if (!fetching) {
+                    fetchUsers(userSearchInput.value, nextPage++, fetchAmount);
+                }
             }
-        }
-    });
+        });
 
+    }
 
+    /**
+     * 새로운 데이터를 기반으로 현재 팀 목록 테이블을 재생성한다.
+     * @param newData
+     */
     function updateTable(newData) {
         const tableBody = document.querySelector('.table tbody');
-        // 기존 테이블의 내용을 클리어합니다.
         tableBody.innerHTML = '';
 
-        // 새로운 데이터로 테이블 행을 생성합니다.
         newData.forEach(item => {
             const row = tableBody.insertRow();
 
@@ -187,21 +214,25 @@
 
             // Manage 열
             const manageCell = row.insertCell();
-            manageCell.innerHTML = `<button class="btn btn-info">Edit</button> <button class="btn btn-danger">Remove</button>`;
+            manageCell.innerHTML = `<button class="btn btn-danger" onclick="removeUser(${myTeamSeq}, '${item.email}')">Remove</button>`;
         });
     }
 
-
-    function fetchUsers(teamseq = null, email = null) {
-        if (teamseq && email) {
-            fetch(`http://localhost:9000/api/team/member/${email}`)
+    /**
+     * 주어진 team과 email을 바탕으로 유저 검색 결과를 다이얼로그에 업데이트한다.
+     * @param teamseq
+     * @param email
+     */
+    async function fetchUsers(email = null, page = 0, size = 10) {
+        if (email) {
+            fetching = true;
+            await fetch(`http://localhost:9000/api/team/member/${email}`)
                 .then(response => response.json())
                 .then(data => {
                     console.log('Team member data:', data);
                     // 데이터를 화면에 표시
                     if (data.list) {
-                        displayUsers(data.list);  // 가정한 함수, 'members'는 서버로부터 받은 데이터 구조에 따라 변경해야 할 수 있습니다.
-                        displayMemberList(teamseq);
+                        searchResult = [...searchResult, ...data.list];
                     } else
                         userResults.innerHTML = '';
                 })
@@ -209,6 +240,7 @@
                     console.error('Error fetching member:', error);
                 });
         }
+        fetching = false;
     }
 
     function displayMemberList(teamseq = null) {
@@ -219,21 +251,25 @@
         updateTable(myTeamMembers);
     }
 
+    /**
+     * 아직 DB에 팀원을 넣은 적이 없어서 이 함수가 실제 동작하면 예상 결과와 다르게 나옴
+     * @param teamseq
+     */
     function fetchMemberList(teamseq = null) {
-        if (teamseq == null)
-            return;
-
-        fetch(`http://localhost:9000/api/team/${teamseq}`)
-            .then(response => response.json())
-            .then(data => {
-                console.log('Team members >> ', data);
-                if (data.team.members) {
-                    myTeamMembers = data.team.members;
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching team member list: ', error);
-            });
+        // if (teamseq == null)
+        //     return;
+        //
+        // fetch(`http://localhost:9000/api/team/${teamseq}`)
+        //     .then(response => response.json())
+        //     .then(data => {
+        //         console.log('Team members >> ', data);
+        //         if (data.team.members) {
+        //             myTeamMembers = data.team.members;
+        //         }
+        //     })
+        //     .catch(error => {
+        //         console.error('Error fetching team member list: ', error);
+        //     });
     }
 
     function addUser(teamseq = null, email = null) {
@@ -251,8 +287,13 @@
                     console.log('Team member data:', data);
                     // 데이터를 화면에 표시
                     if (data.member) {
-                        myTeamMembers.add(data.member);  // 가정한 함수, 'members'는 서버로부터 받은 데이터 구조에 따라 변경해야 할 수 있습니다.
-                        displayMemberList(myTeamSeq);
+                        myTeamMembers.push(data.member);  // 가정한 함수, 'members'는 서버로부터 받은 데이터 구조에 따라 변경해야 할 수 있습니다.
+
+
+                        updateTeamListDisplay();
+                        updateSearchDialogDisplay();
+
+
                     } else
                         userResults.innerHTML = '';
                 })
@@ -263,15 +304,80 @@
 
     }
 
+    /**
+     * email에 해당하는 유저를 검색 결과를 가져온다.
+     * @param email
+     * @param page
+     * @param size
+     */
+    function fetchUserListByEmail(email, page, size) {
+
+    }
+
+    /**
+     *
+     */
+    function removeUser(teamseq = null, email = null) {
+        if (teamseq && email) {
+            fetch(`http://localhost:9000/api/team/${teamseq}/member/${email}`, {
+                method: 'DELETE',  // 요청 메소드를 POST로 설정
+                headers: {
+                    'Content-Type': 'application/json',  // 내용 유형을 JSON으로 설정
+                },
+                body: JSON.stringify({teamseq: teamseq, email: email})  // 바디에 JSON 문자열로 데이터 포함
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Team member data:', data);
+
+                    myTeamMembers.filter(item => item.email !== email);
+                    updateTeamListDisplay();
+                    updateSearchDialogDisplay();
+                })
+                .catch(error => {
+                    console.error('Error fetching team member:', error);
+                });
+        }
+    }
+
+
+
+
+    /**
+     * 팀원에 대한 crud 작업 수행 후 호출되는 함수로 화면을 업데이트한다.
+     * @param bList 팀원 현황 업데이트 여부
+     * @param bDialog 유저 검색 다이얼로그 창 업데이트 여부
+     */
+    function updateDisplay(bList = true, bDialog = true) {
+        updateTeamListDisplay();
+        updateSearchDialogDisplay();
+    }
+
+    /**
+     * 유저 검색 화면을 업데이트한다.
+     */
+    function updateSearchDialogDisplay() {
+        displayUsers(searchResult);
+    }
+
+    /**
+     * 팀원 현황 테이블을 업데이트한다.
+     */
+    function updateTeamListDisplay() {
+        updateTable(myTeamMembers)
+    }
+
+
+
 
     function displayUsers(members) {
         userResults.innerHTML = '';  // 기존 목록을 초기화
         members.forEach(member => {
             let userElement = document.createElement('div');
             userElement.innerHTML = `<span>${member.email}</span>`;
-            // 멤버십 여부에 따라 버튼 추가
-            if (member.isMember) {
-                userElement.innerHTML += `<button class="btn btn-danger" id="remove_${member.email}">제거</button>`;
+            // 현재 팀에 속한 팀원인지 판별 결과에 따라 추가/삭제
+            if (myTeamMembers.some(teamMember => teamMember.email === member.email)) {
+                userElement.innerHTML += `<button class="btn btn-danger" onclick="removeUser(${myTeamSeq}, '${member.email}')">제거</button>`;
             } else {
                 userElement.innerHTML += `<button class="btn btn-info" onclick="addUser(${myTeamSeq}, '${member.email}')">추가</button>`;
             }
