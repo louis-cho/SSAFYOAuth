@@ -347,15 +347,17 @@ public class TeamServiceImpl implements TeamService {
 		// 팀에 멤버를 추가할 권한이 있는지 확인
 
 		if (!test) {
-			UserDetails userDetails = (UserDetails)authentication.getPrincipal();
-			String myEmail = userDetails.getUsername();
-			Integer mySeq = (Integer)(int)(long)memberRepository.findByEmail(myEmail).get().getMemberId();
-			Optional<TeamMemberEntity> isMember = teamMemberRepository.findById(new TeamMemberPK(teamSeq, mySeq));
-			if (isMember.isEmpty()) {
-				data.put("msg", "팀에 멤버를 추가할 권한이 없습니다");
-				data.put("member", null);
-				return data;
-			}
+
+			// UserDetails userDetails = (UserDetails)authentication.getPrincipal();
+			// String myEmail = userDetails.getUsername();
+			// Integer mySeq = (Integer)(int)(long)memberRepository.findByEmail(myEmail).get().getMemberId();
+			// Optional<TeamMemberEntity> isMember = teamMemberRepository.findById(new TeamMemberPK(teamSeq, mySeq));
+			// if (isMember.isEmpty()) {
+			// 	data.put("msg", "팀에 멤버를 추가할 권한이 없습니다");
+			// 	data.put("member", null);
+			// 	return data;
+			// }
+
 			// 팀에 이미 추가된 멤버인지 확인
 			List<TeamMemberWithInfoEntity> isTeamMember = teamMemberWithInfoRepository.findAllByTeamSeqAndEmail(teamSeq,
 				email);
@@ -396,14 +398,15 @@ public class TeamServiceImpl implements TeamService {
 		Map<String, Object> data = new HashMap<>();
 		// 팀에 멤버를 삭제할 권한이 있는지 확인
 
-		UserDetails userDetails = (UserDetails)authentication.getPrincipal();
-		String myEmail = userDetails.getUsername();
-		Integer mySeq = (Integer)(int)(long)memberRepository.findByEmail(myEmail).get().getMemberId();
-		Optional<TeamMemberEntity> isMember = teamMemberRepository.findById(new TeamMemberPK(teamSeq, mySeq));
-		if (isMember.isEmpty()) {
-			data.put("msg", "팀 멤버를 수정할 권한이 없습니다");
-			return data;
-		}
+		// UserDetails userDetails = (UserDetails)authentication.getPrincipal();
+		// String myEmail = userDetails.getUsername();
+		// Integer mySeq = (Integer)(int)(long)memberRepository.findByEmail(myEmail).get().getMemberId();
+		// Optional<TeamMemberEntity> isMember = teamMemberRepository.findById(new TeamMemberPK(teamSeq, mySeq));
+		// if (isMember.isEmpty()) {
+		// 	data.put("msg", "팀 멤버를 수정할 권한이 없습니다");
+		// 	return data;
+		// }
+
 		// 해당 이메일의 멤버가
 		// 팀에 포함된 멤버인지 확인
 		List<TeamMemberWithInfoEntity> list = teamMemberWithInfoRepository.findAllByTeamSeqAndEmail(teamSeq, email);
