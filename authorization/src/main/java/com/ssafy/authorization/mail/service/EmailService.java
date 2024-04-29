@@ -43,17 +43,17 @@ public class EmailService {
 		Context context = new Context();
 		context.setVariable("authCode", authCode);
 
-		String html = templateEngine.process("mail", context);
+		String html = templateEngine.process("pages/mail", context);
 		helper.setText(html, true);
 
 		emailSender.send(emailContent);
-		String key = "AuthCode : " + "jaehwa"; // 나중에 userid 넣어야 함
+		String key = "AuthCode : " + userEmail;
 		redisTemplate.opsForValue().set(key, authCode);
-		redisTemplate.expire(key, 300, TimeUnit.SECONDS);
+		redisTemplate.expire(key, 180, TimeUnit.SECONDS);
 	}
 
-	public boolean certify(String userCode) {
-		String key = "AuthCode : " + "jaehwa";  // 나중에 userid 넣어야 함
+	public boolean certify(String userEmail, String userCode) {
+		String key = "AuthCode : " + userEmail;
 		String originCode = redisTemplate.opsForValue().get(key);
 		return userCode != null && userCode.equals(originCode);
 	}

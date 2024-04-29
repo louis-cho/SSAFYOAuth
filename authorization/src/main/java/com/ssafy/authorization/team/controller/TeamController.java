@@ -44,7 +44,7 @@ public class TeamController {
 	}
 
 	@GetMapping("/add")
-	public String getTeamAddPage(){
+	public String getTeamAddPage() {
 		return "team/add";
 	}
 
@@ -63,10 +63,10 @@ public class TeamController {
 		return null;
 	}
 	@GetMapping("/{team-seq}")
-	public String teamDetail(@PathVariable("team-seq") Integer teamSeq, Model model, Authentication authentication) {
+	@ResponseBody
+	public Map teamDetail(@PathVariable("team-seq") Integer teamSeq, Authentication authentication) {
 		Map data = teamService.detailTeam(teamSeq, authentication);
-		model.addAllAttributes(data);
-		return "team/detail";
+		return data;
 	}
 
 	@DeleteMapping("/{team-seq}")
@@ -114,20 +114,21 @@ public class TeamController {
 
 	@PostMapping("/image")
 	@ResponseBody
-	public Map teamImageUpload(@RequestParam("image")MultipartFile file){
+	public Map teamImageUpload(@RequestParam("image") MultipartFile file) {
 		return teamService.uploadTeamImage(file);
 	}
 
 	@DeleteMapping("/{team-seq}/image")
 	@ResponseBody
-	public Map teamImageDelete(@PathVariable("team-seq") Integer teamSeq, Authentication authentication){
+	public Map teamImageDelete(@PathVariable("team-seq") Integer teamSeq, Authentication authentication) {
 		Map data = teamService.deleteTeamImage(teamSeq, authentication);
 		return data;
 	}
 
 	@PostMapping("/{team-seq}/image")
 	@ResponseBody
-	public Map teamImageModify(@RequestParam("team-seq") Integer teamSeq, @RequestBody @Valid TeamImageVo vo, Authentication authentication){
+	public Map teamImageModify(@RequestParam("team-seq") Integer teamSeq, @RequestBody @Valid TeamImageVo vo,
+		Authentication authentication) {
 		Map data = teamService.modifyTeamImage(teamSeq, vo, authentication);
 		return data;
 	}
