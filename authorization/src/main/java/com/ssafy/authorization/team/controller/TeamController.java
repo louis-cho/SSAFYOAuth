@@ -132,4 +132,25 @@ public class TeamController {
 		Map data = teamService.modifyTeamImage(teamSeq, vo, authentication);
 		return data;
 	}
+
+	@GetMapping("/invite")
+	public String invitedTeamList(Model model, Authentication authentication){
+		Map data = teamService.listInvitedTeam(authentication);
+		model.addAllAttributes(data);
+		return "team/invite";
+	}
+
+	@PatchMapping("/invite/{team-seq}")
+	public String acceptInvitation(@PathVariable("team-seq") Integer teamSeq, Model model, Authentication authentication){
+		Map data = teamService.acceptInvite(teamSeq, authentication);
+		model.addAllAttributes(data);
+		return "team/invite";
+	}
+
+	@DeleteMapping("/invite/{team-seq}")
+	public String rejectInvitation(@PathVariable("team-seq") Integer teamSeq, Model model, Authentication authentication){
+		Map data = teamService.rejectInvite(teamSeq, authentication);
+		model.addAllAttributes(data);
+		return "team/invite";
+	}
 }
