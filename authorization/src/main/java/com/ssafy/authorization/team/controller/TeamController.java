@@ -50,7 +50,7 @@ public class TeamController {
 
 	@PostMapping
 	@ResponseBody
-	public Map teamAdd(@ModelAttribute @Valid TeamAddVo vo, Authentication authentication) {
+	public Map teamAdd(@RequestBody TeamAddVo vo, Authentication authentication) {
 		log.info("팀 추가에서 넘어온 값 : {} ", vo);
 		Map data = teamService.addTeam(vo, authentication);
 		return data;
