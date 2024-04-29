@@ -2,6 +2,7 @@ package com.ssafy.client.user.domain;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.security.core.GrantedAuthority;
@@ -21,7 +22,10 @@ public class CustomOAuth2User implements OAuth2User {
 
     @Override
     public Map<String, Object> getAttributes() {
-
+        HashMap<String,Object> map = new HashMap<String, Object>();
+        map.put("name", userDto.getName());
+        map.put("userName", userDto.getUsername());
+        map.put("role", userDto.getRole());
         return null;
     }
 
@@ -44,8 +48,8 @@ public class CustomOAuth2User implements OAuth2User {
 
     @Override
     public String getName() {
-
-        return userDto.getName();
+        System.out.println("ttttt" + userDto.getUsername());
+        return userDto.getUsername();
     }
 
     public String getUsername() {

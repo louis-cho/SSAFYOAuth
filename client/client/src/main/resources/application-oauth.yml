@@ -32,7 +32,7 @@ spring:
             scope: profile,email
 
           client:
-            provider: spring
+            provider: client
             client-id: client
             client-secret: secret
             authorization-grant-type: authorization_code
@@ -43,7 +43,7 @@ spring:
 
 
         provider:
-          spring:
+          client:
             authorization-uri: http://127.0.0.1:9000/oauth2/authorize
             token-uri: http://127.0.0.1:9000/oauth2/token
             user-info-uri: http://127.0.0.1:8090/user/info

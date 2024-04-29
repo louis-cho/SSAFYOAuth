@@ -11,6 +11,8 @@ import com.ssafy.client.user.OAuth2Response.KakaoResponse;
 import com.ssafy.client.user.OAuth2Response.NaverResponse;
 import com.ssafy.client.user.OAuth2Response.OAuth2Response;
 import com.ssafy.client.user.OAuth2Response.SsafyResponse;
+import com.ssafy.client.user.domain.CustomOAuth2User;
+import com.ssafy.client.user.domain.UserDTO;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -54,7 +56,11 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         //리소스 서버에서 발급 받은 정보로 사용자를 특정할 아이디값을 만듬
         String username = oAuth2Response.getProvider()+" "+oAuth2Response.getProviderId();
-        return null;
+        UserDTO userDTO = new UserDTO();
+        userDTO.setUsername("client");
+        userDTO.setName("client");
+        userDTO.setRole("ROLE_USER");
+        return new CustomOAuth2User(userDTO);
         // UserEntity existData = userRepository.findByUsername(username);
         //
         // if (existData == null) {
