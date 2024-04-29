@@ -66,7 +66,7 @@ public class AuthorizationServerConfig {
 		http.csrf(csrf -> csrf.disable());
 		http
 				.authorizeHttpRequests((authorize) -> authorize
-						.requestMatchers("/css/**", "/favicon.ico", "/error",
+						.requestMatchers("/css/**", "/favicon.ico", "/error","/image/**","/vendor/**",
 							"/test/**","/login","/signup", "/sendemail","/certify","/forgot_password"
 							,".well-known/jwks.json").permitAll()
 						.anyRequest().authenticated()
