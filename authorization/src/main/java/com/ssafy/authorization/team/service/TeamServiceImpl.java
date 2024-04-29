@@ -533,4 +533,45 @@ public class TeamServiceImpl implements TeamService {
 		}
 		return data;
 	}
+
+	@Override
+	public Map acceptInvite(Integer teamSeq, Authentication authentication) {
+		Map<String, Object> data = new HashMap<>();
+
+		// 사용자 정보 가져오기
+		UserDetails userDetails = (UserDetails)authentication.getPrincipal();
+		String myEmail = userDetails.getUsername();
+		Integer mySeq = (Integer)(int)(long)memberRepository.findByEmail(myEmail).get().getMemberId();
+
+		// 초대 확인
+		Optional<TeamMemberEntity> optional = teamMemberRepository.findById(new TeamMemberPK(teamSeq, mySeq));
+		if(optional.isEmpty()){
+			data.put("msg", "초대 된 적이 없습니다.");
+			data.put("list", null);
+			return data;
+		}
+
+		// 초대 수락
+		TeamMemberEntity e = optional.get();
+		e.setIsAccept(true);
+		teamMemberRepository.save(e);
+
+		// 팀 초대 리스트 재 조회
+		List<InviteListVo> list = teamListRepository.findByMemberSeqAndIsAcceptFalse(mySeq).stream().map(entity -> {
+			InviteListVo vo = new InviteListVo();
+			vo.setTeamSeq(entity.getTeamSeq());
+			vo.setTeamName(entity.getTeamName());
+			String leader = memberRepository.findById((long)(int)entity.getLeader()).get().getName();
+			vo.setLeader(leader);
+			return vo;
+		}).collect(Collectors.toList());
+		if(list.isEmpty()){
+			data.put("msg", "초대된 팀이 없습니다.");
+			data.put("list", null);
+		}else{
+			data.put("msg", null);
+			data.put("list", list);
+		}
+		return data;
+	}
 }

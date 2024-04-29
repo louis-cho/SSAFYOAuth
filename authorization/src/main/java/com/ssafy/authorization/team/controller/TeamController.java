@@ -129,4 +129,11 @@ public class TeamController {
 		model.addAllAttributes(data);
 		return "team/invite";
 	}
+
+	@PatchMapping("/invite/{team-seq}")
+	public String acceptInvitation(@PathVariable("team-seq") Integer teamSeq, Model model, Authentication authentication){
+		Map data = teamService.acceptInvite(teamSeq, authentication);
+		model.addAllAttributes(data);
+		return "team/invite";
+	}
 }

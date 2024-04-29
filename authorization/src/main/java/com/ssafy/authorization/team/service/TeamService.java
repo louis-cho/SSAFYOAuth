@@ -37,4 +37,6 @@ public interface TeamService {
 	Map modifyTeamImage(Integer teamSeq, TeamImageVo vo, Authentication authentication);
 
 	Map listInvitedTeam(Authentication authentication);
+
+	Map acceptInvite(Integer teamSeq, Authentication authentication);
 }
