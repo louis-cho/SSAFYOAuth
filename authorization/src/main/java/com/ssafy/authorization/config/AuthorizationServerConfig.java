@@ -5,7 +5,6 @@ import static org.springframework.security.config.Customizer.*;
 import java.util.Arrays;
 import java.util.UUID;
 
-import com.ssafy.authorization.member.login.auth.CustomAuthenticationProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
