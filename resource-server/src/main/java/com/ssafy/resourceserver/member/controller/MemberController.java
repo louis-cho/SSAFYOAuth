@@ -69,6 +69,11 @@ public class MemberController {
 		return "login";
 	}
 
+	@GetMapping("/member")
+	public String getMemberInfo() {
+		return "member";
+	}
+
 	// @PostMapping("/sign_up")
 	// public String signUpPost(@Valid @ModelAttribute SignUpRequestDto dto, BindingResult bindingResult, Model model) {
 	// 	log.info("Post Data : {} ", dto);
