@@ -26,12 +26,12 @@ public class SsafyResponse  implements OAuth2Response {
 	@Override
 	public String getEmail() {
 
-		return attribute.get("aud").toString();
+		return attribute.get("username").toString();
 	}
 
 	@Override
 	public String getName() {
 
-		return attribute.get("aud").toString();
+		return attribute.get("username").toString();
 	}
 }
