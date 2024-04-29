@@ -41,9 +41,10 @@ public class MemberController {
 	}
 
 	@PostMapping("/signup")
-	public void sign_Up(@ModelAttribute SignUpRequestDto signUpRequestDto) {
+	public String sign_Up(@ModelAttribute SignUpRequestDto signUpRequestDto) {
 		System.out.println(signUpRequestDto);
 		memberService.save(Member.create(signUpRequestDto), signUpRequestDto);
+		return "login";
 	}
 
 	@PostMapping("/sendemail")
@@ -67,9 +68,10 @@ public class MemberController {
 
 	//  @Valid 추가해야함
 	@PostMapping("/reset_password")
-	public void resetPassword(@RequestBody ResetPasswordDto resetPasswordDto) {
+	public String resetPassword(@RequestBody ResetPasswordDto resetPasswordDto) {
 		customMemberManager.changePassword(resetPasswordDto.getOldPassword(), resetPasswordDto.getNewPassword());
 		log.info("{} 비밀번호 바꾸기 성공4386731268579047945268754829624786584732958230475098243");
+		return "login";
 	}
 
 	// @PostMapping("/sign_up")

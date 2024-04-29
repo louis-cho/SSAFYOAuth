@@ -29,6 +29,7 @@
 
 <body id="page-top" th:class="${bodyClass}">
 <div class="header" th:replace="~{layouts/header :: header}"></div>
+
 <!-- Page Wrapper -->
 <div id="wrapper">
     <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
@@ -169,54 +170,92 @@
 
     </ul>
 
+    <div class="row">
 
-    <!-- Content Wrapper -->
-    <div id="content-wrapper" class="d-flex flex-column">
-
-        <!-- Main Content -->
-        <div id="content">
-
-            <!-- Begin Page Content -->
-            <div class="container-fluid col-lg-9 mb-4">
-                <div class="d-flex align-items-center">
-                    <h1 class="h3 text-gray-800">나의 팀 </h1>
-                    <!-- 팀 수를 표시하는 부분입니다. 처음에는 0으로 설정됩니다 -->
-                    <p class="h3 text-gray-800"><span id="teamCount">  (0)</span></p>
-                </div>
-
-                <!-- Page Heading -->
-                <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                    <div class="team-card">
-                        <div class="card shadow h-100 add-team-card" style="cursor:pointer;">
-                            <div class="card-body d-flex align-items-center">
-                                <!-- "+" 아이콘 추가. FontAwesome 라이브러리를 사용합니다. -->
-                                <i class="fas fa-plus-circle fa-2x"></i>
-                                <h5 class="card-title ml-3">팀 추가하기</h5>
-                            </div>
+        <!-- Area Chart -->
+        <div class="col-xl-8 col-lg-7">
+            <div class="card shadow mb-4">
+                <!-- Card Header - Dropdown -->
+                <div
+                        class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Earnings Overview</h6>
+                    <div class="dropdown no-arrow">
+                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
+                             aria-labelledby="dropdownMenuLink">
+                            <div class="dropdown-header">Dropdown Header:</div>
+                            <a class="dropdown-item" href="#">Action</a>
+                            <a class="dropdown-item" href="#">Another action</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="#">Something else here</a>
                         </div>
                     </div>
                 </div>
-
-                <!-- Team List -->
-                <div class="align-items-center mb-4">
-                    <div id="teamList" class="row">
-                        <!-- Team Card Example will be appended here -->
+                <!-- Card Body -->
+                <div class="card-body">
+                    <div class="chart-area">
+                        <canvas id="myAreaChart"></canvas>
                     </div>
                 </div>
-                <!-- /.row -->
-
             </div>
-            <!-- /.container-fluid -->
-
         </div>
-        <!-- End of Main Content -->
 
-        <!-- Footer -->
-        <div class="footer" th:replace="~{layouts/footer :: footer}"></div>
-        <!-- End of Footer -->
-
+        <!-- Pie Chart -->
+        <div class="col-xl-4 col-lg-5">
+            <div class="card shadow mb-4">
+                <!-- Card Header - Dropdown -->
+                <div
+                        class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Revenue Sources</h6>
+                    <div class="dropdown no-arrow">
+                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
+                             aria-labelledby="dropdownMenuLink">
+                            <div class="dropdown-header">Dropdown Header:</div>
+                            <a class="dropdown-item" href="#">Action</a>
+                            <a class="dropdown-item" href="#">Another action</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="#">Something else here</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- Card Body -->
+                <div class="card-body">
+                    <div class="chart-pie pt-4 pb-2">
+                        <canvas id="myPieChart"></canvas>
+                    </div>
+                    <div class="mt-4 text-center small">
+                                        <span class="mr-2">
+                                            <i class="fas fa-circle text-primary"></i> Direct
+                                        </span>
+                        <span class="mr-2">
+                                            <i class="fas fa-circle text-success"></i> Social
+                                        </span>
+                        <span class="mr-2">
+                                            <i class="fas fa-circle text-info"></i> Referral
+                                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <!-- End of Content Wrapper -->
+    <!-- /.container-fluid -->
+
+</div>
+<!-- End of Main Content -->
+
+<!-- Footer -->
+<div class="footer" th:replace="~{layouts/footer :: footer}"></div>
+<!-- End of Footer -->
+
+</div>
+<!-- End of Content Wrapper -->
 
 </div>
 <!-- End of Page Wrapper -->
@@ -264,38 +303,23 @@
     </div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-<script th:inline="javascript">
-    document.querySelector('.add-team-card').addEventListener('click', function () {
-        $('#teamAddModal').modal('show');
-    });
+<!-- Bootstrap core JavaScript-->
+<script th:src="@{/vendor/jquery/jquery.min.js}"></script>
+<script th:src="@{/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
 
-    function addTeam() {
-        var teamName = document.getElementById('teamName').value;
-        var serviceName = document.getElementById('serviceName').value;
-        var email = document.getElementById('email').value;
-        var domainUrl = document.getElementById('domainUrl').value;
-        var redirectUrl = document.getElementById('redirectUrl').value;
+<!-- Core plugin JavaScript-->
+<script th:src="@{/vendor/jquery-easing/jquery.easing.min.js}"></script>
 
-        var teamList = document.getElementById('teamList');
-        var teamCard = document.createElement('div');
-        teamCard.classList.add('col-md-4', 'mb-4', 'team-card');
-        teamCard.innerHTML = `<div class="card shadow h-100">
-            <div class="card-body">
-                <h5 class="card-title">${teamName}</h5>
-                <p class="card-text">서비스: ${serviceName}</p>
-                <p class="card-text">이메일: ${email}</p>
-                <p class="card-text">도메인: ${domainUrl}</p>
-                <p class="card-text">리다이렉트: ${redirectUrl}</p>
-            </div>
-        </div>`;
-        teamList.appendChild(teamCard);
-        $('#teamAddModal').modal('hide');
-        document.getElementById('teamForm').reset();
-    }
-</script>
+<!-- Custom scripts for all pages-->
+<script th:src="@{/js/sb-admin-2.min.js}"></script>
+
+<!-- Page level plugins -->
+<script th:src="@{/vendor/chart.js/Chart.min.js}"></script>
+
+<!-- Page level custom scripts -->
+<script th:src="@{/js/demo/chart-area-demo.js}"></script>
+<script th:src="@{/js/demo/chart-pie-demo.js}"></script>
+
 
 </body>
 
