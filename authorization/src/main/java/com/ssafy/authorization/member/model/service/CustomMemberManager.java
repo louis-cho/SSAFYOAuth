@@ -11,6 +11,7 @@ import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
 
 import com.ssafy.authorization.member.model.domain.Member;
+import com.ssafy.authorization.member.model.dto.FindUserEmailDto;
 import com.ssafy.authorization.member.model.repository.MemberRepository;
 
 import jakarta.transaction.Transactional;
@@ -76,6 +77,16 @@ public class CustomMemberManager implements UserDetailsManager {
 		} else {
 			throw new UsernameNotFoundException("User not found for username: " + username);
 		}
+	}
+
+	public String findMemberUserEmail(FindUserEmailDto dto) {
+		Optional<Member> member = memberRepository.findByNameAndPhoneNumber(dto.getUserName(),
+			dto.getPhoneNumber());
+		if(member.isPresent()){
+			return member.get().getEmail();
+		}
+		else return null;
+
 	}
 }
 
