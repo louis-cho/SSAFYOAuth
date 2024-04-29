@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,10 +26,12 @@ import com.ssafy.authorization.team.vo.TeamNameUpdateVo;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Controller
 @RequestMapping("/api/team")
 @RequiredArgsConstructor
+@Slf4j
 public class TeamController {
 
 	private final TeamService teamService;
@@ -47,11 +50,18 @@ public class TeamController {
 
 	@PostMapping
 	@ResponseBody
-	public Map teamAdd(@RequestBody @Valid TeamAddVo vo, Authentication authentication) {
+	public Map teamAdd(@ModelAttribute @Valid TeamAddVo vo, Authentication authentication) {
+		log.info("팀 추가에서 넘어온 값 : {} ", vo);
 		Map data = teamService.addTeam(vo, authentication);
 		return data;
 	}
-
+	@PostMapping("/test")
+	@ResponseBody
+	public Map teamAdd(@RequestBody @Valid TeamAddVo vo) {
+		log.info("팀 추가에서 넘어온 값 : {} ", vo);
+		// Map data = teamService.addTeam(vo,);
+		return null;
+	}
 	@GetMapping("/{team-seq}")
 	public String teamDetail(@PathVariable("team-seq") Integer teamSeq, Model model, Authentication authentication) {
 		Map data = teamService.detailTeam(teamSeq, authentication);
