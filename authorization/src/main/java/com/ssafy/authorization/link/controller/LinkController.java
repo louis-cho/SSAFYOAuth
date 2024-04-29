@@ -27,13 +27,13 @@ public class LinkController {
 	public String linkList(Model model, Authentication authentication){
 		Map data = linkService.listLink(authentication);
 		model.addAllAttributes(data);
-		return "link/services";
+		return "subscribe/services";
 	}
 
 	@DeleteMapping("/{team-seq}")
 	public String linkRemove(@PathVariable("team-seq") Integer teamSeq, Model model, Authentication authentication){
 		Map data = linkService.removeLink(teamSeq, authentication);
 		model.addAllAttributes(data);
-		return "link/services";
+		return "subscribe/services";
 	}
 }
