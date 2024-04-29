@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" th:href="@{/css/style.css}">
-    <title>Spring Boot Tutorial - Consent</title>
+    <title>싸오스 권한페이지</title>
     <script>
         function cancelConsent() {
             document.consent_form.reset();
@@ -17,22 +17,19 @@
 <div class="consent-page">
     <div class="consent">
         <div>
-            <h1>Spring Boot Tutorial</h1>
+            <h1>싸오스 권한 페이지</h1>
         </div>
         <div>
             <div>
                 <p>
-                    The application
-                    <span class="consent_span" th:text="${clientId}"></span>
-                    wants to access your account
-                    <span class="consent_span" th:text="${principalName}"></span>
+                <p th:text="${clientName}"> 서비스에 제공할 데이터를 선택해주세요. </br>
+                    유저 이메일과 이름은 필수 항목입니다.</p>
                 </p>
             </div>
         </div>
         <div>
             <div>
-                <p>The following permissions are requested by the above app.<br />Please review
-                    these and consent if you approve.</p>
+                <p>여기에는 권한 설명 들어갈 예정</p>
             </div>
         </div>
         <div>
@@ -73,8 +70,8 @@
             <div>
                 <p>
                     <small>
-                        Your consent to provide access is required.<br />
-                        If you do not approve, click Cancel, in which case no information will be shared with the app.
+                        액세스 제공에 대한 귀하의 동의가 필요합니다. </br>
+                        승인하지 않을 경우 취소를 클릭하세요. 이 경우 앱과 정보가 공유되지 않습니다.
                     </small>
                 </p>
             </div>

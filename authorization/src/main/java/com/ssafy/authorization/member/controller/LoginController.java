@@ -3,6 +3,9 @@ package com.ssafy.authorization.member.controller;
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationConsent;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationConsentService;
+import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
+import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
+import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -16,15 +19,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import lombok.RequiredArgsConstructor;
+
 @Controller
+@RequiredArgsConstructor
 public class LoginController {
 
 	private final OAuth2AuthorizationConsentService authorizationConsentService;
-
-	public LoginController(OAuth2AuthorizationConsentService authorizationConsentService) {
-		this.authorizationConsentService = authorizationConsentService;
-	}
-
+	private final RegisteredClientRepository registeredClientRepository;
 	@GetMapping("/login")
 	public String login() {
 		return "login";
@@ -36,7 +38,8 @@ public class LoginController {
 			Model model,
 			@RequestParam(OAuth2ParameterNames.SCOPE) String scope,
 			@RequestParam(OAuth2ParameterNames.CLIENT_ID) String clientId,
-			@RequestParam(OAuth2ParameterNames.STATE) String state) {
+			@RequestParam(OAuth2ParameterNames.STATE) String state
+	) {
 
 		Set<String> scopesToApprove = new HashSet<>();
 		Set<String> previouslyApprovedScopes = new HashSet<>();
@@ -48,9 +51,11 @@ public class LoginController {
 				scopesToApprove.add(scopeFromRequest);
 			}
 		}
+		RegisteredClient client = registeredClientRepository.findByClientId(clientId);
 
 		model.addAttribute("state", state);
 		model.addAttribute("clientId", clientId);
+		model.addAttribute("clientName", client.getClientName());
 		model.addAttribute("scopes", withDescription(scopesToApprove));
 		model.addAttribute("previouslyApprovedScopes", withDescription(previouslyApprovedScopes));
 		model.addAttribute("principalName", principal.getName());
