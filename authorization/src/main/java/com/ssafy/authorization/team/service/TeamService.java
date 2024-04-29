@@ -39,4 +39,6 @@ public interface TeamService {
 	Map listInvitedTeam(Authentication authentication);
 
 	Map acceptInvite(Integer teamSeq, Authentication authentication);
+
+	Map rejectInvite(Integer teamSeq, Authentication authentication);
 }

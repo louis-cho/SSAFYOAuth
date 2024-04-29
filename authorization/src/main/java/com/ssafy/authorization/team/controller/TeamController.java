@@ -136,4 +136,11 @@ public class TeamController {
 		model.addAllAttributes(data);
 		return "team/invite";
 	}
+
+	@DeleteMapping("/invite/{team-seq}")
+	public String rejectInvitation(@PathVariable("team-seq") Integer teamSeq, Model model, Authentication authentication){
+		Map data = teamService.rejectInvite(teamSeq, authentication);
+		model.addAllAttributes(data);
+		return "team/invite";
+	}
 }
