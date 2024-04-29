@@ -16,3 +16,51 @@ spring:
         jwt:
           issuer-uri: http://127.0.0.1:9000
           jwk-set-uri: http://127.0.0.1:9000/oauth2/jwks
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    mode: HTML
+    encoding: UTF-8
+    check-template-location: true
+    cache: false
+  datasource:
+    url: jdbc:postgresql://k10a306.p.ssafy.io:5432/postgres
+    username: postgres
+    password: ssafy
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    generate-ddl: false
+    show-sql: true
+    hibernate:
+      ddl-auto: validate
+  data:
+    redis:
+      host: k10a306.p.ssafy.io
+      port: 6379
+  main:
+    allow-bean-definition-overriding: true
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: kimssafy1030@gmail.com
+    password: vzxkizmiaqcjrknm
+    properties:
+      mail:
+        smtp:
+          starttls:
+            enable: true
+          auth: true
+
+cloud:
+  aws:
+    s3:
+      bucket: dagak
+    region:
+      static: ap-northeast-2
+      auto: false
+    stack:
+      auto: false
+    credentials:
+      access-key: AKIA4PE75RA3RF4YKTN4
+      secret-key: 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
