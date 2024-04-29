@@ -122,4 +122,11 @@ public class TeamController {
 		Map data = teamService.modifyTeamImage(teamSeq, vo, authentication);
 		return data;
 	}
+
+	@GetMapping("/invite")
+	public String invitedTeamList(Model model, Authentication authentication){
+		Map data = teamService.listInvitedTeam(authentication);
+		model.addAllAttributes(data);
+		return "team/invite";
+	}
 }
