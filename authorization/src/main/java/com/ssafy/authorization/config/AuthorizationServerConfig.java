@@ -74,6 +74,7 @@ public class AuthorizationServerConfig {
 				.formLogin(formLogin -> formLogin
 						.loginPage("/login")
 				);
+		
 		return http.build();
 	}
 	

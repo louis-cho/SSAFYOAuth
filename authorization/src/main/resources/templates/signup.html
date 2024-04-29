@@ -319,13 +319,13 @@
             var xhr = new XMLHttpRequest();
             xhr.open("POST", "http://localhost:9000/signup", true);
             xhr.onreadystatechange = function () {
-              // if (xhr.readyState === 4 && xhr.status === 200) {
+              if (xhr.readyState === 4 && xhr.status === 200) {
                 // 요청이 성공적으로 완료됨
                 console.log(xhr.responseText); // 응답 데이터를 콘솔에 출력하거나 다른 작업 수행
                 // 회원가입 성공 시 로그인 페이지로 이동
                 alert("회원 가입에 성공했습니다.")
                 window.location.href = "login"; // 로그인 페이지의 URL로 이동
-              // }
+              }
             };
             xhr.send(formData); // 폼 데이터 전송
           });
