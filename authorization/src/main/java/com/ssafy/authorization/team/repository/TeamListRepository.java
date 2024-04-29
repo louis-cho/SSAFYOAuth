@@ -12,4 +12,5 @@ import com.ssafy.authorization.team.entity.TeamListPK;
 public interface TeamListRepository extends JpaRepository<TeamListEntity, TeamListPK> {
 	List<TeamListEntity> findByMemberSeq(Integer memberSeq);
 
+	List<TeamListEntity> findByMemberSeqAndIsAcceptFalse(Integer memberSeq);
 }

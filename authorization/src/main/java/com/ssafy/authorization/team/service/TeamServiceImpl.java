@@ -35,6 +35,7 @@ import com.ssafy.authorization.team.repository.TeamListRepository;
 import com.ssafy.authorization.team.repository.TeamMemberRepository;
 import com.ssafy.authorization.team.repository.TeamMemberWithInfoRepository;
 import com.ssafy.authorization.team.vo.DeveloperSearchVo;
+import com.ssafy.authorization.team.vo.InviteListVo;
 import com.ssafy.authorization.team.vo.ServiceNameUpdateVo;
 import com.ssafy.authorization.team.vo.TeamAddVo;
 import com.ssafy.authorization.team.vo.TeamDetailVo;
@@ -66,41 +67,42 @@ public class TeamServiceImpl implements TeamService {
 	@Transactional
 	public Map<String, Object> addTeam(TeamAddVo vo, Authentication authentication) {
 		Map<String, Object> data = new HashMap<>();
-		if(vo.getTeamMember() != null && vo.getTeamMember().length > 5){
+		if (vo.getTeamMember() != null && vo.getTeamMember().length > 5) {
 			data.put("msg", "팀원은 자신 포함 6명을 넘길 수 없습니다.");
 			data.put("team_seq", null);
 			return data;
 		}
-		if(vo.getDomainUrl() != null && vo.getDomainUrl().length > 5){
+		if (vo.getDomainUrl() != null && vo.getDomainUrl().length > 5) {
 			data.put("msg", "도메인은 5개까지 등록할 수 있습니다.");
 			data.put("team_seq", null);
 			return data;
 		}
-		if(vo.getRedirectionUrl() != null && vo.getRedirectionUrl().length > 10){
+		if (vo.getRedirectionUrl() != null && vo.getRedirectionUrl().length > 10) {
 			data.put("msg", "리다이렉트 url은 10개까지 등록할 수 있습니다.");
 			data.put("team_seq", null);
 			return data;
 		}
 		// 팀원들이 모두 등록된 개발자 인지 확인
 
-		if(vo.getTeamMember() != null) for(String member : vo.getTeamMember()){
-			boolean is_exist = true;
-			// 존재 하지 않는 팀 원이면
-			List<DeveloperMemberEntity> l = developerMemberRepository.findAllByEmail(member);
-			if(l.isEmpty()){
-				is_exist = false;
+		if (vo.getTeamMember() != null)
+			for (String member : vo.getTeamMember()) {
+				boolean is_exist = true;
+				// 존재 하지 않는 팀 원이면
+				List<DeveloperMemberEntity> l = developerMemberRepository.findAllByEmail(member);
+				if (l.isEmpty()) {
+					is_exist = false;
+				}
+				if (!is_exist) {
+					data.put("msg", "팀원 목록에 존재 하지 않는 개발자 이메일이 있습니다.");
+					data.put("team_seq", null);
+					return data;
+				}
 			}
-			if(!is_exist){
-				data.put("msg", "팀원 목록에 존재 하지 않는 개발자 이메일이 있습니다.");
-				data.put("team_seq", null);
-				return data;
-			}
-		}
 		TeamAddDto dto = new TeamAddDto();
 		dto.setTeamName(vo.getTeamName());
 		dto.setServiceName(vo.getServiceName());
-		String[] teamMembers = new String[vo.getTeamMember()==null? 1 : vo.getTeamMember().length + 1];
-		for(int i = 0; i < (vo.getTeamMember()==null? 0: vo.getTeamMember().length); i++){
+		String[] teamMembers = new String[vo.getTeamMember() == null ? 1 : vo.getTeamMember().length + 1];
+		for (int i = 0; i < (vo.getTeamMember() == null ? 0 : vo.getTeamMember().length); i++) {
 
 			teamMembers[i] = vo.getTeamMember()[i];
 		}
@@ -108,8 +110,8 @@ public class TeamServiceImpl implements TeamService {
 		UserDetails userDetails = (UserDetails)authentication.getPrincipal();
 		String myEmail = userDetails.getUsername();
 
-		Integer mySeq = (Integer)(int)(long) memberRepository.findByEmail(myEmail).get().getMemberId();
-		teamMembers[vo.getTeamMember()== null ? 0 : vo.getTeamMember().length] = myEmail;
+		Integer mySeq = (Integer)(int)(long)memberRepository.findByEmail(myEmail).get().getMemberId();
+		teamMembers[vo.getTeamMember() == null ? 0 : vo.getTeamMember().length] = myEmail;
 
 		dto.setDomainUrl(vo.getDomainUrl());
 		dto.setRedirectUrl(vo.getRedirectionUrl());
@@ -127,18 +129,19 @@ public class TeamServiceImpl implements TeamService {
 		Integer teamSeq = developerTeamRepository.save(entity).getSeq();
 
 		// 팀원 생성
-		if(dto.getMembers() != null) for(String email : dto.getMembers()){
+		if (dto.getMembers() != null)
+			for (String email : dto.getMembers()) {
 
-			// email로 member_seq읽기
-			Integer seq = developerMemberRepository.findAllByEmail(email).get(0).getMemberSeq();
-			//멤버로 추가
-			teamMemberRepository.save(new TeamMemberEntity(teamSeq, seq, seq == mySeq ? true : false));
-		}
+				// email로 member_seq읽기
+				Integer seq = developerMemberRepository.findAllByEmail(email).get(0).getMemberSeq();
+				//멤버로 추가
+				teamMemberRepository.save(new TeamMemberEntity(teamSeq, seq, seq == mySeq ? true : false));
+			}
 
 		// 도메인 url 등록
 
 		// 리다이렉트 url 등록
-		for(int i = 0; i < (dto.getRedirectUrl()==null?0:dto.getRedirectUrl().length); i++) {
+		for (int i = 0; i < (dto.getRedirectUrl() == null ? 0 : dto.getRedirectUrl().length); i++) {
 			RedirectEntity e = new RedirectEntity();
 			e.setTeamId(teamSeq);
 			e.setRedirect(dto.getRedirectUrl()[i]);
@@ -439,6 +442,7 @@ public class TeamServiceImpl implements TeamService {
 	}
 
 	@Override
+	@Transactional
 	public Map uploadTeamImage(MultipartFile file) {
 		Map<String, String> data = new HashMap<>();
 		String filename = file.getOriginalFilename() + UUID.randomUUID();
@@ -458,6 +462,7 @@ public class TeamServiceImpl implements TeamService {
 	}
 
 	@Override
+	@Transactional
 	public Map deleteTeamImage(Integer teamSeq, Authentication authentication) {
 		Map<String, String> data = new HashMap<>();
 		data.put("msg", null);
@@ -482,6 +487,7 @@ public class TeamServiceImpl implements TeamService {
 	}
 
 	@Override
+	@Transactional
 	public Map modifyTeamImage(Integer teamSeq, TeamImageVo vo, Authentication authentication) {
 		Map<String, String> data = new HashMap<>();
 		data.put("msg", null);
@@ -502,6 +508,115 @@ public class TeamServiceImpl implements TeamService {
 		DeveloperTeamEntity e = team.get();
 		e.setServiceImage(vo.getUrl());
 		developerTeamRepository.save(e);
+		return data;
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public Map listInvitedTeam(Authentication authentication) {
+		Map<String, Object> data = new HashMap<>();
+		// 사용자 정보 가져오기
+		UserDetails userDetails = (UserDetails)authentication.getPrincipal();
+		String myEmail = userDetails.getUsername();
+		Integer mySeq = (Integer)(int)(long)memberRepository.findByEmail(myEmail).get().getMemberId();
+		// 사용자가 추가 되었는데 수락하지 않은 리스트 조회
+		List<InviteListVo> list = teamListRepository.findByMemberSeqAndIsAcceptFalse(mySeq).stream().map(entity -> {
+			InviteListVo vo = new InviteListVo();
+			vo.setTeamSeq(entity.getTeamSeq());
+			vo.setTeamName(entity.getTeamName());
+			String leader = memberRepository.findById((long)(int)entity.getLeader()).get().getName();
+			vo.setLeader(leader);
+			return vo;
+		}).collect(Collectors.toList());
+		if(list.isEmpty()){
+			data.put("msg", "초대된 팀이 없습니다.");
+			data.put("list", null);
+		}else{
+			data.put("msg", null);
+			data.put("list", list);
+		}
+		return data;
+	}
+
+	@Override
+	@Transactional
+	public Map acceptInvite(Integer teamSeq, Authentication authentication) {
+		Map<String, Object> data = new HashMap<>();
+
+		// 사용자 정보 가져오기
+		UserDetails userDetails = (UserDetails)authentication.getPrincipal();
+		String myEmail = userDetails.getUsername();
+		Integer mySeq = (Integer)(int)(long)memberRepository.findByEmail(myEmail).get().getMemberId();
+
+		// 초대 확인
+		Optional<TeamMemberEntity> optional = teamMemberRepository.findById(new TeamMemberPK(teamSeq, mySeq));
+		if(optional.isEmpty()){
+			data.put("msg", "초대 된 적이 없습니다.");
+			data.put("list", null);
+			return data;
+		}
+
+		// 초대 수락
+		TeamMemberEntity e = optional.get();
+		e.setIsAccept(true);
+		teamMemberRepository.save(e);
+
+		// 팀 초대 리스트 재 조회
+		List<InviteListVo> list = teamListRepository.findByMemberSeqAndIsAcceptFalse(mySeq).stream().map(entity -> {
+			InviteListVo vo = new InviteListVo();
+			vo.setTeamSeq(entity.getTeamSeq());
+			vo.setTeamName(entity.getTeamName());
+			String leader = memberRepository.findById((long)(int)entity.getLeader()).get().getName();
+			vo.setLeader(leader);
+			return vo;
+		}).collect(Collectors.toList());
+		if(list.isEmpty()){
+			data.put("msg", "초대된 팀이 없습니다.");
+			data.put("list", null);
+		}else{
+			data.put("msg", null);
+			data.put("list", list);
+		}
+		return data;
+	}
+
+	@Override
+	@Transactional
+	public Map rejectInvite(Integer teamSeq, Authentication authentication) {
+		Map<String, Object> data = new HashMap<>();
+
+		// 사용자 정보 가져오기
+		UserDetails userDetails = (UserDetails)authentication.getPrincipal();
+		String myEmail = userDetails.getUsername();
+		Integer mySeq = (Integer)(int)(long)memberRepository.findByEmail(myEmail).get().getMemberId();
+
+		// 초대 확인
+		Optional<TeamMemberEntity> optional = teamMemberRepository.findById(new TeamMemberPK(teamSeq, mySeq));
+		if(optional.isEmpty()){
+			data.put("msg", "초대 된 적이 없습니다.");
+			data.put("list", null);
+			return data;
+		}
+
+		// 초대 삭제
+		teamMemberRepository.delete(optional.get());
+
+		// 팀 초대 리스트 재 조회
+		List<InviteListVo> list = teamListRepository.findByMemberSeqAndIsAcceptFalse(mySeq).stream().map(entity -> {
+			InviteListVo vo = new InviteListVo();
+			vo.setTeamSeq(entity.getTeamSeq());
+			vo.setTeamName(entity.getTeamName());
+			String leader = memberRepository.findById((long)(int)entity.getLeader()).get().getName();
+			vo.setLeader(leader);
+			return vo;
+		}).collect(Collectors.toList());
+		if(list.isEmpty()){
+			data.put("msg", "초대된 팀이 없습니다.");
+			data.put("list", null);
+		}else{
+			data.put("msg", null);
+			data.put("list", list);
+		}
 		return data;
 	}
 }

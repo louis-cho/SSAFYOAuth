@@ -35,4 +35,10 @@ public interface TeamService {
 	Map deleteTeamImage(Integer teamSeq, Authentication authentication);
 
 	Map modifyTeamImage(Integer teamSeq, TeamImageVo vo, Authentication authentication);
+
+	Map listInvitedTeam(Authentication authentication);
+
+	Map acceptInvite(Integer teamSeq, Authentication authentication);
+
+	Map rejectInvite(Integer teamSeq, Authentication authentication);
 }
