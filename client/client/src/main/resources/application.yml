@@ -1,0 +1,23 @@
+spring:
+  application:
+    name : client
+  thymeleaf:
+    cache: false
+  config:
+    import:
+      - application-oauth.yml
+      - application-jwt.yml
+
+
+server:
+  port: 8080
+  forward-headers-strategy: framework
+logging:
+  level:
+    root: INFO
+    org:
+      springframework:
+        web : DEBUG
+        security : DEBUG
+        RestTemplate : DEBUG
+

@@ -1,29 +1,98 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Hello Spring OAuth2</title>
-    <link rel="stylesheet" th:href="@{/css/reset.css}">
-    <link rel="stylesheet" th:href="@{/css/style.css}">
-</head>
-<body>
-<div id="login-page">
-    <div class="login-form">
-        <h1>로그인하쇼</h1>
+  <meta charset="utf-8"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+  <meta name="description" content=""/>
+  <meta name="author" content=""/>
 
-        <div class="message error" th:if="${param.error}">
-            잘못된 입력입니다. 아이디 또는 비밀번호를 다시 확인하세요.
+  <title th:text="#{title}">SSAFY Auth - Login</title>
+
+  <!-- Custom fonts for this template-->
+  <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css"/>
+  <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+        rel="stylesheet"/>
+
+  <!-- Custom styles for this template-->
+  <link rel="stylesheet" th:href="@{/css/sb-admin-2.min.css}"/>
+</head>
+
+<body class="bg-gradient-primary" style="background-color: #ffffff">
+<div class="container">
+  <!-- Outer Row -->
+  <div class="row justify-content-center">
+    <div class="col-xl-10 col-lg-12 col-md-9">
+      <div class="card o-hidden border-0 shadow-lg my-5">
+        <div class="card-body p-0">
+          <!-- Nested Row within Card Body -->
+          <div class="row">
+            <div class="col-lg-5 d-none d-lg-block bg-login-image"></div>
+            <div class="col-lg-7">
+              <div class="p-5">
+                <div class="text-center">
+                  <h1 class="h4 text-gray-900 mb-4">로그인</h1>
+                </div>
+                <!-- 여기에 로그인 실패 메시지를 출력하는 코드 추가 -->
+                <div th:if="${param.error}" class="alert alert-danger" role="alert">
+                  로그인에 실패했습니다. 다시 시도해주세요.
+                </div>
+                <form class="user" th:action="@{/login}" method="post">
+                  <div class="form-group">
+                    <input
+                            type="email"
+                            class="form-control form-control-user"
+                            name="username"
+                            id="username"
+                            aria-describedby="emailHelp"
+                            placeholder="이메일을 입력해주세요"
+                    />
+                  </div>
+                  <div class="form-group">
+                    <input
+                            type="password"
+                            name="password"
+                            class="form-control form-control-user"
+                            id="exampleInputPassword"
+                            placeholder="비밀번호"
+                    />
+                  </div>
+                  <div class="form-group">
+                    <div class="custom-control custom-checkbox small">
+                      <input
+                              type="checkbox"
+                              class="custom-control-input"
+                              id="customCheck"
+                      />
+                      <label class="custom-control-label" for="customCheck">이메일 저장</label>
+                    </div>
+                  </div>
+                  <button
+                          type="submit"
+                          class="btn btn-primary btn-user btn-block"
+                  >
+                    로그인
+                  </button>
+                </form>
+                <hr/>
+                <div class="text-center">
+                  <a class="small" href="forgot_user">아이디 찾기</a>
+                </div>
+                <div class="text-center">
+                  <a class="small" href="forgot_password">비밀번호 찾기</a>
+                </div>
+                <div class="text-center">
+                  <a class="small" href="http://localhost:8090/signup">계정 생성하기</a>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <form th:action="@{/login}" method="post">
-            <div>
-                <input type="text" name="username" placeholder="아이디"/>
-            </div>
-            <div>
-                <input type="password" name="password" placeholder="비밀번호"/>
-            </div>
-            <button type="submit">로그인</button>
-        </form>
-        <a th:href="@{/sign_up}">회원 가입</a>
+      </div>
     </div>
+  </div>
 </div>
+
+<!-- Scripts omitted for brevity -->
 </body>
 </html>

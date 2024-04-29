@@ -13,6 +13,7 @@ java {
     sourceCompatibility = '21'
 }
 
+
 configurations {
     compileOnly {
         extendsFrom annotationProcessor
@@ -28,16 +29,45 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-authorization-server'
     implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-batch'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+    // JMX를 사용하기 위한 의존성
+    implementation 'org.springframework:spring-context'
+    implementation 'org.springframework:spring-webmvc'
+
+    //S3
+    implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.1.RELEASE'
+
+
+
     implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-redis', version: '3.2.4'  // redis
+    implementation 'org.postgresql:postgresql'
+    implementation 'org.springframework.security:spring-security-cas'
+
+    implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
+    implementation group: 'org.springframework.data', name: 'spring-data-elasticsearch', version: '5.2.5'
+
+
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
-    runtimeOnly 'com.h2database:h2'
+    implementation 'mysql:mysql-connector-java:8.0.33'
+
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
+    implementation 'org.postgresql:postgresql'
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
 
+    // mail
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+    implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'
+
+    implementation 'org.springframework.security:spring-security-cas'
 }
 
 tasks.named('test') {

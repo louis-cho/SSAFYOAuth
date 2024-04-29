@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+  <meta name="description" content=""/>
+  <meta name="author" content=""/>
+
+  <title>SSAFYAuth 회원가입</title>
+
+  <!-- Custom fonts for this template-->
+  <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css"/>
+  <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+        rel="stylesheet"/>
+
+  <!-- Custom styles for this template-->
+  <link rel="stylesheet" th:href="@{/css/sb-admin-2.min.css}"/>
+
+  <style>
+    .verification-controls {
+      display: none;
+      margin-top: 10px;
+    }
+
+    .verification-controls .btn {
+      /*margin-top: 10px;*/
+    }
+
+    /* Adjusting the width of the verification code input field */
+    #emailVerificationCode {
+      width: calc(100% - 120px); /* Adjust the width as needed */
+    }
+
+    #verificationTimer {
+      display: block;
+      margin-top: 5px;
+      font-size: 12px;
+    }
+
+    .text-danger {
+      color: red;
+    }
+  </style>
+</head>
+
+<body class="bg-gradient-primary" style="background-color: #ffffff">
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-xl-10 col-lg-12 col-md-9">
+      <div class="card o-hidden border-0 shadow-lg my-5">
+        <div class="card-body p-0">
+          <!-- Nested Row within Card Body -->
+          <div class="row">
+            <div class="col-lg-6 d-none d-lg-block bg-register-image"></div>
+            <div class="col-lg-6">
+              <div class="p-5">
+                <div class="text-center">
+                  <h1 class="h4 text-gray-900 mb-4">회원가입</h1>
+                </div>
+                <form class="user" id="registrationForm" method="post">
+                  <div class="form-group">
+                    <input
+                            type="text"
+                            class="form-control form-control-user"
+                            id="exampleFirstName"
+                            name="userName"
+                            placeholder="이름"
+                    />
+                  </div>
+                  <div class="form-group">
+                    <input
+                            type="text"
+                            class="form-control form-control-user"
+                            id="exampleInputPhone"
+                            name="phoneNumber"
+                            placeholder="핸드폰 번호"
+                    />
+                  </div>
+                  <div class="form-group">
+                    <select
+                            class="form-control"
+                            id="exampleGender"
+                            name="gender"
+                    >
+                      <option value="0">남자</option>
+                      <option value="1">여자</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <input
+                            type="text"
+                            class="form-control form-control-user"
+                            id="exampleInputStudentID"
+                            name="studentId"
+                            placeholder="학번"
+                    />
+                  </div>
+                  <div class="form-group">
+                    <input
+                            type="file"
+                            class="form-control-file"
+                            id="exampleProfileImage"
+                            name="profileImage"
+                    />
+                  </div>
+                  <div class="form-group">
+                    <div class="input-group">
+                      <input
+                              type="email"
+                              class="form-control form-control-user"
+                              id="exampleInputEmail"
+                              name="userEmail"
+                              placeholder="이메일을 입력해주세요"
+                      />
+                      <!-- Email verification button -->
+                      <div class="input-group-append">
+                        <button
+                                type="button"
+                                class="btn btn-primary"
+                                id="emailVerificationBtn"
+                        >
+                          인증 요청
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Verification code input field -->
+                  <div
+                          class="form-group verification-controls"
+                          id="verificationCodeGroup"
+                  >
+                    <div class="input-group">
+                      <input
+                              type="text"
+                              class="form-control form-control-user"
+                              id="emailVerificationCode"
+                              placeholder="인증 코드를 입력하세요."
+                      />
+                      <!-- Verification button -->
+                      <div class="input-group-append">
+                        <button
+                                type="button"
+                                class="btn btn-primary"
+                                id="verifyCodeBtn"
+                        >
+                          인증 확인
+                        </button>
+                      </div>
+                    </div>
+                    <span id="verificationTimer"></span>
+                    <div
+                            id="errorMessage"
+                            class="text-danger"
+                    ></div>
+                  </div>
+                  <div class="form-group row">
+                    <div class="col-sm-6 mb-3 mb-sm-0">
+                      <input
+                              type="password"
+                              class="form-control form-control-user"
+                              id="exampleInputPassword"
+                              placeholder="비밀번호"
+                      />
+                    </div>
+                    <div class="col-sm-6">
+                      <input
+                              type="password"
+                              class="form-control form-control-user"
+                              id="exampleRepeatPassword"
+                              name="password"
+                              placeholder="비밀번호 재입력"
+                      />
+                      <div
+                              id="passwordErrorMessage"
+                              class="text-danger"
+                      ></div>
+                    </div>
+                  </div>
+                  <button
+                          type="submit"
+                          class="btn btn-primary btn-user btn-block"
+                  >
+                    회원가입
+                  </button>
+                  <hr />
+                </form>
+                <hr />
+                <div class="text-center">
+                  <a class="small" href="forgot_password">비밀번호 찾기</a>
+                </div>
+                <div class="text-center">
+                  <a class="small" href="login">이미 계정이 있습니다.</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--<footer th:replace=""></footer>-->
+
+<!-- JavaScript to handle the visibility of the verification code input field -->
+<script>
+  document
+          .getElementById("emailVerificationBtn")
+          .addEventListener("click", function () {
+            document.getElementById("verificationCodeGroup").style.display =
+                    "block";
+            var countdown = 180; // 3분
+            var timer = setInterval(function () {
+              countdown--;
+              var minutes = Math.floor(countdown / 60);
+              var seconds = countdown % 60;
+              document.getElementById("verificationTimer").textContent =
+                      " (제한시간: " +
+                      minutes.toString().padStart(2, "0") +
+                      ":" +
+                      seconds.toString().padStart(2, "0") +
+                      ")";
+              if (countdown <= 0) {
+                clearInterval(timer);
+                document.getElementById("emailVerificationCode").placeholder =
+                        "시간이 초과되었습니다.";
+              }
+            }, 1000);
+          });
+
+  // 인증코드 이메일 보내기
+  document.getElementById("emailVerificationBtn").addEventListener("click", function () {
+    var userEmail = document.getElementById("exampleInputEmail").value; // 이메일 값 가져오기
+    var xhr = new XMLHttpRequest(); // XMLHttpRequest 객체 생성
+    xhr.open("POST", "http://localhost:9000/sendemail", true); // POST 요청 준비
+    xhr.setRequestHeader("Content-Type", "application/json"); // 요청 헤더 설정
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4 && xhr.status === 200) {
+        console.log(xhr.responseText); // 응답 데이터 콘솔 출력
+      }
+    };
+    xhr.send(userEmail); // 문자열 형식의 이메일 주소를 보냄
+  });
+
+  var userEmailValue;
+
+  // 인증코드 확인
+  document.getElementById("verifyCodeBtn").addEventListener("click", function () {
+    var userEmail = document.getElementById("exampleInputEmail").value; // 이메일 값 가져오기
+    var userCode = document.getElementById("emailVerificationCode").value; // 코드 값 가져오기
+    var requestBody = {
+      "userEmail": userEmail,
+      "userCode": userCode
+    }; // JSON 형식으로 이메일과 코드를 묶음
+    var xhr = new XMLHttpRequest(); // XMLHttpRequest 객체 생성
+    xhr.open("POST", "http://localhost:9000/certify", true); // POST 요청 준비
+    xhr.setRequestHeader("Content-Type", "application/json"); // 요청 헤더 설정
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4) {
+        if (xhr.status === 200) {
+          var response = JSON.parse(xhr.responseText);
+          if (response.result === true) {
+            // 백엔드에서 true를 받은 경우
+            userEmailValue = userEmail;
+            document.getElementById("exampleInputEmail").disabled = true; // 이메일 입력 칸 비활성화
+            document.getElementById("emailVerificationBtn").disabled = true; // 인증 요청 버튼 비활성화
+            document.getElementById("emailVerificationCode").disabled = true; // 인증 코드 입력 칸 비활성화
+            document.getElementById("verifyCodeBtn").disabled = true; // 인증 확인 버튼 비활성화
+          } else {
+            // 백엔드에서 false를 받은 경우
+            var errorMessage = document.getElementById("errorMessage");
+            errorMessage.textContent = "인증번호가 일치하지 않습니다."; // 오류 메시지 표시
+            errorMessage.style.color = "red"; // 빨간색으로 스타일 지정
+          }
+        } else {
+          // 서버로부터 오류가 있는 경우
+          console.error("서버 오류: " + xhr.status); // 콘솔에 오류 메시지 출력
+        }
+      }
+    };
+    xhr.send(JSON.stringify(requestBody)); // JSON 형식의 데이터를 문자열로 변환하여 보냄
+  });
+
+
+
+
+  document
+          .getElementById("registrationForm")
+          .addEventListener("submit", function (event) {
+            event.preventDefault(); // 기본 제출 행동 방지
+
+            var password = document.getElementById("exampleInputPassword").value;
+            var repeatPassword = document.getElementById(
+                    "exampleRepeatPassword"
+            ).value;
+
+            var errorMessage = document.getElementById("passwordErrorMessage");
+
+            // 비밀번호와 재입력한 비밀번호가 일치하지 않는 경우
+            if (
+                    password !== repeatPassword &&
+                    password !== "" &&
+                    repeatPassword !== ""
+            ) {
+              errorMessage.textContent =
+                      "비밀번호가 일치하지 않습니다. 다시 입력해주세요.";
+              return; // 제출 중지
+            } else {
+              errorMessage.textContent = ""; // 에러 메시지 초기화
+            }
+
+            var formData = new FormData(this); // 폼 데이터 가져오기
+            if (userEmailValue) {
+              formData.append("userEmail", userEmailValue);
+            }
+
+            // AJAX를 사용하여 백엔드로 데이터 전송
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "http://localhost:9000/signup", true);
+            xhr.onreadystatechange = function () {
+              if (xhr.readyState === 4 && xhr.status === 200) {
+                // 요청이 성공적으로 완료됨
+                console.log(xhr.responseText); // 응답 데이터를 콘솔에 출력하거나 다른 작업 수행
+                // 회원가입 성공 시 로그인 페이지로 이동
+                alert("회원 가입에 성공했습니다.")
+                window.location.href = "login"; // 로그인 페이지의 URL로 이동
+              }
+            };
+            xhr.send(formData); // 폼 데이터 전송
+          });
+</script>
+</body>
+</html>
