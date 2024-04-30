@@ -36,4 +36,11 @@ public class LinkController {
 		model.addAllAttributes(data);
 		return "subscribe/services";
 	}
+
+	@GetMapping("/{team-seq}/list")
+	public String customerList(@PathVariable("team-seq") Integer teamSeq, Model model, Authentication authentication){
+		Map data = linkService.listCustomer(teamSeq, authentication);
+		model.addAllAttributes(data);
+		return "subscribe/customers";
+	}
 }

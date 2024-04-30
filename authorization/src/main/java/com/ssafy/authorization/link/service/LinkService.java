@@ -8,4 +8,6 @@ public interface LinkService {
 	Map listLink(Authentication authentication);
 
 	Map removeLink(Integer teamSeq, Authentication authentication);
+
+	Map listCustomer(Integer teamSeq, Authentication authentication);
 }
