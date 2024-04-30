@@ -51,4 +51,12 @@ public class LinkController {
 		model.addAllAttributes(data);
 		return "subscribe/customers";
 	}
+
+	@DeleteMapping("/{team-seq}/{member-seq}")
+	public String customerRemove(@PathVariable("team-seq") Integer teamSeq,
+		@PathVariable("member-seq") Integer memberSeq, Model model, Authentication authentication) {
+		Map data = linkService.removeCustomer(teamSeq, memberSeq, authentication);
+		model.addAllAttributes(data);
+		return "subscribe/customers";
+	}
 }

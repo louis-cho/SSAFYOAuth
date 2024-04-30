@@ -125,7 +125,7 @@ public class LinkServiceImpl implements LinkService{
 			return data;
 		}
 		// 요청한 사람이 팀의 팀원 이면 리스트 출력
-		List<CustomerEntity> customers = customerRepository.findAllByTeamSeq(teamSeq);
+		List<CustomerEntity> customers = customerRepository.findAllByTeamSeqAndIsDeleteFalse(teamSeq);
 		// 고객이 없는 경우
 		if(customers.isEmpty()){
 			data.put("msg", "서비스에 가입된 사용자가 없습니다.");
@@ -173,16 +173,16 @@ public class LinkServiceImpl implements LinkService{
 		// 요청한 사람이 팀의 팀원 이면 리스트 출력
 		List<CustomerEntity> customerList = new ArrayList<>();
 		// 이름으로 검색
-		List<CustomerEntity> customerName = customerRepository.findAllByNameContains(keyword);
+		List<CustomerEntity> customerName = customerRepository.findAllByNameContainsAndIsDeleteFalse(keyword);
 		customerList.addAll(customerName);
 		// 이메일로 검색
-		List<CustomerEntity> customerEmail = customerRepository.findAllByEmailContains(keyword);
+		List<CustomerEntity> customerEmail = customerRepository.findAllByEmailContainsAndIsDeleteFalse(keyword);
 		customerList.addAll(customerEmail);
 		// 학번으로 검색
-		List<CustomerEntity> customerStudentId = customerRepository.findAllByStudentIdContains(keyword);
+		List<CustomerEntity> customerStudentId = customerRepository.findAllByStudentIdContainsAndIsDeleteFalse(keyword);
 		customerList.addAll(customerStudentId);
 		// 전화번호로 검색
-		List<CustomerEntity> customerPhoneNumber = customerRepository.findAllByPhoneNumberContains(keyword);
+		List<CustomerEntity> customerPhoneNumber = customerRepository.findAllByPhoneNumberContainsAndIsDeleteFalse(keyword);
 		customerList.addAll(customerPhoneNumber);
 		if(customerList.isEmpty()){
 			data.put("msg", "검색 결과가 없습니다.");
@@ -190,6 +190,64 @@ public class LinkServiceImpl implements LinkService{
 			return data;
 		}
 		List<CustomerVo> list = customerList.stream().map(e ->{
+			CustomerVo vo = new CustomerVo();
+			vo.setMemberSeq(e.getMemberSeq());
+			vo.setName(e.getName());
+			vo.setEmail(e.getEmail());
+			vo.setImage(e.getImage());
+			vo.setGender(e.getGender() == (short)0 ? false : true);
+			vo.setTrack(e.getTrack());
+			vo.setPhoneNumber(e.getPhoneNumber());
+			vo.setStudentId(e.getStudentId());
+			return vo;
+		}).collect(Collectors.toList());
+		data.put("msg", null);
+		data.put("list", list);
+		return data;
+	}
+
+	@Override
+	public Map removeCustomer(Integer teamSeq, Integer memberSeq, Authentication authentication) {
+		Map<String, Object> data = new HashMap<>();
+		// 존재하는 팀인지 확인
+		Optional<DeveloperTeamEntity> optionalDeveloperTeam = developerTeamRepository.findById(teamSeq);
+		if(optionalDeveloperTeam.isEmpty()){
+			data.put("msg", "존재하지 않는 서비스 입니다.");
+			data.put("list", null);
+			return data;
+		}
+		// 요청한 사람 확인
+		UserDetails userDetails = (UserDetails)authentication.getPrincipal();
+		String myEmail = userDetails.getUsername();
+		Integer mySeq = (int)(long)memberRepository.findByEmail(myEmail).get().getMemberId();
+		// 요청한 사람이 팀의 팀원 인지 확인
+		Optional<TeamMemberEntity> optionalTeamMember = teamMemberRepository.findById(new TeamMemberPK(teamSeq, mySeq));
+		if(optionalTeamMember.isEmpty()){
+			data.put("msg", "서비스에 가입된 사용자를 볼 수 있는 권한이 없습니다.");
+			data.put("list", null);
+			return data;
+		}
+		// 삭제된 사람이 존재하는지 검색
+		Optional<SubscribeEntity> optionalSubscribe = subscribeRepository.findById(new SubscribePK(memberSeq, teamSeq));
+		if(optionalSubscribe.isEmpty()){
+			data.put("msg", "해당 서비스에 가입한적 없는 사용자 입니다.");
+			data.put("list", null);
+			return data;
+		}
+		// 삭제
+		SubscribeEntity subscribe = optionalSubscribe.get();
+		subscribe.setIsDelete(true);
+		subscribe.setDeleteDate(LocalDateTime.now());
+		subscribeRepository.save(subscribe);
+		// 요청이 끝나면 리스트 출력
+		List<CustomerEntity> customers = customerRepository.findAllByTeamSeqAndIsDeleteFalse(teamSeq);
+		// 고객이 없는 경우
+		if(customers.isEmpty()){
+			data.put("msg", "서비스에 가입된 사용자가 없습니다.");
+			data.put("list", null);
+			return data;
+		}
+		List<CustomerVo> list = customers.stream().map(e -> {
 			CustomerVo vo = new CustomerVo();
 			vo.setMemberSeq(e.getMemberSeq());
 			vo.setName(e.getName());
