@@ -24,11 +24,11 @@ public class LoginController {
 	public LoginController(OAuth2AuthorizationConsentService authorizationConsentService) {
 		this.authorizationConsentService = authorizationConsentService;
 	}
-
-	@GetMapping("/login")
-	public String login() {
-		return "login";
+	@GetMapping(value = "/login_test")
+	public String asd() {
+		return "login_test";
 	}
+
 
 	@GetMapping(value = "/oauth2/consent")
 	public String consent(
