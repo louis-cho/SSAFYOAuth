@@ -57,7 +57,7 @@ public class CustomerEntity {
 	private String phoneNumber;
 
 	@Column(name = "gender")
-	private Short gender;
+	private Boolean gender;
 
 	@Column(name = "image")
 	private String image;

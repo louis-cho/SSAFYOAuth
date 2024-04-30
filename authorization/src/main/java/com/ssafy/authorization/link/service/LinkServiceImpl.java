@@ -9,7 +9,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.parameters.P;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,7 +45,7 @@ public class LinkServiceImpl implements LinkService{
 		// 로그인한 사용자 정보 가져오기
 		UserDetails userDetails = (UserDetails)authentication.getPrincipal();
 		String myEmail = userDetails.getUsername();
-		Integer mySeq = (int)(long)memberRepository.findByEmail(myEmail).get().getMemberId();
+		Integer mySeq = memberRepository.findByEmail(myEmail).get().getMemberId();
 		// 사용자의 가입한 서비스 가져오기
 		List<SubscribeEntity> subscribes = subscribeRepository.findAllByMemberSeqAndIsDeleteFalse(mySeq);
 		if(subscribes.isEmpty()){
@@ -73,7 +72,7 @@ public class LinkServiceImpl implements LinkService{
 		// 로그인한 사용자 정보 가져오기
 		UserDetails userDetails = (UserDetails)authentication.getPrincipal();
 		String myEmail = userDetails.getUsername();
-		Integer mySeq = (int)(long)memberRepository.findByEmail(myEmail).get().getMemberId();
+		Integer mySeq = memberRepository.findByEmail(myEmail).get().getMemberId();
 		// 사용자가 가입한 서비스 가져오기
 		Optional<SubscribeEntity> optional = subscribeRepository.findById(new SubscribePK(mySeq, teamSeq));
 		if(optional.isEmpty()){
@@ -116,7 +115,7 @@ public class LinkServiceImpl implements LinkService{
 		// 요청한 사람 확인
 		UserDetails userDetails = (UserDetails)authentication.getPrincipal();
 		String myEmail = userDetails.getUsername();
-		Integer mySeq = (int)(long)memberRepository.findByEmail(myEmail).get().getMemberId();
+		Integer mySeq = memberRepository.findByEmail(myEmail).get().getMemberId();
 		// 요청한 사람이 팀의 팀원 인지 확인
 		Optional<TeamMemberEntity> optionalTeamMember = teamMemberRepository.findById(new TeamMemberPK(teamSeq, mySeq));
 		if(optionalTeamMember.isEmpty()){
@@ -138,7 +137,7 @@ public class LinkServiceImpl implements LinkService{
 			vo.setName(e.getName());
 			vo.setEmail(e.getEmail());
 			vo.setImage(e.getImage());
-			vo.setGender(e.getGender() == (short)0 ? false : true);
+			vo.setGender(e.getGender());
 			vo.setTrack(e.getTrack());
 			vo.setPhoneNumber(e.getPhoneNumber());
 			vo.setStudentId(e.getStudentId());
@@ -162,7 +161,7 @@ public class LinkServiceImpl implements LinkService{
 		// 요청한 사람 확인
 		UserDetails userDetails = (UserDetails)authentication.getPrincipal();
 		String myEmail = userDetails.getUsername();
-		Integer mySeq = (int)(long)memberRepository.findByEmail(myEmail).get().getMemberId();
+		Integer mySeq = memberRepository.findByEmail(myEmail).get().getMemberId();
 		// 요청한 사람이 팀의 팀원 인지 확인
 		Optional<TeamMemberEntity> optionalTeamMember = teamMemberRepository.findById(new TeamMemberPK(teamSeq, mySeq));
 		if(optionalTeamMember.isEmpty()){
@@ -195,7 +194,7 @@ public class LinkServiceImpl implements LinkService{
 			vo.setName(e.getName());
 			vo.setEmail(e.getEmail());
 			vo.setImage(e.getImage());
-			vo.setGender(e.getGender() == (short)0 ? false : true);
+			vo.setGender(e.getGender());
 			vo.setTrack(e.getTrack());
 			vo.setPhoneNumber(e.getPhoneNumber());
 			vo.setStudentId(e.getStudentId());
@@ -219,7 +218,7 @@ public class LinkServiceImpl implements LinkService{
 		// 요청한 사람 확인
 		UserDetails userDetails = (UserDetails)authentication.getPrincipal();
 		String myEmail = userDetails.getUsername();
-		Integer mySeq = (int)(long)memberRepository.findByEmail(myEmail).get().getMemberId();
+		Integer mySeq = memberRepository.findByEmail(myEmail).get().getMemberId();
 		// 요청한 사람이 팀의 팀원 인지 확인
 		Optional<TeamMemberEntity> optionalTeamMember = teamMemberRepository.findById(new TeamMemberPK(teamSeq, mySeq));
 		if(optionalTeamMember.isEmpty()){
@@ -253,7 +252,7 @@ public class LinkServiceImpl implements LinkService{
 			vo.setName(e.getName());
 			vo.setEmail(e.getEmail());
 			vo.setImage(e.getImage());
-			vo.setGender(e.getGender() == (short)0 ? false : true);
+			vo.setGender(e.getGender());
 			vo.setTrack(e.getTrack());
 			vo.setPhoneNumber(e.getPhoneNumber());
 			vo.setStudentId(e.getStudentId());
