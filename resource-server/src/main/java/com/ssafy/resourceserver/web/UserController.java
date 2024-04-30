@@ -18,6 +18,8 @@ public class UserController {
     @GetMapping("/info")
     public UserInfo getUserInfo(@AuthenticationPrincipal Jwt jwt) {
         // Jwt에서 사용자 정보 추출
+        log.info("test : {} ",jwt.getTokenValue());
+        log.info("{} JWT TTT", jwt);
         String username = jwt.getClaimAsString("sub");
         String scope = jwt.getClaimAsString("scope");
         // 필요한 사용자 정보를 UserInfo 객체에 설정

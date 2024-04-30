@@ -54,7 +54,6 @@ public class AuthorizationServerConfig {
 			)
 			.oauth2ResourceServer((resourceServer) -> resourceServer
 				.jwt(withDefaults()));
-
 		return http.build();
 	}
 
@@ -94,8 +93,8 @@ public class AuthorizationServerConfig {
 		RegisteredClientRepository registeredClientRepository) {
 
 		RegisteredClient registeredClient = RegisteredClient.withId(UUID.randomUUID().toString())
-			.clientId("client")
-			.clientName("client")
+			.clientId("1234")
+			.clientName("ssoauth")
 			.clientSecret(passwordEncoder().encode("secret"))
 			.clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
 			.clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_POST)
@@ -106,22 +105,32 @@ public class AuthorizationServerConfig {
 			.postLogoutRedirectUri("http://localhost:8080/logged-out")
 			.scope(OidcScopes.OPENID)
 			.scope(OidcScopes.PROFILE)
-			.scope("read")
-			.scope("write")
+			.scope("profile")
+			.scope("email")
+			.scope("image")
+			.scope("name")
+			.scope("gender")
+			.scope("phoneNumber")
+			.scope("studentId")
 			.clientSettings(ClientSettings.builder().requireAuthorizationConsent(true).build())
 			.build();
 
 		RegisteredClient deviceClient = RegisteredClient.withId(UUID.randomUUID().toString())
-			.clientId("device-client")
+			.clientId("device-1234")
 			.clientAuthenticationMethod(ClientAuthenticationMethod.NONE)
 			.authorizationGrantType(AuthorizationGrantType.DEVICE_CODE)
 			.authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
-			.scope("message.read")
-			.scope("message.write")
+			.scope("profile")
+			.scope("email")
+			.scope("image")
+			.scope("name")
+			.scope("gender")
+			.scope("phoneNumber")
+			.scope("studentId")
 			.build();
 
-		//			 registeredClientRepository.save(registeredClient);
-		//			 registeredClientRepository.save(deviceClient);
+		 // registeredClientRepository.save(registeredClient);
+		 // registeredClientRepository.save(deviceClient);
 
 		return new JdbcOAuth2AuthorizationService(jdbcOperations, registeredClientRepository);
 	}
