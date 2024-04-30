@@ -30,12 +30,17 @@ import org.springframework.security.oauth2.server.authorization.config.annotatio
 import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
+
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class AuthorizationServerConfig {
-
+	private final RateLimitingFilter rateLimitingFilter;
 	@Bean
 	@Order(1)
 	SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http)
@@ -58,26 +63,25 @@ public class AuthorizationServerConfig {
 		return http.build();
 	}
 
-
 	@Bean
 	@Order(2)
 	SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http)
-			throws Exception {
+		throws Exception {
 		http.csrf(csrf -> csrf.disable());
-		http
-				.authorizeHttpRequests((authorize) -> authorize
-						.requestMatchers("/css/**", "/favicon.ico", "/error","/image/**","/vendor/**",
-							"/test/**","/login","/signup", "/sendemail","/certify","/forgot_password","/forgot_user","/find_user"
-							,".well-known/jwks.json").permitAll()
-						.anyRequest().authenticated()
-				)
-				.formLogin(formLogin -> formLogin
-						.loginPage("/login")
-				);
-		
+		http.addFilterBefore(rateLimitingFilter, UsernamePasswordAuthenticationFilter.class)
+			.authorizeHttpRequests((authorize) -> authorize
+				.requestMatchers("/css/**", "/favicon.ico", "/error", "/image/**", "/vendor/**",
+					"/test/**", "/login", "/signup", "/sendemail", "/certify", "/forgot_password"
+					, ".well-known/jwks.json").permitAll()
+				.anyRequest().authenticated()
+			)
+			.formLogin(formLogin -> formLogin
+				.loginPage("/login")
+			);
+
 		return http.build();
 	}
-	
+
 	@Bean
 	PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
