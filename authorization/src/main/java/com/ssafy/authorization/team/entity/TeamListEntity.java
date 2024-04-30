@@ -2,6 +2,8 @@ package com.ssafy.authorization.team.entity;
 
 import java.time.LocalDateTime;
 
+import org.hibernate.annotations.Immutable;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -17,6 +19,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @IdClass(TeamListPK.class)
+@Immutable
 public class TeamListEntity {
 
 	@Id

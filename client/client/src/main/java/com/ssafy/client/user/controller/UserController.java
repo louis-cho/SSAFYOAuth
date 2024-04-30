@@ -1,7 +1,22 @@
 package com.ssafy.client.user.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
+import org.springframework.security.oauth2.client.annotation.RegisteredOAuth2AuthorizedClient;
+import org.springframework.security.oauth2.core.OAuth2AccessToken;
+import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
 import lombok.RequiredArgsConstructor;
 
@@ -9,6 +24,54 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/users")
 public class UserController {
+
+	@Autowired
+	private final OAuth2AuthorizedClientService authorizedClientService;
+	@Autowired
+	private final RestTemplate restTemplate;
+
+	@GetMapping("/check-auth")
+	public String checkAuthentication() {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (authentication == null) {
+			return "No authentication found.";
+		} else {
+			return "Authentication: " + authentication.toString() + "\nPrincipal: " + authentication.getPrincipal().toString();
+		}
+	}
+
+
+	@GetMapping("/token")
+	public String getToken(Authentication authentication) {
+		OAuth2AuthorizedClient client = authorizedClientService.loadAuthorizedClient(
+			"client", authentication.getName());
+		if (client == null) {
+			return "No client data found.";
+		}
+
+		OAuth2AccessToken accessToken = client.getAccessToken();
+		return "Access Token: " + accessToken.getTokenValue();
+	}
+
+	@GetMapping("test")
+	public String makeOAuth2Request(@AuthenticationPrincipal OAuth2User principal,
+		@RegisteredOAuth2AuthorizedClient("client") OAuth2AuthorizedClient client) {
+		// 토큰 추출
+		String accessToken = client.getAccessToken().getTokenValue();
+
+		// Http 헤더 설정
+		HttpHeaders headers = new HttpHeaders();
+		headers.setBearerAuth(accessToken);  // Bearer 토큰 설정
+
+		// HttpEntity 객체 생성
+		HttpEntity<String> entity = new HttpEntity<>(headers);
+
+		// RestTemplate을 사용하여 GET 요청
+		ResponseEntity<String> response = restTemplate.exchange(
+			"http://127.0.0.1:8090/user/test", HttpMethod.GET, entity, String.class);
+
+		return response.getBody();
+	}
     // private final UserService userService;
     //
     // @GetMapping

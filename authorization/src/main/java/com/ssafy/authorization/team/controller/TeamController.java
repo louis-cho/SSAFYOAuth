@@ -50,7 +50,7 @@ public class TeamController {
 
 	@PostMapping
 	@ResponseBody
-	public Map teamAdd(@ModelAttribute @Valid TeamAddVo vo, Authentication authentication) {
+	public Map teamAdd(@RequestBody TeamAddVo vo, Authentication authentication) {
 		log.info("팀 추가에서 넘어온 값 : {} ", vo);
 		Map data = teamService.addTeam(vo, authentication);
 		return data;
@@ -131,5 +131,26 @@ public class TeamController {
 		Authentication authentication) {
 		Map data = teamService.modifyTeamImage(teamSeq, vo, authentication);
 		return data;
+	}
+
+	@GetMapping("/invite")
+	public String invitedTeamList(Model model, Authentication authentication){
+		Map data = teamService.listInvitedTeam(authentication);
+		model.addAllAttributes(data);
+		return "team/invite";
+	}
+
+	@PatchMapping("/invite/{team-seq}")
+	public String acceptInvitation(@PathVariable("team-seq") Integer teamSeq, Model model, Authentication authentication){
+		Map data = teamService.acceptInvite(teamSeq, authentication);
+		model.addAllAttributes(data);
+		return "team/invite";
+	}
+
+	@DeleteMapping("/invite/{team-seq}")
+	public String rejectInvitation(@PathVariable("team-seq") Integer teamSeq, Model model, Authentication authentication){
+		Map data = teamService.rejectInvite(teamSeq, authentication);
+		model.addAllAttributes(data);
+		return "team/invite";
 	}
 }

@@ -76,7 +76,7 @@ public class SecurityConfig {
 
         http.logout((logout) -> logout
                 .logoutUrl("/logout")
-                .logoutSuccessUrl("https://j10a710.p.ssafy.io")
+                .logoutSuccessUrl("https://localhost:8080")
                 .invalidateHttpSession(true)
                 .clearAuthentication(true)
                 .deleteCookies("access", "refresh")
@@ -88,7 +88,6 @@ public class SecurityConfig {
                 .authorizeHttpRequests((request) -> request.requestMatchers(CorsUtils::isPreFlightRequest).permitAll());
 
 
-
         //oauth2
         http
                 .oauth2Login((oauth2) -> oauth2
@@ -96,7 +95,7 @@ public class SecurityConfig {
                                 .userService(customOAuth2UserService))
                         .successHandler(customSuccessHandler)
                         .failureHandler(customOAuth2FailHandler)
-//                        .authorizationEndpoint(e -> e.authorizationRequestRepository(oAuth2AuthorizationRequestRepository()))
+                       // .authorizationEndpoint(e -> e.authorizationRequestRepository(oAuth2AuthorizationRequestRepository()))
                 );
 
         //경로별 인가 작업
@@ -105,7 +104,7 @@ public class SecurityConfig {
                         // .requestMatchers("/nft/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_USER")
                         // .requestMatchers("/users/name").permitAll()
                         // .requestMatchers("/users").hasAnyAuthority("ROLE_ADMIN", "ROLE_USER")
-                        // .requestMatchers("/**").permitAll()
+                        .requestMatchers("users/**").permitAll()
                         .anyRequest().authenticated());
 
         //세션 설정 : STATELESS

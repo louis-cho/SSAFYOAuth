@@ -1,5 +1,7 @@
 package com.ssafy.authorization.team.entity;
 
+import org.hibernate.annotations.Immutable;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -15,6 +17,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @IdClass(TeamMemberWithInfoPK.class)
+@Immutable
 public class TeamMemberWithInfoEntity {
 
 	@Id

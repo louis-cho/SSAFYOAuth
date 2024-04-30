@@ -12,4 +12,6 @@ import com.ssafy.authorization.member.model.domain.Member;
 public interface MemberRepository extends JpaRepository<Member, Long> {
 	Optional<Member> findByEmail(@Param("email") String email);
 	void deleteByEmail(String email);
+
+	Optional<Member> findByNameAndPhoneNumber(String userName, String phoneNumber);
 }
