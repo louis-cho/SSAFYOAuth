@@ -58,43 +58,65 @@
                 <div class="text-center">
                   <h1 class="h4 text-gray-900 mb-4">회원가입</h1>
                 </div>
-                <form class="user" id="registrationForm" method="post">
-                  <div class="form-group">
+                <form class="user" id="registrationForm" method="post" th:object="${signUpRequestDto}">
+                  <!-- 에러 메시지 출력 -->
+                  <div class="text-danger" th:if="${#fields.hasErrors()}">
+                    <div th:each="error : ${#fields.errors()}">
+                      <span th:text="${error.defaultMessage}"></span><br/>
+                    </div>
+                  </div>
+                  <div class="form-group" th:classappend="${#fields.hasErrors('userName')} ? 'has-error'">
                     <input
                             type="text"
                             class="form-control form-control-user"
                             id="exampleFirstName"
                             name="userName"
                             placeholder="이름"
+                            th:value="${signUpRequestDto.userName}"
                     />
+                    <!-- 에러 메시지 출력 -->
+                    <div class="text-danger" th:if="${#fields.hasErrors('userName')}">
+                      <span th:errors="${userName}"></span>
+                    </div>
                   </div>
-                  <div class="form-group">
+                  <div class="form-group" th:classappend="${#fields.hasErrors('phoneNumber')} ? 'has-error'">
                     <input
                             type="text"
                             class="form-control form-control-user"
                             id="exampleInputPhone"
                             name="phoneNumber"
                             placeholder="핸드폰 번호"
+                            th:value="${signUpRequestDto.phoneNumber}"
                     />
+                    <!-- 에러 메시지 출력 -->
+                    <div class="text-danger" th:if="${#fields.hasErrors('phoneNumber')}">
+                      <span th:errors="${phoneNumber}"></span>
+                    </div>
                   </div>
                   <div class="form-group">
                     <select
                             class="form-control"
                             id="exampleGender"
                             name="gender"
+                            th:value="${signUpRequestDto.gender}"
                     >
                       <option value="0">남자</option>
                       <option value="1">여자</option>
                     </select>
                   </div>
-                  <div class="form-group">
+                  <div class="form-group" th:classappend="${#fields.hasErrors('studentId')} ? 'has-error'">
                     <input
                             type="text"
                             class="form-control form-control-user"
                             id="exampleInputStudentID"
                             name="studentId"
                             placeholder="학번"
+                            th:value="${signUpRequestDto.studentId}"
                     />
+                    <!-- 에러 메시지 출력 -->
+                    <div class="text-danger" th:if="${#fields.hasErrors('studentId')}">
+                      <span th:errors="${studentId}"></span>
+                    </div>
                   </div>
                   <div class="form-group">
                     <input
@@ -104,7 +126,7 @@
                             name="profileImage"
                     />
                   </div>
-                  <div class="form-group">
+                  <div class="form-group" th:classappend="${#fields.hasErrors('userEmail')} ? 'has-error'">
                     <div class="input-group">
                       <input
                               type="email"
@@ -112,6 +134,7 @@
                               id="exampleInputEmail"
                               name="userEmail"
                               placeholder="이메일을 입력해주세요"
+                              th:value="${signUpRequestDto.userEmail}"
                       />
                       <!-- Email verification button -->
                       <div class="input-group-append">
@@ -123,6 +146,10 @@
                           인증 요청
                         </button>
                       </div>
+                    </div>
+                    <!-- 에러 메시지 출력 -->
+                    <div class="text-danger" th:if="${#fields.hasErrors('userEmail')}">
+                      <span th:errors="${userEmail}"></span>
                     </div>
                   </div>
                   <!-- Verification code input field -->
@@ -154,7 +181,7 @@
                             class="text-danger"
                     ></div>
                   </div>
-                  <div class="form-group row">
+                  <div class="form-group row" th:classappend="${#fields.hasErrors('password')} ? 'has-error'">
                     <div class="col-sm-6 mb-3 mb-sm-0">
                       <input
                               type="password"
@@ -162,6 +189,10 @@
                               id="exampleInputPassword"
                               placeholder="비밀번호"
                       />
+                      <!-- 에러 메시지 출력 -->
+                      <div class="text-danger" th:if="${#fields.hasErrors('password')}">
+                        <span th:errors="${password}"></span>
+                      </div>
                     </div>
                     <div class="col-sm-6">
                       <input
@@ -171,10 +202,10 @@
                               name="password"
                               placeholder="비밀번호 재입력"
                       />
-                      <div
-                              id="passwordErrorMessage"
-                              class="text-danger"
-                      ></div>
+                      <!-- 에러 메시지 출력 -->
+                      <div class="text-danger" th:if="${#fields.hasErrors('password')}">
+                        <span th:errors="${password}"></span>
+                      </div>
                     </div>
                   </div>
                   <button
@@ -183,9 +214,9 @@
                   >
                     회원가입
                   </button>
-                  <hr />
+                  <hr/>
                 </form>
-                <hr />
+                <hr/>
                 <div class="text-center">
                   <a class="small" href="forgot_password">비밀번호 찾기</a>
                 </div>
@@ -321,10 +352,10 @@
             xhr.onreadystatechange = function () {
               if (xhr.readyState === 4 && xhr.status === 200) {
                 // 요청이 성공적으로 완료됨
-                console.log(xhr.responseText); // 응답 데이터를 콘솔에 출력하거나 다른 작업 수행
-                // 회원가입 성공 시 로그인 페이지로 이동
-                alert("회원 가입에 성공했습니다.")
-                window.location.href = "login"; // 로그인 페이지의 URL로 이동
+                // console.log(xhr.responseText); // 응답 데이터를 콘솔에 출력하거나 다른 작업 수행
+                // // 회원가입 성공 시 로그인 페이지로 이동
+                // alert("회원 가입에 성공했습니다.")
+                // window.location.href = "login"; // 로그인 페이지의 URL로 이동
               }
             };
             xhr.send(formData); // 폼 데이터 전송
