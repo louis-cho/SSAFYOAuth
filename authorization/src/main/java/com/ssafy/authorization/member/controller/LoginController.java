@@ -31,7 +31,7 @@ public class LoginController {
 	}
 
 	@GetMapping(value = "/login_test")
-	public String asd() {
+	public String login_test() {
 		return "login_test";
 	}
 

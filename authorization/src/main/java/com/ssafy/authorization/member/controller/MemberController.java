@@ -16,9 +16,6 @@ import com.ssafy.authorization.member.model.dto.ResetPasswordDto;
 import com.ssafy.authorization.member.model.dto.SignUpRequestDto;
 import com.ssafy.authorization.member.model.service.CustomMemberManager;
 import com.ssafy.authorization.member.model.service.MemberService;
-import com.ssafy.authorization.team.service.TeamService;
-
-import jakarta.validation.Valid;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -46,18 +43,17 @@ public class MemberController {
 
 	private final CustomMemberManager customMemberManager;
 
-	private final TeamService teamService;
 
-	@GetMapping("/")
-	public String thisdfz(Model model, Authentication authentication) {
-		Map data = teamService.listTeam(authentication);
-		System.out.println(data);
-		List<String> teamNames = new ArrayList<>();
-		teamNames.add("루피");
-		teamNames.add("망곰이");
-		model.addAttribute("teamNames", teamNames);
-		return "index";
-	}
+//	@GetMapping("/")
+//	public String thisdfz(Model model, Authentication authentication) {
+//		Map data = teamService.listTeam(authentication);
+//		System.out.println(data);
+//		List<String> teamNames = new ArrayList<>();
+//		teamNames.add("루피");
+//		teamNames.add("망곰이");
+//		model.addAttribute("teamNames", teamNames);
+//		return "index";
+//	}
 
 	@GetMapping("/signup")
 	public String signUp() {
