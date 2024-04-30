@@ -110,7 +110,7 @@ public class TeamServiceImpl implements TeamService {
 		UserDetails userDetails = (UserDetails)authentication.getPrincipal();
 		String myEmail = userDetails.getUsername();
 
-		Integer mySeq = (Integer)(int)(long)memberRepository.findByEmail(myEmail).get().getMemberId();
+		Integer mySeq =memberRepository.findByEmail(myEmail).get().getMemberId();
 		teamMembers[vo.getTeamMember() == null ? 0 : vo.getTeamMember().length] = myEmail;
 
 		dto.setDomainUrl(vo.getDomainUrl());
@@ -166,7 +166,7 @@ public class TeamServiceImpl implements TeamService {
 		// 요청한 사람의 시퀀스 넘버 확인
 		UserDetails userDetails = (UserDetails)authentication.getPrincipal();
 		String myEmail = userDetails.getUsername();
-		Integer mySeq = (Integer)(int)(long)memberRepository.findByEmail(myEmail).get().getMemberId();
+		Integer mySeq =     memberRepository.findByEmail(myEmail).get().getMemberId();
 		// 요청한 사람이 팀의 리더 인지 파악
 		DeveloperTeamEntity entity = list.get(0);
 		if (entity.getLeader() != mySeq) {
@@ -197,7 +197,7 @@ public class TeamServiceImpl implements TeamService {
 		// 자신의 시퀀스 넘버 확인
 		UserDetails userDetails = (UserDetails)authentication.getPrincipal();
 		String myEmail = userDetails.getUsername();
-		Integer mySeq = (Integer)(int)(long)memberRepository.findByEmail(myEmail).get().getMemberId();
+		Integer mySeq =     memberRepository.findByEmail(myEmail).get().getMemberId();
 
 		// 자신이 요청한 팀의 팀원인지 확인
 		Optional<TeamMemberEntity> member = teamMemberRepository.findById(new TeamMemberPK(teamSeq, mySeq));
@@ -223,7 +223,7 @@ public class TeamServiceImpl implements TeamService {
 		// 자신의 시퀀스 넘버를 확인
 		UserDetails userDetails = (UserDetails)authentication.getPrincipal();
 		String myEmail = userDetails.getUsername();
-		Integer mySeq = (Integer)(int)(long)memberRepository.findByEmail(myEmail).get().getMemberId();
+		Integer mySeq =     memberRepository.findByEmail(myEmail).get().getMemberId();
 		List<TeamListEntity> entities = teamListRepository.findByMemberSeq(mySeq);
 		if (entities.isEmpty()) {
 			data.put("msg", "소속된 팀이 존재하지 않습니다.");
@@ -262,7 +262,7 @@ public class TeamServiceImpl implements TeamService {
 		if (!test) {
 			UserDetails userDetails = (UserDetails)authentication.getPrincipal();
 			String myEmail = userDetails.getUsername();
-			Integer mySeq = (Integer)(int)(long)memberRepository.findByEmail(myEmail).get().getMemberId();
+			Integer mySeq =     memberRepository.findByEmail(myEmail).get().getMemberId();
 			Optional<TeamMemberEntity> member = teamMemberRepository.findById(new TeamMemberPK(teamSeq, mySeq));
 			if (member.isEmpty()) {
 				data.put("msg", "팀을 볼 수 있는 권한이 없습니다.");
@@ -308,7 +308,7 @@ public class TeamServiceImpl implements TeamService {
 		// 사용자가 팀의 멤버인지 확인
 		UserDetails userDetails = (UserDetails)authentication.getPrincipal();
 		String myEmail = userDetails.getUsername();
-		Integer mySeq = (Integer)(int)(long)memberRepository.findByEmail(myEmail).get().getMemberId();
+		Integer mySeq =     memberRepository.findByEmail(myEmail).get().getMemberId();
 		Optional<TeamMemberEntity> member = teamMemberRepository.findById(new TeamMemberPK(teamSeq, mySeq));
 		if (member.isEmpty()) {
 			data.put("msg", "팀을 볼 수 있는 권한이 없습니다.");
@@ -353,7 +353,7 @@ public class TeamServiceImpl implements TeamService {
 
 			// UserDetails userDetails = (UserDetails)authentication.getPrincipal();
 			// String myEmail = userDetails.getUsername();
-			// Integer mySeq = (Integer)(int)(long)memberRepository.findByEmail(myEmail).get().getMemberId();
+			// Integer mySeq =     memberRepository.findByEmail(myEmail).get().getMemberId();
 			// Optional<TeamMemberEntity> isMember = teamMemberRepository.findById(new TeamMemberPK(teamSeq, mySeq));
 			// if (isMember.isEmpty()) {
 			// 	data.put("msg", "팀에 멤버를 추가할 권한이 없습니다");
@@ -403,7 +403,7 @@ public class TeamServiceImpl implements TeamService {
 
 		// UserDetails userDetails = (UserDetails)authentication.getPrincipal();
 		// String myEmail = userDetails.getUsername();
-		// Integer mySeq = (Integer)(int)(long)memberRepository.findByEmail(myEmail).get().getMemberId();
+		// Integer mySeq =     memberRepository.findByEmail(myEmail).get().getMemberId();
 		// Optional<TeamMemberEntity> isMember = teamMemberRepository.findById(new TeamMemberPK(teamSeq, mySeq));
 		// if (isMember.isEmpty()) {
 		// 	data.put("msg", "팀 멤버를 수정할 권한이 없습니다");
@@ -474,7 +474,7 @@ public class TeamServiceImpl implements TeamService {
 		// 요청한 사람의 시퀀스 아이디
 		UserDetails userDetails = (UserDetails)authentication.getPrincipal();
 		String myEmail = userDetails.getUsername();
-		Integer mySeq = (Integer)(int)(long)memberRepository.findByEmail(myEmail).get().getMemberId();
+		Integer mySeq =     memberRepository.findByEmail(myEmail).get().getMemberId();
 		Optional<TeamMemberEntity> member = teamMemberRepository.findById(new TeamMemberPK(teamSeq, mySeq));
 		if (member.isEmpty()) {
 			data.put("msg", "사진 수정 권한이 없습니다.");
@@ -499,7 +499,7 @@ public class TeamServiceImpl implements TeamService {
 		// 요청한 사람의 시퀀스 아이디
 		UserDetails userDetails = (UserDetails)authentication.getPrincipal();
 		String myEmail = userDetails.getUsername();
-		Integer mySeq = (Integer)(int)(long)memberRepository.findByEmail(myEmail).get().getMemberId();
+		Integer mySeq =     memberRepository.findByEmail(myEmail).get().getMemberId();
 		Optional<TeamMemberEntity> member = teamMemberRepository.findById(new TeamMemberPK(teamSeq, mySeq));
 		if (member.isEmpty()) {
 			data.put("msg", "사진 수정 권한이 없습니다.");
@@ -518,7 +518,7 @@ public class TeamServiceImpl implements TeamService {
 		// 사용자 정보 가져오기
 		UserDetails userDetails = (UserDetails)authentication.getPrincipal();
 		String myEmail = userDetails.getUsername();
-		Integer mySeq = (Integer)(int)(long)memberRepository.findByEmail(myEmail).get().getMemberId();
+		Integer mySeq =     memberRepository.findByEmail(myEmail).get().getMemberId();
 		// 사용자가 추가 되었는데 수락하지 않은 리스트 조회
 		List<InviteListVo> list = teamListRepository.findByMemberSeqAndIsAcceptFalse(mySeq).stream().map(entity -> {
 			InviteListVo vo = new InviteListVo();
@@ -546,7 +546,7 @@ public class TeamServiceImpl implements TeamService {
 		// 사용자 정보 가져오기
 		UserDetails userDetails = (UserDetails)authentication.getPrincipal();
 		String myEmail = userDetails.getUsername();
-		Integer mySeq = (Integer)(int)(long)memberRepository.findByEmail(myEmail).get().getMemberId();
+		Integer mySeq =     memberRepository.findByEmail(myEmail).get().getMemberId();
 
 		// 초대 확인
 		Optional<TeamMemberEntity> optional = teamMemberRepository.findById(new TeamMemberPK(teamSeq, mySeq));
@@ -588,7 +588,7 @@ public class TeamServiceImpl implements TeamService {
 		// 사용자 정보 가져오기
 		UserDetails userDetails = (UserDetails)authentication.getPrincipal();
 		String myEmail = userDetails.getUsername();
-		Integer mySeq = (Integer)(int)(long)memberRepository.findByEmail(myEmail).get().getMemberId();
+		Integer mySeq = memberRepository.findByEmail(myEmail).get().getMemberId();
 
 		// 초대 확인
 		Optional<TeamMemberEntity> optional = teamMemberRepository.findById(new TeamMemberPK(teamSeq, mySeq));

@@ -3,9 +3,6 @@ package com.ssafy.authorization.member.controller;
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationConsent;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationConsentService;
-import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
-import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
-import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -19,17 +16,17 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import lombok.RequiredArgsConstructor;
-
 @Controller
-@RequiredArgsConstructor
 public class LoginController {
 
 	private final OAuth2AuthorizationConsentService authorizationConsentService;
-	private final RegisteredClientRepository registeredClientRepository;
-	@GetMapping("/login")
-	public String login() {
-		return "login";
+
+	public LoginController(OAuth2AuthorizationConsentService authorizationConsentService) {
+		this.authorizationConsentService = authorizationConsentService;
+	}
+	@GetMapping(value = "/login_test")
+	public String asd() {
+		return "login_test";
 	}
 
 	@GetMapping(value = "/oauth2/consent")
@@ -51,11 +48,9 @@ public class LoginController {
 				scopesToApprove.add(scopeFromRequest);
 			}
 		}
-		RegisteredClient client = registeredClientRepository.findByClientId(clientId);
 
 		model.addAttribute("state", state);
 		model.addAttribute("clientId", clientId);
-		model.addAttribute("clientName", client.getClientName());
 		model.addAttribute("scopes", withDescription(scopesToApprove));
 		model.addAttribute("previouslyApprovedScopes", withDescription(previouslyApprovedScopes));
 		model.addAttribute("principalName", principal.getName());
