@@ -20,8 +20,7 @@ public class SecurityConfig {
         httpSecurity
                 .authorizeHttpRequests(request -> request
                         .requestMatchers("/user/**").hasAuthority("SCOPE_profile")
-                        .requestMatchers("/userinfo").hasAuthority("SCOPE_profile")
-                    .requestMatchers("/signup","/css/**", "/favicon.ico","/image/**").permitAll())
+                        .requestMatchers("/userinfo").hasAuthority("SCOPE_profile"))
                 .oauth2ResourceServer(resource -> resource.jwt(Customizer.withDefaults()));
         return httpSecurity.build();
     }
