@@ -29,7 +29,7 @@ public class Member extends BaseTimeEntity implements UserDetails {
 	@Id
 	@Column(name = "member_seq")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long memberId;
+	private Integer memberId;
 
 	@Column(unique = true)
 	@JsonProperty("username")
@@ -61,13 +61,13 @@ public class Member extends BaseTimeEntity implements UserDetails {
 	private LocalDateTime deleteDate;
 
 	@Column
-	private Boolean isDeleted;
+	private Boolean isDelete;
 
 	@Column
 	private String image;
 
 	@Column
-	private Short gender;
+	private Boolean gender;
 
 
 
@@ -131,7 +131,7 @@ public class Member extends BaseTimeEntity implements UserDetails {
 			.name(dto.getUserName())
 			.grade(1)
 			.password(dto.getPassword())
-			.gender(Short.parseShort(dto.getGender()))
+			.gender(dto.getGender())
 			.phoneNumber(dto.getPhoneNumber())
 			.studentId(dto.getStudentId())
 			.accountNonExpired(true)
@@ -139,7 +139,7 @@ public class Member extends BaseTimeEntity implements UserDetails {
 			.credentialsNonExpired(true)
 			.enabled(true)
 			.role(MemberRoleEnum.USER)
-			.isDeleted(false)
+			.isDelete(false)
 			.build();
 	}
 }
