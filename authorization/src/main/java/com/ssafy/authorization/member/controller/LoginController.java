@@ -28,6 +28,10 @@ public class LoginController {
 	public String asd() {
 		return "login_test";
 	}
+	@GetMapping(value = "/login")
+	public String login() {
+		return "login";
+	}
 
 	@GetMapping(value = "/oauth2/consent")
 	public String consent(

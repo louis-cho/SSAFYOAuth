@@ -16,3 +16,14 @@ spring:
         jwt:
           issuer-uri: http://127.0.0.1:9000
           jwk-set-uri: http://127.0.0.1:9000/oauth2/jwks
+  datasource:
+    url: jdbc:postgresql://k10a306.p.ssafy.io:5432/postgres
+    username: postgres
+    password: ssafy
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    generate-ddl: false
+    show-sql: true
+    hibernate:
+      ddl-auto: validate

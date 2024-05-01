@@ -47,7 +47,7 @@ spring:
             authorization-uri: http://127.0.0.1:9000/oauth2/authorize
             token-uri: http://127.0.0.1:9000/oauth2/token
             user-info-uri: http://127.0.0.1:8090/user/info
-            user-name-attribute: sub
+            user-name-attribute: email
           kakao:
             authorization-uri: https://kauth.kakao.com/oauth/authorize
             token-uri: https://kauth.kakao.com/oauth/token

@@ -81,18 +81,23 @@
 
 <script>
     document.querySelector("form").addEventListener("submit", function(event) {
-        var requiredScopes = ['profile', 'email', 'openid','image'];
-        var checkbox = document.getElementById(scope);
-        if(!checkbox || !checkbox.checked){
-            event.preventDefault();
-            alert("프로필 입력은 필수입니다.");
+        const checkRequiredScopes = ["openid", "profile"];
+        const checkRequiredPresent = checkRequiredScopes.some(scope => {
+            let checkbox = document.getElementById(scope);
+            return checkbox && checkbox.checked;
+        });
+
+        if (checkRequiredPresent) {
+            return; // 폼 제출 계속 진행
         }
-        var allRequiredPresent = requiredScopes.some(scope => {
-            var checkbox = document.getElementById(scope);
+
+        const alwaysRequiredScopes = ['email','image'];
+        const allRequiredPresent = alwaysRequiredScopes.every(scope => {
+            let checkbox = document.getElementById(scope);
             return checkbox && checkbox.checked;
         });
         if (!allRequiredPresent) {
-            event.preventDefault(); // Prevent form submission
+            event.preventDefault();
             alert("이메일과 이미지는 필수입니다.");
         }
     });
