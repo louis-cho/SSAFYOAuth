@@ -70,53 +70,50 @@ public class AuthorizationServerConfig {
 			)
 			.oauth2ResourceServer((resourceServer) -> resourceServer
 				.jwt(withDefaults()));
+
 		return http.build();
 	}
 
-
-	 @Bean
-	 @Order(2)
-	 SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http)
-	 		throws Exception {
-		http.csrf(csrf -> csrf.disable());
-
-		http
-				.authorizeHttpRequests((request) -> request.requestMatchers(CorsUtils::isPreFlightRequest).permitAll());
-
-		http
-				.authorizeHttpRequests((authorize) -> authorize
-	 					.requestMatchers("/css/**", "/favicon.ico", "/error","/image/**","/vendor/**",
-	 						"/test/**","/login","/signup", "/sendemail","/certify","/forgot_password","/forgot_user","/find_user"
-	 						,".well-known/jwks.json").permitAll()
-	 					.anyRequest().authenticated()
-	 			)
-	 			.formLogin(formLogin -> formLogin
-	 					.loginPage("/login")
-	 			);
-		
-	 	return http.build();
-	 }
 
 //	 @Bean
 //	 @Order(2)
 //	 SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http)
 //	 		throws Exception {
-//		 http
-//				 .csrf(httpSecurityCsrfConfigurer -> httpSecurityCsrfConfigurer.disable())
-//				 .authorizeHttpRequests(authorize -> authorize
-//						 .requestMatchers("/login_test", "/css/**", "/api/auth/login", "/favicon.ico", "/error", "/test/**", "/login", "/sign_up", ".well-known/jwks.json").permitAll()
-//						 .anyRequest().authenticated())
-//				 .formLogin(formLogin -> formLogin
-//						 .loginPage("/login_test")
-//						 .successHandler((request, response, authentication) -> {
-//							 System.out.println("Login success");
-//						 })
-//						 .failureHandler((request, response, exception) -> {
-//							 System.out.println("Login failed");
-//						 })
-//				 );
+//	 	http.csrf(csrf -> csrf.disable());
+//	 	http
+//	 			.authorizeHttpRequests((authorize) -> authorize
+//	 					.requestMatchers("/css/**", "/favicon.ico", "/error","/image/**","/vendor/**",
+//	 						"/test/**","/login","/signup", "/sendemail","/certify","/forgot_password","/forgot_user","/find_user"
+//	 						,".well-known/jwks.json").permitAll()
+//	 					.anyRequest().authenticated()
+//	 			)
+//	 			.formLogin(formLogin -> formLogin
+//	 					.loginPage("/login")
+//	 			);
+//
 //	 	return http.build();
 //	 }
+
+	 @Bean
+	 @Order(2)
+	 SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http)
+	 		throws Exception {
+		 http
+				 .csrf(httpSecurityCsrfConfigurer -> httpSecurityCsrfConfigurer.disable())
+				 .authorizeHttpRequests(authorize -> authorize
+						 .requestMatchers("/api/auth/login", "/login_test", "/css/**", "/favicon.ico", "/error", "/test/**", "/login", "/sign_up", ".well-known/jwks.json").permitAll()
+						 .anyRequest().authenticated())
+				 .formLogin(formLogin -> formLogin
+						 .loginPage("/login_test")
+						 .successHandler((request, response, authentication) -> {
+							 System.out.println("Login success");
+						 })
+						 .failureHandler((request, response, exception) -> {
+							 System.out.println("Login failed");
+						 })
+				 );
+	 	return http.build();
+	 }
 	
 	@Bean
 	PasswordEncoder passwordEncoder() {
