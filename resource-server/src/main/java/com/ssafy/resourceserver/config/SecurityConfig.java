@@ -9,11 +9,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-import com.ssafy.resourceserver.member.jwt.JWTFilter;
-import com.ssafy.resourceserver.member.jwt.JWTUtil;
-import com.ssafy.resourceserver.member.service.JWTService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -21,8 +16,6 @@ import lombok.RequiredArgsConstructor;
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig {
-    private final JWTUtil jwtUtil;
-    private final JWTService jwtService;
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -39,9 +32,6 @@ public class SecurityConfig {
         httpSecurity
             .httpBasic((auth) -> auth.disable());
 
-        // //JWTFilter 추가
-        httpSecurity
-            .addFilterBefore(new JWTFilter(jwtUtil, jwtService), UsernamePasswordAuthenticationFilter.class);
 
         httpSecurity
                 .authorizeHttpRequests(request -> request
