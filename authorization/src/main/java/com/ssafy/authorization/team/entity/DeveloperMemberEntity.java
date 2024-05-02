@@ -33,7 +33,7 @@ public class DeveloperMemberEntity {
 	@Column(name = "email")
 	private String email;
 
-	@Column(name = "phone")
+	@Column(name = "phone_number")
 	private String phone;
 
 	@Column(name = "gender")

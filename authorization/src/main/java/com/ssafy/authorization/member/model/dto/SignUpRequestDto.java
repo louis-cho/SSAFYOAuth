@@ -1,6 +1,8 @@
 package com.ssafy.authorization.member.model.dto;
 
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
@@ -28,7 +30,7 @@ public class SignUpRequestDto {
 	@Pattern(regexp = "^\\d{2,3}-\\d{3,4}-\\d{4}$", message = "핸드폰의 양식과 맞지 않습니다. xxx-xxxx-xxxx")
 	private String phoneNumber;
 
-	private String gender;
+	private Boolean gender;
 
 	@Pattern(regexp = "^[0-9]+$", message = "학번은 숫자만 입력 가능합니다.")
 	private String studentId;

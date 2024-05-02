@@ -48,7 +48,7 @@ public class TeamListEntity {
 	@Column(name = "leader_member_seq")
 	private Integer leader;
 
-	@Column(name = "crete_date", nullable = false)
+	@Column(name = "create_date", nullable = false)
 	private LocalDateTime createDate;
 
 	@Column(name = "delete_date")
