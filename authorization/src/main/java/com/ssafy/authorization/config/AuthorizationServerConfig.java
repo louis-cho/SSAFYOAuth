@@ -8,6 +8,7 @@ import java.util.UUID;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcOperations;
@@ -124,43 +125,45 @@ public class AuthorizationServerConfig {
 	// 	return new JdbcRegisteredClientRepository(template);
 	// }
 
-	@Bean
-	OAuth2AuthorizationService jdbcOAuth2AuthorizationService(
-		JdbcOperations jdbcOperations,
-		RegisteredClientRepository registeredClientRepository) {
-
-		RegisteredClient registeredClient = RegisteredClient.withId(UUID.randomUUID().toString())
-			.clientId("client")
-			.clientName("client")
-			.clientSecret(passwordEncoder().encode("secret"))
-			.clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
-			.clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_POST)
-			.authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-			.authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
-			.authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
-			.redirectUri("http://localhost:8080/login/oauth2/code/client")
-			.postLogoutRedirectUri("http://localhost:8080/logged-out")
-			.scope(OidcScopes.OPENID)
-			.scope(OidcScopes.PROFILE)
-			.scope("read")
-			.scope("write")
-			.clientSettings(ClientSettings.builder().requireAuthorizationConsent(true).build())
-			.build();
-
-		RegisteredClient deviceClient = RegisteredClient.withId(UUID.randomUUID().toString())
-			.clientId("device-client")
-			.clientAuthenticationMethod(ClientAuthenticationMethod.NONE)
-			.authorizationGrantType(AuthorizationGrantType.DEVICE_CODE)
-			.authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
-			.scope("message.read")
-			.scope("message.write")
-			.build();
-
-		//			 registeredClientRepository.save(registeredClient);
-		//			 registeredClientRepository.save(deviceClient);
-
-		return new JdbcOAuth2AuthorizationService(jdbcOperations, registeredClientRepository);
-	}
+	// @Bean
+	// OAuth2AuthorizationService jdbcOAuth2AuthorizationService(
+	// 	JdbcOperations jdbcOperations,
+	// 	RegisteredClientRepository registeredClientRepository) {
+	//
+	// 	RegisteredClient registeredClient = registeredClientRepository.findById(id);
+	//
+	// 	RegisteredClient registeredClient = RegisteredClient.withId(UUID.randomUUID().toString())
+	// 		.clientId("client")
+	// 		.clientName("client")
+	// 		.clientSecret(passwordEncoder().encode("secret"))
+	// 		.clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
+	// 		.clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_POST)
+	// 		.authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+	// 		.authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
+	// 		.authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
+	// 		.redirectUri("http://localhost:8080/login/oauth2/code/client")
+	// 		.postLogoutRedirectUri("http://localhost:8080/logged-out")
+	// 		.scope(OidcScopes.OPENID)
+	// 		.scope(OidcScopes.PROFILE)
+	// 		.scope("read")
+	// 		.scope("write")
+	// 		.clientSettings(ClientSettings.builder().requireAuthorizationConsent(true).build())
+	// 		.build();
+	//
+	// 	RegisteredClient deviceClient = RegisteredClient.withId(UUID.randomUUID().toString())
+	// 		.clientId("device-client")
+	// 		.clientAuthenticationMethod(ClientAuthenticationMethod.NONE)
+	// 		.authorizationGrantType(AuthorizationGrantType.DEVICE_CODE)
+	// 		.authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
+	// 		.scope("message.read")
+	// 		.scope("message.write")
+	// 		.build();
+	//
+	// 	//			 registeredClientRepository.save(registeredClient);
+	// 	//			 registeredClientRepository.save(deviceClient);
+	//
+	// 	return new JdbcOAuth2AuthorizationService(jdbcOperations, registeredClientRepository);
+	// }
 
 	@Bean
 	OAuth2AuthorizationConsentService jdbcOAuth2AuthorizationConsentService(
