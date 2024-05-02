@@ -1,15 +1,20 @@
 package com.ssafy.authorization.team.entity;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+
+import com.ssafy.authorization.redirect.model.RedirectEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -55,4 +60,8 @@ public class DeveloperTeamEntity {
 
 	@Column(name = "leader_member_seq", nullable = false)
 	private Integer leader;
+
+	@OneToMany
+	@JoinColumn(name = "team_seq")
+	List<RedirectEntity> redirects;
 }
