@@ -20,12 +20,12 @@ import org.springframework.transaction.annotation.Transactional;
 import com.ssafy.resourceserver.link.repository.CustomerRepository;
 import com.ssafy.resourceserver.link.repository.SubscribeRepository;
 import com.ssafy.resourceserver.link.vo.CustomerVo;
-import com.ssafy.authorization.member.model.repository.MemberRepository;
-import com.ssafy.authorization.team.entity.DeveloperTeamEntity;
-import com.ssafy.authorization.team.entity.TeamMemberEntity;
-import com.ssafy.authorization.team.entity.TeamMemberPK;
-import com.ssafy.authorization.team.repository.DeveloperTeamRepository;
-import com.ssafy.authorization.team.repository.TeamMemberRepository;
+import com.ssafy.resourceserver.member.model.repository.MemberRepository;
+import com.ssafy.resourceserver.team.entity.DeveloperTeamEntity;
+import com.ssafy.resourceserver.team.entity.TeamMemberEntity;
+import com.ssafy.resourceserver.team.entity.TeamMemberPK;
+import com.ssafy.resourceserver.team.repository.DeveloperTeamRepository;
+import com.ssafy.resourceserver.team.repository.TeamMemberRepository;
 
 import lombok.RequiredArgsConstructor;
 

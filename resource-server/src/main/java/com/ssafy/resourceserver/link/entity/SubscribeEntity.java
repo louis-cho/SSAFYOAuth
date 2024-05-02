@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import com.ssafy.authorization.team.entity.DeveloperTeamEntity;
+import com.ssafy.resourceserver.team.entity.DeveloperTeamEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

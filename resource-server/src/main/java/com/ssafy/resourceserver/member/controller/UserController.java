@@ -1,7 +1,7 @@
-package com.ssafy.resourceserver.web;
+package com.ssafy.resourceserver.member.controller;
 
-import lombok.Getter;
-import lombok.Setter;
+import com.ssafy.resourceserver.member.service.MemberService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -10,26 +10,27 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/user")
 @Slf4j
+@RequiredArgsConstructor
 public class UserController {
+    private final MemberService memberService;
 
     @GetMapping("/info")
-    public UserInfo getUserInfo(@AuthenticationPrincipal Jwt jwt) {
+    public Map<String, Object> getUserInfo(@AuthenticationPrincipal Jwt jwt) {
         // Jwt에서 사용자 정보 추출
-        String username = jwt.getClaimAsString("sub");
-        String scope = jwt.getClaimAsString("scope");
-        // 필요한 사용자 정보를 UserInfo 객체에 설정
-        UserInfo userInfo = new UserInfo();
-        userInfo.setUsername(username);
-        userInfo.setSub(username);
+        log.info("test : {} ",jwt.getTokenValue());
+        log.info("{} JWT TTT", jwt);
+        String email = jwt.getClaimAsString("sub");
+        List<String> scopes = jwt.getClaimAsStringList("scope");
 
-
-        userInfo.setScope(scope);
-        // 다른 사용자 정보들도 설정 가능
-
-        return userInfo;
+        Map<String, Object> userProfile = memberService.getUserProfile(email, scopes);
+        log.info("유저정보 스코프별: {} ",userProfile);
+        return userProfile;
     }
     @GetMapping("/test")
     public String test(@AuthenticationPrincipal Jwt jwt) {
@@ -42,12 +43,4 @@ public class UserController {
         return "잘되네";
     }
 
-    @Getter
-    @Setter
-    public static class UserInfo {
-        private String username;
-        private String sub;
-        private String scope;
-        // getter and setter
-    }
 }
