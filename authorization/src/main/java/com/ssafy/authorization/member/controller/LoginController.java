@@ -34,10 +34,6 @@ public class LoginController {
 	public String login_test() {
 		return "login_test";
 	}
-	@GetMapping(value = "/login")
-	public String login() {
-		return "login";
-	}
 
 	@GetMapping(value = "/oauth2/consent")
 	public String consent(

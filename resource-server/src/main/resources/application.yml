@@ -16,6 +16,10 @@ spring:
         jwt:
           issuer-uri: http://127.0.0.1:9000
           jwk-set-uri: http://127.0.0.1:9000/oauth2/jwks
+  data:
+    redis:
+      host: k10a306.p.ssafy.io
+      port: 6379
   datasource:
     url: jdbc:postgresql://k10a306.p.ssafy.io:5432/postgres
     username: postgres
@@ -27,3 +31,17 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: validate
+
+cloud:
+  aws:
+    s3:
+      bucket: dagak
+    region:
+      static: ap-northeast-2
+      auto: false
+    stack:
+      auto: false
+    credentials:
+      access-key: AKIA4PE75RA3RF4YKTN4
+      secret-key: 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
+

@@ -32,6 +32,10 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-oauth2-client"
     implementation 'org.postgresql:postgresql'
 
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    //S3
+    implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.1.RELEASE'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-redis', version: '3.2.4'  // redis
 
     annotationProcessor 'org.projectlombok:lombok'
 }
