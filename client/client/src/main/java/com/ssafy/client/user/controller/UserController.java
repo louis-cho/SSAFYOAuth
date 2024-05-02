@@ -13,22 +13,26 @@ import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.annotation.RegisteredOAuth2AuthorizedClient;
 import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+import com.ssafy.client.user.domain.CustomOAuth2User;
+
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/users")
+@Slf4j
 public class UserController {
 
 	@Autowired
 	private final OAuth2AuthorizedClientService authorizedClientService;
-	@Autowired
-	private final RestTemplate restTemplate;
 
 	@GetMapping("/check-auth")
 	public String checkAuthentication() {
@@ -54,23 +58,21 @@ public class UserController {
 	}
 
 	@GetMapping("test")
-	public String makeOAuth2Request(@AuthenticationPrincipal OAuth2User principal,
-		@RegisteredOAuth2AuthorizedClient("client") OAuth2AuthorizedClient client) {
+	public String makeOAuth2Request(Authentication authentication
+		, Model model) {
+		CustomOAuth2User user = (CustomOAuth2User)authentication.getPrincipal();
+		log.info(authentication.getName());
+		OAuth2AuthorizedClient client = authorizedClientService.loadAuthorizedClient(
+			"client", user.getUsername());
+		if (client == null) {
+			return "No client data found.";
+		}
 		// 토큰 추출
 		String accessToken = client.getAccessToken().getTokenValue();
 
-		// Http 헤더 설정
-		HttpHeaders headers = new HttpHeaders();
-		headers.setBearerAuth(accessToken);  // Bearer 토큰 설정
-
-		// HttpEntity 객체 생성
-		HttpEntity<String> entity = new HttpEntity<>(headers);
-
-		// RestTemplate을 사용하여 GET 요청
-		ResponseEntity<String> response = restTemplate.exchange(
-			"http://127.0.0.1:8090/user/test", HttpMethod.GET, entity, String.class);
-
-		return response.getBody();
+		log.info("test 요청, token value : {}", accessToken);
+		model.addAttribute("token", accessToken);
+		return "team";
 	}
     // private final UserService userService;
     //

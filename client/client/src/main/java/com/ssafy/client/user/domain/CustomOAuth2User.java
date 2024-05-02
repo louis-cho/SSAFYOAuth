@@ -26,7 +26,7 @@ public class CustomOAuth2User implements OAuth2User {
         map.put("name", userDto.getName());
         map.put("userName", userDto.getUsername());
         map.put("role", userDto.getRole());
-        return null;
+        return map;
     }
 
     @Override
@@ -48,8 +48,7 @@ public class CustomOAuth2User implements OAuth2User {
 
     @Override
     public String getName() {
-        System.out.println("ttttt" + userDto.getUsername());
-        return userDto.getUsername();
+        return userDto.getName();
     }
 
     public String getUsername() {

@@ -1,7 +1,13 @@
 spring:
+
   application:
-    name : client
+    name: client
   thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    mode: HTML
+    encoding: UTF-8
+    check-template-location: true
     cache: false
   config:
     import:
@@ -17,7 +23,7 @@ logging:
     root: INFO
     org:
       springframework:
-        web : DEBUG
-        security : DEBUG
-        RestTemplate : DEBUG
+        web: DEBUG
+        security: DEBUG
+        RestTemplate: DEBUG
 

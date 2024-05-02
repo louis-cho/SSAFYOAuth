@@ -8,6 +8,7 @@ import java.util.UUID;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -30,36 +31,27 @@ import org.springframework.security.oauth2.server.authorization.config.annotatio
 import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.CorsUtils;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import com.ssafy.authorization.config.filter.countrylimit.CountryLimitFilter;
-import com.ssafy.authorization.config.filter.ratelimit.RateLimitingFilter;
-
-import lombok.RequiredArgsConstructor;
 
 @Configuration
 @EnableWebSecurity
-@RequiredArgsConstructor
 public class AuthorizationServerConfig {
-	private final RateLimitingFilter rateLimitingFilter;
-	private final CountryLimitFilter countryLimitFilter;
 
-	@Bean
-	public CorsConfigurationSource corsConfigurationSource() {
-		CorsConfiguration configuration = new CorsConfiguration();
-		configuration.setAllowedOrigins(Arrays.asList("http://localhost:9000")); // 허용할 오리진
-		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
-		configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
-
-		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-		source.registerCorsConfiguration("/**", configuration);
-		return source;
-	}
-
+//	@Bean
+//	public CorsConfigurationSource corsConfigurationSource() {
+//		CorsConfiguration configuration = new CorsConfiguration();
+//		configuration.setAllowedOrigins(Arrays.asList("http://localhost:9000")); // 허용할 오리진
+//		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
+//		configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
+//
+//		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//		source.registerCorsConfiguration("/**", configuration);
+//		return source;
+//	}
 	@Bean
 	@Order(1)
 	SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http)
@@ -82,29 +74,46 @@ public class AuthorizationServerConfig {
 		return http.build();
 	}
 
-	@Bean
-	@Order(2)
-	SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http)
-		throws Exception {
-		http
-			.csrf(httpSecurityCsrfConfigurer -> httpSecurityCsrfConfigurer.disable())
-			.addFilterBefore(countryLimitFilter, UsernamePasswordAuthenticationFilter.class)
-			.addFilterBefore(rateLimitingFilter, UsernamePasswordAuthenticationFilter.class)
-			.authorizeHttpRequests(authorize -> authorize
-				.requestMatchers("/login_test", "/css/**", "/api/auth/login", "/favicon.ico", "/error", "/test/**",
-					"/login", "/sign_up", ".well-known/jwks.json").permitAll()
-				.anyRequest().authenticated())
-			.formLogin(formLogin -> formLogin
-				.loginPage("/login_test")
-				.successHandler((request, response, authentication) -> {
-					System.out.println("Login success");
-				})
-				.failureHandler((request, response, exception) -> {
-					System.out.println("Login failed");
-				})
-			);
-		return http.build();
-	}
+
+	 @Bean
+	 @Order(2)
+	 SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http)
+	 		throws Exception {
+	 	http.csrf(csrf -> csrf.disable());
+	 	http
+	 			.authorizeHttpRequests((authorize) -> authorize
+	 					.requestMatchers("/css/**", "/favicon.ico", "/error","/image/**","/vendor/**",
+	 						"/test/**","/login","/signup", "/sendemail","/certify","/forgot_password","/forgot_user","/find_user"
+	 						,".well-known/jwks.json").permitAll()
+	 					.anyRequest().authenticated()
+	 			)
+	 			.formLogin(formLogin -> formLogin
+	 					.loginPage("/login")
+	 			);
+
+	 	return http.build();
+	 }
+
+	 // @Bean
+	 // @Order(2)
+	 // SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http)
+	 // 		throws Exception {
+		//  http
+		// 		 .csrf(httpSecurityCsrfConfigurer -> httpSecurityCsrfConfigurer.disable())
+		// 		 .authorizeHttpRequests(authorize -> authorize
+		// 				 .requestMatchers("/api/auth/login", "/login_test", "/css/**", "/favicon.ico", "/error", "/test/**", "/login", "/sign_up", ".well-known/jwks.json").permitAll()
+		// 				 .anyRequest().authenticated())
+		// 		 .formLogin(formLogin -> formLogin
+		// 				 .loginPage("/login_test")
+		// 				 .successHandler((request, response, authentication) -> {
+		// 					 System.out.println("Login success");
+		// 				 })
+		// 				 .failureHandler((request, response, exception) -> {
+		// 					 System.out.println("Login failed");
+		// 				 })
+		// 		 );
+	 // 	return http.build();
+	 // }
 
 	@Bean
 	PasswordEncoder passwordEncoder() {
@@ -122,8 +131,8 @@ public class AuthorizationServerConfig {
 		RegisteredClientRepository registeredClientRepository) {
 
 		RegisteredClient registeredClient = RegisteredClient.withId(UUID.randomUUID().toString())
-			.clientId("client")
-			.clientName("client")
+			.clientId("1234")
+			.clientName("ssoauth")
 			.clientSecret(passwordEncoder().encode("secret"))
 			.clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
 			.clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_POST)
@@ -134,22 +143,32 @@ public class AuthorizationServerConfig {
 			.postLogoutRedirectUri("http://localhost:8080/logged-out")
 			.scope(OidcScopes.OPENID)
 			.scope(OidcScopes.PROFILE)
-			.scope("read")
-			.scope("write")
+			.scope("profile")
+			.scope("email")
+			.scope("image")
+			.scope("name")
+			.scope("gender")
+			.scope("phoneNumber")
+			.scope("studentId")
 			.clientSettings(ClientSettings.builder().requireAuthorizationConsent(true).build())
 			.build();
 
 		RegisteredClient deviceClient = RegisteredClient.withId(UUID.randomUUID().toString())
-			.clientId("device-client")
+			.clientId("device-1234")
 			.clientAuthenticationMethod(ClientAuthenticationMethod.NONE)
 			.authorizationGrantType(AuthorizationGrantType.DEVICE_CODE)
 			.authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
-			.scope("message.read")
-			.scope("message.write")
+			.scope("profile")
+			.scope("email")
+			.scope("image")
+			.scope("name")
+			.scope("gender")
+			.scope("phoneNumber")
+			.scope("studentId")
 			.build();
 
-		//			 registeredClientRepository.save(registeredClient);
-		//			 registeredClientRepository.save(deviceClient);
+		 // registeredClientRepository.save(registeredClient);
+		 // registeredClientRepository.save(deviceClient);
 
 		return new JdbcOAuth2AuthorizationService(jdbcOperations, registeredClientRepository);
 	}

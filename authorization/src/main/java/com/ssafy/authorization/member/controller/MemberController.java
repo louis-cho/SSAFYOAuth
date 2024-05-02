@@ -26,11 +26,24 @@ import com.ssafy.authorization.member.model.dto.ResetPasswordDto;
 import com.ssafy.authorization.member.model.dto.SignUpRequestDto;
 import com.ssafy.authorization.member.model.service.CustomMemberManager;
 import com.ssafy.authorization.member.model.service.MemberService;
-import com.ssafy.authorization.team.service.TeamService;
 
 import jakarta.validation.Valid;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+
 
 @Controller
 @Slf4j
@@ -42,18 +55,17 @@ public class MemberController {
 
 	private final CustomMemberManager customMemberManager;
 
-	private final TeamService teamService;
 
-	@GetMapping("/")
-	public String thisdfz(Model model, Authentication authentication) {
-		Map data = teamService.listTeam(authentication);
-		System.out.println(data);
-		List<String> teamNames = new ArrayList<>();
-		teamNames.add("루피");
-		teamNames.add("망곰이");
-		model.addAttribute("teamNames", teamNames);
-		return "index";
-	}
+//	@GetMapping("/")
+//	public String thisdfz(Model model, Authentication authentication) {
+//		Map data = teamService.listTeam(authentication);
+//		System.out.println(data);
+//		List<String> teamNames = new ArrayList<>();
+//		teamNames.add("루피");
+//		teamNames.add("망곰이");
+//		model.addAttribute("teamNames", teamNames);
+//		return "index";
+//	}
 
 	@GetMapping("/signup")
 	public String signUp() {

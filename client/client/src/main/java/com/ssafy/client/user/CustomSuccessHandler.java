@@ -12,8 +12,6 @@ import org.springframework.stereotype.Component;
 
 import com.ssafy.client.user.domain.CustomOAuth2User;
 // import com.ssafy.client.client.user.jwt.JWTUtil;
-import com.ssafy.client.user.jwt.JWTUtil;
-import com.ssafy.client.user.service.JWTService;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -27,33 +25,26 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
-    private final JWTUtil jwtUtil;
-    private final JWTService jwtService;
-
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException, IOException {
         //OAuth2User
         CustomOAuth2User customUserDetails = (CustomOAuth2User) authentication.getPrincipal();
 
         String username = customUserDetails.getUsername();
+        response.getHeaderNames().iterator().forEachRemaining(e ->{
+            log.info("headers : {}  body : {} ,tttt", response.getHeader(e),e);
+        });
+
         System.out.println("ttttt" + username);
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
         GrantedAuthority auth = iterator.next();
         String role = auth.getAuthority();
 
-        //토큰생성
-        //access 10분
-        //refresh 24시간
-        String access = jwtUtil.createJwt("access", username, role, 600000L);
-        String refresh = jwtUtil.createJwt("refresh", username, role, 86400000L);
-
-        log.info("access = " + access);
-        log.info("refresh = " + refresh);
 
 //        response.setHeader("access", access);
-        response.addCookie(createCookie("access", access));
-        response.addCookie(createCookie("refresh", refresh));
+//         response.addCookie(createCookie("access", access));
+        // response.addCookie(createCookie("refresh", refresh));
         response.setStatus(HttpStatus.OK.value());
         response.sendRedirect("http://localhost:8080");
     }
