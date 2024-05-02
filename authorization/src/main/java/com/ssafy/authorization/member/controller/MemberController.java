@@ -12,6 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -56,14 +57,21 @@ public class MemberController {
 
 	@GetMapping("/signup")
 	public String signUp() {
+
+		log.debug("signup 실행됨");
 		return "signup";
 	}
 
 	@PostMapping("/signup")
 	public String sign_Up(@ModelAttribute @Valid SignUpRequestDto signUpRequestDto, BindingResult result, Model model) {
-		System.out.println(signUpRequestDto);
 		if (result.hasErrors()) {
-			model.addAttribute("errors", result.getAllErrors());
+			// 필드별 에러를 모델에 추가
+			Map<String, String> fieldErrors = new HashMap<>();
+			for (FieldError error : result.getFieldErrors()) {
+				fieldErrors.put(error.getField(), error.getDefaultMessage());
+				log.debug("field : {}, msg : {}", error.getField(), error.getDefaultMessage());
+			};
+			model.addAttribute("fieldErrors", fieldErrors);
 			return "signup";
 		}
 		memberService.save(Member.create(signUpRequestDto), signUpRequestDto);

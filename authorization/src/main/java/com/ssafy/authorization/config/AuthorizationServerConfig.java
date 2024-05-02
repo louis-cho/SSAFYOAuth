@@ -8,7 +8,6 @@ import java.util.UUID;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -37,7 +36,9 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import jakarta.servlet.http.HttpServletResponse;
+import com.ssafy.authorization.config.filter.countrylimit.CountryLimitFilter;
+import com.ssafy.authorization.config.filter.ratelimit.RateLimitingFilter;
+
 import lombok.RequiredArgsConstructor;
 
 @Configuration
@@ -45,6 +46,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AuthorizationServerConfig {
 	private final RateLimitingFilter rateLimitingFilter;
+	private final CountryLimitFilter countryLimitFilter;
+
 	@Bean
 	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
@@ -56,6 +59,7 @@ public class AuthorizationServerConfig {
 		source.registerCorsConfiguration("/**", configuration);
 		return source;
 	}
+
 	@Bean
 	@Order(1)
 	SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http)
@@ -78,47 +82,30 @@ public class AuthorizationServerConfig {
 		return http.build();
 	}
 
+	@Bean
+	@Order(2)
+	SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http)
+		throws Exception {
+		http
+			.csrf(httpSecurityCsrfConfigurer -> httpSecurityCsrfConfigurer.disable())
+			.addFilterBefore(countryLimitFilter, UsernamePasswordAuthenticationFilter.class)
+			.addFilterBefore(rateLimitingFilter, UsernamePasswordAuthenticationFilter.class)
+			.authorizeHttpRequests(authorize -> authorize
+				.requestMatchers("/login_test", "/css/**", "/api/auth/login", "/favicon.ico", "/error", "/test/**",
+					"/login", "/sign_up", ".well-known/jwks.json").permitAll()
+				.anyRequest().authenticated())
+			.formLogin(formLogin -> formLogin
+				.loginPage("/login_test")
+				.successHandler((request, response, authentication) -> {
+					System.out.println("Login success");
+				})
+				.failureHandler((request, response, exception) -> {
+					System.out.println("Login failed");
+				})
+			);
+		return http.build();
+	}
 
-	// @Bean
-	// @Order(2)
-	// SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http)
-	// 		throws Exception {
-	// 	http.csrf(csrf -> csrf.disable());
-	// 	http
-	// 			.authorizeHttpRequests((authorize) -> authorize
-	// 					.requestMatchers("/css/**", "/favicon.ico", "/error","/image/**","/vendor/**",
-	// 						"/test/**","/login","/signup", "/sendemail","/certify","/forgot_password","/forgot_user","/find_user"
-	// 						,".well-known/jwks.json").permitAll()
-	// 					.anyRequest().authenticated()
-	// 			)
-	// 			.formLogin(formLogin -> formLogin
-	// 					.loginPage("/login")
-	// 			);
-
-	// 	return http.build();
-	// }
-
-	 @Bean
-	 @Order(2)
-	 SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http)
-	 		throws Exception {
-		 http
-				 .csrf(httpSecurityCsrfConfigurer -> httpSecurityCsrfConfigurer.disable()).addFilterBefore(rateLimitingFilter, UsernamePasswordAuthenticationFilter.class)
-				 .authorizeHttpRequests(authorize -> authorize
-						 .requestMatchers("/login_test", "/css/**", "/api/auth/login", "/favicon.ico", "/error", "/test/**", "/login", "/sign_up", ".well-known/jwks.json").permitAll()
-						 .anyRequest().authenticated())
-				 .formLogin(formLogin -> formLogin
-						 .loginPage("/login_test")
-						 .successHandler((request, response, authentication) -> {
-							 System.out.println("Login success");
-						 })
-						 .failureHandler((request, response, exception) -> {
-							 System.out.println("Login failed");
-						 })
-				 );
-	 	return http.build();
-	 }
-	
 	@Bean
 	PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();

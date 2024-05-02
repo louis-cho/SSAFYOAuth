@@ -55,13 +55,13 @@ public class TeamController {
 		Map data = teamService.addTeam(vo, authentication);
 		return data;
 	}
-	@PostMapping("/test")
-	@ResponseBody
-	public Map teamAdd(@RequestBody @Valid TeamAddVo vo) {
-		log.info("팀 추가에서 넘어온 값 : {} ", vo);
-		// Map data = teamService.addTeam(vo,);
-		return null;
-	}
+	// @PostMapping("/test")
+	// @ResponseBody
+	// public Map teamAdd(@RequestBody @Valid TeamAddVo vo) {
+	// 	log.info("팀 추가에서 넘어온 값 : {} ", vo);
+	// 	Map data = teamService.addTeam(vo,);
+	// 	return null;
+	// }
 	@GetMapping("/{team-seq}")
 	@ResponseBody
 	public Map teamDetail(@PathVariable("team-seq") Integer teamSeq, Authentication authentication) {

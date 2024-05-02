@@ -1,4 +1,4 @@
-package com.ssafy.authorization.config;
+package com.ssafy.authorization.config.filter.ratelimit;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -20,7 +20,7 @@ public class RateLimitingFilter extends OncePerRequestFilter {
 	private final RateLimitingService rateLimitingService;
 
 	public RateLimitingFilter(RateLimitingService rateLimitingService) {
-		log.info("RateLimitingFilter 실행됨");
+		log.debug("RateLimitingFilter 실행됨");
 		this.rateLimitingService = rateLimitingService;
 	}
 
@@ -33,7 +33,7 @@ public class RateLimitingFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
 		FilterChain filterChain) throws ServletException, IOException {
 		String ip = request.getRemoteAddr();
-		log.info("ip는 이렇다구 {}", ip);
+		log.debug("ip는 이렇다구 {}", ip);
 		if (rateLimitingService.isBlocked(ip)) {
 			response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
 			response.getWriter().write("요청이 너무 많습니다");
