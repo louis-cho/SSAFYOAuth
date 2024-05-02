@@ -9,13 +9,39 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import com.ssafy.resourceserver.member.jwt.JWTFilter;
+import com.ssafy.resourceserver.member.jwt.JWTUtil;
+import com.ssafy.resourceserver.member.service.JWTService;
+
+import lombok.RequiredArgsConstructor;
 
 @EnableWebSecurity
-@Configuration(proxyBeanMethods = false)
+@Configuration
+@RequiredArgsConstructor
 public class SecurityConfig {
+    private final JWTUtil jwtUtil;
+    private final JWTService jwtService;
+
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
+        //csrf disable
+        httpSecurity
+            .csrf((auth) -> auth.disable());
+
+        //로그인 방식 disable
+        httpSecurity
+            .formLogin((auth) -> auth.disable());
+
+        //HTTP Basic 인증 방식 disable
+        httpSecurity
+            .httpBasic((auth) -> auth.disable());
+
+        // //JWTFilter 추가
+        httpSecurity
+            .addFilterBefore(new JWTFilter(jwtUtil, jwtService), UsernamePasswordAuthenticationFilter.class);
 
         httpSecurity
                 .authorizeHttpRequests(request -> request

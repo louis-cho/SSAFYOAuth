@@ -4,9 +4,12 @@ import com.ssafy.resourceserver.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -32,6 +35,16 @@ public class UserController {
         log.info("유저정보 스코프별: {} ",userProfile);
         return userProfile;
     }
+
+    @PostMapping("/info")
+    public ResponseEntity<?> updateUserInfo() {
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(null);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.OK).body(null);
+        }
+    }
+
     @GetMapping("/test")
     public String test(@AuthenticationPrincipal Jwt jwt) {
         // Jwt에서 사용자 정보 추출
