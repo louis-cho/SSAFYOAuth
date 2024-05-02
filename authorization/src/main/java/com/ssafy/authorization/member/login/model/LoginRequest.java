@@ -9,15 +9,12 @@ import lombok.ToString;
 @ToString
 public class LoginRequest {
     private String username;
-    private String password;
-    private int teamId;
-    private int userId;
+    private Integer teamId;
 
-    public LoginRequest(String username, String password, int teamId, int userId) {
+
+    public LoginRequest(String username, Integer teamId) {
         this.username = username;
-        this.password = password;
         this.teamId = teamId;
-        this.userId = userId;
     }
 
     // getter 및 setter 메서드
