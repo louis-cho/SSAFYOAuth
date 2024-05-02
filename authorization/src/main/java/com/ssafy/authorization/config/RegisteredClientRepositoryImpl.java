@@ -13,7 +13,7 @@ import org.springframework.security.oauth2.server.authorization.client.Registere
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ssafy.authorization.redirect.repository.RedirectEntityRepository;
 import com.ssafy.authorization.team.entity.DeveloperTeamEntity;
 import com.ssafy.authorization.team.repository.DeveloperTeamRepository;
 
@@ -24,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 public class RegisteredClientRepositoryImpl implements RegisteredClientRepository {
 
 	private final DeveloperTeamRepository developerTeamRepository;
-	private final ObjectMapper objectMapper;
+	private final RedirectEntityRepository redirectEntityRepository;
 
 	@Override
 	public void save(RegisteredClient registeredClient) {
@@ -63,7 +63,7 @@ public class RegisteredClientRepositoryImpl implements RegisteredClientRepositor
 					grantTypes.add(AuthorizationGrantType.REFRESH_TOKEN);
 				})
 				.redirectUris(uris -> {
-					e.getRedirects().forEach(uri -> {
+					redirectEntityRepository.findAllByTeamId(e.getSeq()).forEach(uri -> {
 						uris.add(uri.getRedirect());
 					});
 				})
@@ -100,7 +100,7 @@ public class RegisteredClientRepositoryImpl implements RegisteredClientRepositor
 					grantTypes.add(AuthorizationGrantType.REFRESH_TOKEN);
 				})
 				.redirectUris(uris -> {
-					e.getRedirects().forEach(uri -> {
+					redirectEntityRepository.findAllByTeamId(e.getSeq()).forEach(uri -> {
 						uris.add(uri.getRedirect());
 					});
 				})

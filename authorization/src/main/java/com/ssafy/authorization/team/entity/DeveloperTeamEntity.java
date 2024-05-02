@@ -60,8 +60,4 @@ public class DeveloperTeamEntity {
 
 	@Column(name = "leader_member_seq", nullable = false)
 	private Integer leader;
-
-	@OneToMany
-	@JoinColumn(name = "team_seq")
-	List<RedirectEntity> redirects;
 }
