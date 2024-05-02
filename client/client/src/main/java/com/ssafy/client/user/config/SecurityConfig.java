@@ -83,7 +83,6 @@ public class SecurityConfig {
         );
 
 
-        //preflight 허용
         http
                 .authorizeHttpRequests((request) -> request.requestMatchers(CorsUtils::isPreFlightRequest).permitAll());
 
