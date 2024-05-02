@@ -10,7 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.authentication.AbstractUserDetailsReactiveAuthenticationManager;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -24,22 +30,31 @@ public class LoginQueueManager implements Runnable {
     private final ConcurrentHashMap<Integer, PriorityQueueNode> teamNodes;
     private ConcurrentHashMap<Integer, AtomicInteger> teamTpsMap;
 
-
+    private final AuthenticationManager authenticationManager;
 
     @Getter
     private AtomicInteger queueSize;
     private static final int NUM_PRIORITIES = 100;
 
 
-
-
-
-    public LoginRequest processLoginRequests() {
-        LoginRequest request = dequeue();
-        return request;
+    public Authentication authenticateLogin() throws Exception {
+        LoginRequest loginRequest = dequeue(); // 로그인 요청을 대기열에서 가져옴
+        if (loginRequest == null) {
+            return null;
+        }
+        try {
+            Authentication authentication = new UsernamePasswordAuthenticationToken(
+                    loginRequest.getUsername(),
+                    loginRequest.getPassword()
+            );
+            return authenticationManager.authenticate(authentication);
+        } catch (AuthenticationException e) {
+            return null;
+        }
     }
 
-    public LoginQueueManager() {
+    @Autowired
+    public LoginQueueManager(AuthenticationManager authenticationManager) {
 
         this.procs = new LinkedList[NUM_PRIORITIES];
         this.teamNodes = new ConcurrentHashMap<>();
@@ -49,6 +64,8 @@ public class LoginQueueManager implements Runnable {
         for (int i = 0; i < NUM_PRIORITIES; i++) {
             this.procs[i] = new LinkedList<>();
         }
+
+        this.authenticationManager = authenticationManager;
 
         schedulePriorityRestoration();
     }
@@ -134,7 +151,7 @@ public class LoginQueueManager implements Runnable {
     public void run() {
         while(true) {
             if (this.getQueueSize().intValue() > 0) {
-                System.out.println(this.processLoginRequests());
+                System.out.println(this.authenticateLogin());
             }
             try {
                 Thread.sleep(10);
