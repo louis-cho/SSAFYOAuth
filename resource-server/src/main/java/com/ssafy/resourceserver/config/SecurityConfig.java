@@ -19,9 +19,19 @@ public class SecurityConfig {
 
         httpSecurity
                 .authorizeHttpRequests(request -> request
+<<<<<<< Updated upstream
+=======
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
                         .requestMatchers("/user/**").hasAnyAuthority("SCOPE_profile", "SCOPE_email", "SCOPE_image")
                         .requestMatchers("/userinfo").hasAnyAuthority("SCOPE_profile", "SCOPE_email", "SCOPE_image")
                     .requestMatchers("/signup","/css/**", "/favicon.ico","/image/**").permitAll())
+=======
+                    //     .requestMatchers("/user/**").hasAuthority("SCOPE_profile")
+                    //     .requestMatchers("/userinfo").hasAuthority("SCOPE_profile")
+                    // .requestMatchers("/signup","/css/**", "/favicon.ico","/image/**").permitAll())
+                    .requestMatchers("/**").permitAll())
+>>>>>>> Stashed changes
                 .oauth2ResourceServer(resource -> resource.jwt(Customizer.withDefaults()));
         return httpSecurity.build();
     }
