@@ -1,5 +1,8 @@
 package com.ssafy.authorization.member.model.service;
 
+import static com.ssafy.authorization.exception.ErrorCode.*;
+
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 
@@ -13,10 +16,13 @@ import org.springframework.stereotype.Service;
 import com.ssafy.authorization.member.model.domain.Member;
 import com.ssafy.authorization.member.model.dto.FindUserEmailDto;
 import com.ssafy.authorization.member.model.repository.MemberRepository;
+import com.ssafy.authorization.exception.ErrorResponse;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+
 
 @Service
 @RequiredArgsConstructor
@@ -88,6 +94,16 @@ public class CustomMemberManager implements UserDetailsManager {
 		}
 		else return null;
 
+	}
+
+	public void resetTmpPassword(String userEmail, String tmpPassword) {
+		Member member = memberRepository.findUserByEmail(userEmail);
+		if (member != null) {
+			member.changePassword(passwordEncoder.encode(tmpPassword));
+			memberRepository.save(member);
+		} else {
+			throw new NoSuchElementException("존재하지 않는 회원입니다");
+		}
 	}
 }
 

@@ -23,6 +23,7 @@ import com.ssafy.authorization.member.model.dto.ResetPasswordDto;
 import com.ssafy.authorization.member.model.dto.SignUpRequestDto;
 import com.ssafy.authorization.member.model.dto.UserEmailDto;
 import com.ssafy.authorization.member.model.service.CustomMemberManager;
+import com.ssafy.authorization.member.model.service.MemberFacade;
 import com.ssafy.authorization.member.model.service.MemberService;
 
 import jakarta.validation.Valid;
@@ -35,6 +36,8 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class MemberController {
 	private final MemberService memberService;
+
+	private final MemberFacade memberFacade;
 
 	private final EmailService emailService;
 
@@ -109,19 +112,7 @@ public class MemberController {
 
 	@PostMapping("/forgot_password")
 	public ResponseEntity<?> forgotPassword(@RequestBody UserEmailDto userEmailDto) {
-		String userEmail = userEmailDto.getUserEmail();
-		System.out.println(userEmail);
-		Map<String, Boolean> response = new HashMap<>();
-		if(customMemberManager.userExists(userEmail)) {
-			try {
-				emailService.sendTmpPassword(userEmail);
-				response.put("result", true);
-			} catch (Exception e) {
-				response.put("result", false);
-			}
-		} else { // 존재하지 않는 회원
-			response.put("result", false);
-		}
+		Map<String, Boolean> response = memberFacade.forgotPassword(userEmailDto.getUserEmail());
 		return ResponseEntity.ok().body(response);
 	}
 

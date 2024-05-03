@@ -12,20 +12,21 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
+import com.ssafy.authorization.member.model.service.MemberService;
+
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class EmailService {
 
-	@Autowired
-	private JavaMailSender emailSender;
+	private final JavaMailSender emailSender;
 
-	@Autowired
-	private SpringTemplateEngine templateEngine;
+	private final SpringTemplateEngine templateEngine;
 
-	@Autowired
-	private RedisTemplate<String, String> redisTemplate;
+	private final RedisTemplate<String, String> redisTemplate;
 
 	@Value("${spring.mail.username}")
 	private String emailSenderAddress;
@@ -58,7 +59,7 @@ public class EmailService {
 		return userCode != null && userCode.equals(originCode);
 	}
 
-	public void sendTmpPassword(String userEmail) throws Exception {
+	public String sendTmpPassword(String userEmail) throws Exception {
 		String tmpPassword = UUID.randomUUID().toString().replaceAll("-", "").substring(0, 5);
 		tmpPassword +=  "@"+UUID.randomUUID().toString().replaceAll("-", "").substring(0, 5);
 		MimeMessage emailContent = emailSender.createMimeMessage();
@@ -76,7 +77,6 @@ public class EmailService {
 		helper.setText(html, true);
 
 		emailSender.send(emailContent);
-		// 비밀번호 바꾸는 로직 추가.
-
+		return tmpPassword;
 	}
 }
