@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import com.ssafy.authorization.member.login.filter.CustomAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -42,6 +43,9 @@ import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
 public class AuthorizationServerConfig {
 
 	private final RedisTemplate<String, String> redisTemplate;
+
+	@Value("${oauth2.client.redirect-uri}")
+	private String redirectBaseUrl;
 
 	@Autowired
 	public AuthorizationServerConfig(RedisTemplate<String, String> redisTemplate) {
@@ -149,8 +153,8 @@ public class AuthorizationServerConfig {
 			.authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
 			.authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
 			.authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
-			.redirectUri("http://localhost:8080/login/oauth2/code/client")
-			.postLogoutRedirectUri("http://localhost:8080/logged-out")
+			.redirectUri(redirectBaseUrl+"/login/oauth2/code/client")
+			.postLogoutRedirectUri(redirectBaseUrl+"/logged-out")
 			.scope(OidcScopes.OPENID)
 			.scope(OidcScopes.PROFILE)
 			.scope("profile")
