@@ -5,6 +5,8 @@ import java.util.Map;
 import com.ssafy.resourceserver.team.vo.ServiceNameUpdateVo;
 import com.ssafy.resourceserver.team.vo.TeamAddVo;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -35,23 +37,15 @@ public class TeamController {
 
 	private final TeamService teamService;
 
-	@GetMapping
-	public String teamList(Model model, Authentication authentication) {
-		Map data = teamService.listTeam(authentication);
-		model.addAllAttributes(data);
-		return "team/list";
-	}
 
-	@GetMapping("/add")
-	public String getTeamAddPage() {
-		return "team/add";
-	}
 
 	@PostMapping
 	@ResponseBody
-	public Map teamAdd(@RequestBody TeamAddVo vo, Authentication authentication) {
+	public Map teamAdd(@RequestBody TeamAddVo vo, @AuthenticationPrincipal Jwt jwt) {
 		log.info("팀 추가에서 넘어온 값 : {} ", vo);
-		Map data = teamService.addTeam(vo, authentication);
+		String email = jwt.getClaimAsString("sub");
+		log.info("이메일은 {}", email);
+		Map data = teamService.addTeam(vo, email);
 		return data;
 	}
 	// @PostMapping("/test")

@@ -1,5 +1,6 @@
 package com.ssafy.authorization.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CachingConfigurer;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
@@ -22,6 +23,11 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 public class RedisConfig implements CachingConfigurer {
 
 	private final RedisProperties redisProperties;
+
+	@Value("${spring.data.redis.password}")
+	private String password;
+
+
 	@Bean
 	public RedisTemplate<String, Integer> redisIntegerTemplate(RedisConnectionFactory redisConnectionFactory) {
 		RedisTemplate<String, Integer> redisTemplate = new RedisTemplate<>();
@@ -35,7 +41,7 @@ public class RedisConfig implements CachingConfigurer {
 		RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
 		redisStandaloneConfiguration.setHostName(redisProperties.getHost());
 		redisStandaloneConfiguration.setPort(redisProperties.getPort());
-		// redisStandaloneConfiguration.setPassword(REDIS_PASSWORD);
+		redisStandaloneConfiguration.setPassword(password);
 		return new LettuceConnectionFactory(redisStandaloneConfiguration);
 
 	}

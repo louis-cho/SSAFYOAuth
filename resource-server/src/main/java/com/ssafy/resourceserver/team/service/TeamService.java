@@ -11,7 +11,7 @@ import com.ssafy.resourceserver.team.vo.TeamImageVo;
 import com.ssafy.resourceserver.team.vo.TeamNameUpdateVo;
 
 public interface TeamService {
-	Map<String, Object> addTeam(TeamAddVo vo, Authentication authentication);
+	Map<String, Object> addTeam(TeamAddVo vo, String email);
 
 	Map deleteTeam(Integer teamSeq, Authentication authentication);
 

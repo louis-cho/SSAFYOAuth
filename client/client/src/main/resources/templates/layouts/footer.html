@@ -3,30 +3,34 @@
 <head>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
-<!-- 다른 페이지에 포함시킬 영역을 th:fragment로 선언해준다.-->
-<div th:fragment="footer" class="footer">
-
-    <footer>
-        <div class="footer-content">
-            <div class="logo">
-                <img th:src="@{/image/ssafy_f_logo.png}" alt="로고 이미지">
-            </div>
-            <div>
-                <div class="copy kor">
-                    본 사이트의 콘텐츠는 저작권법의 보호를 받는 바 무단 전재, 복사, 배포 등을 금합니다.
+<body>
+<div th:fragment="footer" class="footer mt">
+    <footer class="text-dark pt-4 pb-4">
+        <div class="container">
+            <div class="row">
+                <!-- 로고 섹션 -->
+                <div class="col-12 col-md-6 mb-3 mb-md-0">
+                    <div class="logo">
+                        <img th:src="@{/image/ssafy_f_logo.png}" alt="로고 이미지" class="img-fluid">
+                    </div>
                 </div>
-                <div class="copy">
-                    &copy; 2024 SSAFY A306 19class. All rights reserved.
+
+                <!-- 저작권 정보 섹션 -->
+                <div class="col-12 col-md-6 text-center text-md-right">
+                    <div class="copy kor mb-2">
+                        본 사이트의 콘텐츠는 저작권법의 보호를 받는 바 무단 전재, 복사, 배포 등을 금합니다.
+                    </div>
+                    <div class="copy">
+                        &copy; 2024 SSAFY A306 19class. All rights reserved.
+                    </div>
                 </div>
             </div>
-
         </div>
     </footer>
-
-    <!--    <footer class="page-footer font-small cyan darken-3">-->
-    <!--        <div class="footer-copyright text-center py-3">-->
-    <!--            2024 SSAFY 자율 306 OAuth-->
-    <!--        </div>-->
-    <!--    </footer>-->
 </div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
 </html>

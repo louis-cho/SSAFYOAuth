@@ -73,40 +73,21 @@
             내 정보 관리
         </div>
 
-        <!-- Nav Item - Pages Collapse Menu -->
+
+        <!-- Nav Item - mypage -->
         <li class="nav-item">
-            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages"
-               aria-expanded="true" aria-controls="collapsePages">
-                <i class="fas fa-fw fa-folder"></i>
-                <span>Pages</span>
-            </a>
-            <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
-                <div class="bg-white py-2 collapse-inner rounded">
-                    <h6 class="collapse-header">Login Screens:</h6>
-                    <a class="collapse-item" th:href="@{/login}">Login</a>
-                    <a class="collapse-item" th:href="@{/register}">Register</a>
-                    <a class="collapse-item" th:href="@{/forgot-password}">Forgot Password</a>
-                    <div class="collapse-divider"></div>
-                    <h6 class="collapse-header">Other Pages:</h6>
-                    <a class="collapse-item" th:href="@{/404}">404 Page</a>
-                    <a class="collapse-item" th:href="@{/blank}">Blank Page</a>
-                </div>
-            </div>
+            <a class="nav-link" th:href="@{/mypage}">
+                <i class="fas fa-fw fa-user-circle"></i> <!-- 마이페이지 아이콘을 사용자 아이콘으로 변경 -->
+                <span>마이페이지</span></a>
         </li>
 
-        <!-- Nav Item - Charts -->
+        <!-- Nav Item - logout -->
         <li class="nav-item">
-            <a class="nav-link" th:href="@{/charts}">
-                <i class="fas fa-fw fa-chart-area"></i>
-                <span>Charts</span></a>
+            <a class="nav-link" th:href="@{/logout}">
+                <i class="fas fa-fw fa-sign-out-alt"></i> <!-- 로그아웃 아이콘을 출구 아이콘으로 변경 -->
+                <span>로그아웃</span></a>
         </li>
 
-        <!-- Nav Item - Tables -->
-        <li class="nav-item">
-            <a class="nav-link" th:href="@{/tables}">
-                <i class="fas fa-fw fa-table"></i>
-                <span>Tables</span></a>
-        </li>
 
         <!-- Divider -->
         <hr class="sidebar-divider d-none d-md-block">

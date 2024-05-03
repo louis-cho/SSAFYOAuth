@@ -5,6 +5,8 @@ import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.ssafy.client.user.OAuth2Response.GoogleResponse;
 import com.ssafy.client.user.OAuth2Response.KakaoResponse;
@@ -14,6 +16,8 @@ import com.ssafy.client.user.OAuth2Response.SsafyResponse;
 import com.ssafy.client.user.domain.CustomOAuth2User;
 import com.ssafy.client.user.domain.UserDTO;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -24,9 +28,12 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         log.info("{} " , userRequest.getAdditionalParameters());
         OAuth2User oAuth2User = super.loadUser(userRequest);
-        log.info("oAuth2User = " + oAuth2User);
-        log.info("oAuth2User.getAttributes() = " + oAuth2User.getAttributes());
-        log.info("{} token", userRequest.getAccessToken().getTokenValue());
+
+        // 세션에 임시로 저장하자
+        HttpServletRequest curRequest =
+            ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+        HttpSession session = curRequest.getSession();
+        session.setAttribute("access_token", userRequest.getAccessToken().getTokenValue());
 
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
         log.info("registrationId = " + registrationId);

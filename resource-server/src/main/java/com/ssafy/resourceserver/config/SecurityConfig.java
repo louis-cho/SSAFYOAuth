@@ -21,7 +21,7 @@ import jakarta.servlet.http.HttpServletRequest;
 public class SecurityConfig {
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-        JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
+        httpSecurity.csrf(csrf -> csrf.disable());
 
         httpSecurity
             .cors(corsCustomizer -> corsCustomizer.configurationSource(new CorsConfigurationSource() {
@@ -48,8 +48,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(request -> request
                         .requestMatchers("/user/**").hasAnyAuthority("SCOPE_profile", "SCOPE_email", "SCOPE_image")
                         .requestMatchers("/userinfo").hasAnyAuthority("SCOPE_profile", "SCOPE_email", "SCOPE_image")
-                    .requestMatchers("/api/**").permitAll()
-                    .requestMatchers("/signup","/css/**", "/favicon.ico","/image/**").permitAll())
+                    .requestMatchers("/signup","/css/**", "/favicon.ico","/image/**","/api/**").permitAll())
                 .oauth2ResourceServer(resource -> resource.jwt(Customizer.withDefaults()));
         return httpSecurity.build();
     }

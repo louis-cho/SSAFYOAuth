@@ -90,7 +90,7 @@ public class SecurityConfig {
                         // .requestMatchers("/nft/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_USER")
                         // .requestMatchers("/users/name").permitAll()
                         // .requestMatchers("/users").hasAnyAuthority("ROLE_ADMIN", "ROLE_USER")
-                        .requestMatchers("/css/**", "/favicon.ico", "/error", "/image/**", "/vendor/**","users/**").permitAll()
+                        .requestMatchers("/css/**", "/favicon.ico", "/error", "/image/**", "/vendor/**","users/**","/**").permitAll()
                         .anyRequest().authenticated());
 
         //세션 설정 : STATELESS

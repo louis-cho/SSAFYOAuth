@@ -17,6 +17,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -27,23 +28,32 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException, IOException {
+        log.info("{} what is this", authentication.getPrincipal());
         //OAuth2User
         CustomOAuth2User customUserDetails = (CustomOAuth2User) authentication.getPrincipal();
 
         String username = customUserDetails.getUsername();
-        response.getHeaderNames().iterator().forEachRemaining(e ->{
-            log.info("headers : {}  body : {} ,tttt", response.getHeader(e),e);
-        });
 
-        System.out.println("ttttt" + username);
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
         GrantedAuthority auth = iterator.next();
         String role = auth.getAuthority();
 
+        // 세션 -> 쿠키에다가 이사하기
+        HttpSession session = request.getSession(false);
+        String accessToken = (session != null) ? (String) session.getAttribute("access_token") : null;
+
+        if (accessToken != null) {
+            // 쿠키 생성하고 넣기
+            Cookie accessCookie = createCookie("access_token", accessToken);
+            response.addCookie(accessCookie);
+        } else {
+            log.warn("Access token not found in session");
+        }
+
 
 //        response.setHeader("access", access);
-//         response.addCookie(createCookie("access", access));
+        log.info("{} what is this", authentication.getPrincipal());
         // response.addCookie(createCookie("refresh", refresh));
         response.setStatus(HttpStatus.OK.value());
         response.sendRedirect("http://localhost:8080");
@@ -55,7 +65,6 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         cookie.setMaxAge(24*60*60);
         //cookie.setSecure(true);
         cookie.setPath("/");
-        cookie.setHttpOnly(true);
 
         return cookie;
     }

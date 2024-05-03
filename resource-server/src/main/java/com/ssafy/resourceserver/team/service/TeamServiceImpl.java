@@ -65,7 +65,7 @@ public class TeamServiceImpl implements TeamService {
 
 	@Override
 	@Transactional
-	public Map<String, Object> addTeam(TeamAddVo vo, Authentication authentication) {
+	public Map<String, Object> addTeam(TeamAddVo vo, String myEmail) {
 		Map<String, Object> data = new HashMap<>();
 		if (vo.getTeamMember() != null && vo.getTeamMember().length > 5) {
 			data.put("msg", "팀원은 자신 포함 6명을 넘길 수 없습니다.");
@@ -107,8 +107,6 @@ public class TeamServiceImpl implements TeamService {
 			teamMembers[i] = vo.getTeamMember()[i];
 		}
 		// 자기 자신의 email을 추가
-		UserDetails userDetails = (UserDetails)authentication.getPrincipal();
-		String myEmail = userDetails.getUsername();
 
 		Integer mySeq =memberRepository.findByEmail(myEmail).get().getMemberId();
 		teamMembers[vo.getTeamMember() == null ? 0 : vo.getTeamMember().length] = myEmail;
@@ -150,6 +148,7 @@ public class TeamServiceImpl implements TeamService {
 
 		data.put("msg", null);
 		data.put("team_seq", teamSeq);
+		data.put("vo", vo);
 		return data;
 	}
 

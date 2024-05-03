@@ -3,8 +3,6 @@
 footer {
     background-color: rgb(36, 41, 44);
     color: #fff;
-    margin: 0;
-    padding: 20px;
 }
 .footer{
 
@@ -26,6 +24,7 @@ footer {
 
 .copy {
     font-size: 12px;
+    color: rgb(140 153 148);
 }
 .kor {
     font-size: 12px;
