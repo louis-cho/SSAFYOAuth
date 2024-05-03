@@ -1,6 +1,5 @@
 package com.ssafy.authorization.config;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CachingConfigurer;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
@@ -14,7 +13,6 @@ import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
-import org.springframework.data.redis.serializer.GenericToStringSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
@@ -24,24 +22,12 @@ public class RedisConfig implements CachingConfigurer {
 
 	private final RedisProperties redisProperties;
 
-	@Value("${spring.data.redis.password}")
-	private String password;
-
-
-	@Bean
-	public RedisTemplate<String, Integer> redisIntegerTemplate(RedisConnectionFactory redisConnectionFactory) {
-		RedisTemplate<String, Integer> redisTemplate = new RedisTemplate<>();
-		redisTemplate.setConnectionFactory(redisConnectionFactory);
-		redisTemplate.setKeySerializer(new StringRedisSerializer());
-		redisTemplate.setValueSerializer(new GenericToStringSerializer<>(Integer.class)); // 수정된 부분
-		return redisTemplate;
-	}
 	@Bean
 	public RedisConnectionFactory redisConnectionFactory() {
 		RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
 		redisStandaloneConfiguration.setHostName(redisProperties.getHost());
 		redisStandaloneConfiguration.setPort(redisProperties.getPort());
-		redisStandaloneConfiguration.setPassword(password);
+		redisStandaloneConfiguration.setPassword("ssafy");
 		return new LettuceConnectionFactory(redisStandaloneConfiguration);
 
 	}
