@@ -27,7 +27,7 @@ public class RedisConfig implements CachingConfigurer {
 		RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
 		redisStandaloneConfiguration.setHostName(redisProperties.getHost());
 		redisStandaloneConfiguration.setPort(redisProperties.getPort());
-		// redisStandaloneConfiguration.setPassword(REDIS_PASSWORD);
+		redisStandaloneConfiguration.setPassword("ssafy");
 		return new LettuceConnectionFactory(redisStandaloneConfiguration);
 
 	}
