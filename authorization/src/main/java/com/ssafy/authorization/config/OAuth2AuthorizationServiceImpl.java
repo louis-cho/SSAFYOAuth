@@ -57,7 +57,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
 
-@Service
+//@Service
 public class OAuth2AuthorizationServiceImpl implements OAuth2AuthorizationService {
 
 	private static final String COLUMN_NAMES = "id, registered_client_id, principal_name, authorization_grant_type, authorized_scopes, attributes, state, authorization_code_value, authorization_code_issued_at, authorization_code_expires_at,authorization_code_metadata,access_token_value,access_token_issued_at,access_token_expires_at,access_token_metadata,access_token_type,access_token_scopes,oidc_id_token_value,oidc_id_token_issued_at,oidc_id_token_expires_at,oidc_id_token_metadata,refresh_token_value,refresh_token_issued_at,refresh_token_expires_at,refresh_token_metadata,user_code_value,user_code_issued_at,user_code_expires_at,user_code_metadata,device_code_value,device_code_issued_at,device_code_expires_at,device_code_metadata";
@@ -370,7 +370,7 @@ public class OAuth2AuthorizationServiceImpl implements OAuth2AuthorizationServic
 
 		public OAuth2Authorization mapRow(ResultSet rs, int rowNum) throws SQLException {
 			String registeredClientId = rs.getString("registered_client_id");
-			RegisteredClient registeredClient = this.registeredClientRepository.findById(registeredClientId);
+			RegisteredClient registeredClient = this.registeredClientRepository.findByClientId(registeredClientId);
 			if (registeredClient == null) {
 				throw new DataRetrievalFailureException("The RegisteredClient with id '" + registeredClientId + "' was not found in the RegisteredClientRepository.");
 			} else {

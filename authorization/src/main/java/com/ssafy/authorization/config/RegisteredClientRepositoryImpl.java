@@ -40,14 +40,14 @@ public class RegisteredClientRepositoryImpl implements RegisteredClientRepositor
 	@Override
 	public RegisteredClient findById(String id) {
 		Assert.hasText(id, "id cannot be empty");
-		Optional<DeveloperTeamEntity> optional = developerTeamRepository.findById(Integer.parseInt(id));
+		DeveloperTeamEntity client = developerTeamRepository.findBySeq(Integer.parseInt(id));
+		if(client == null) return null;
 		String[] scope = {"email", "studentId", "name", "track", "phoneNumber", "gender", "image"};
-		return optional.map(e->{
-			RegisteredClient.Builder builder = RegisteredClient.withId(id)
-				.clientId(e.getTeamName().toString())
-				.clientIdIssuedAt(e.getCreateDate().toInstant(ZoneOffset.UTC))
-				.clientSecret(e.getServiceKey())
-				.clientName(e.getServiceName())
+		return  RegisteredClient.withId(client.getTeamName())
+				.clientId(client.getTeamName())
+				.clientIdIssuedAt(client.getCreateDate().toInstant(ZoneOffset.UTC))
+				.clientSecret(client.getServiceKey())
+				.clientName(client.getServiceName())
 				.clientAuthenticationMethods(clientAuthenticationMethods -> {
 					clientAuthenticationMethods.add(ClientAuthenticationMethod.CLIENT_SECRET_BASIC);
 					clientAuthenticationMethods.add(ClientAuthenticationMethod.CLIENT_SECRET_POST);
@@ -63,15 +63,13 @@ public class RegisteredClientRepositoryImpl implements RegisteredClientRepositor
 					grantTypes.add(AuthorizationGrantType.REFRESH_TOKEN);
 				})
 				.redirectUris(uris -> {
-					redirectEntityRepository.findAllByTeamId(e.getSeq()).forEach(uri -> {
+					redirectEntityRepository.findAllByTeamId(client.getSeq()).forEach(uri -> {
 						uris.add(uri.getRedirect());
 					});
 				})
 				.scopes(scopes ->{
 					Arrays.stream(scope).toList().forEach(s -> {scopes.add(s);});
-				});
-			return builder.build();
-		}).orElse(null);
+				}).build();
 	}
 
 	@Override

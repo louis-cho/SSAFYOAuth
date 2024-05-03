@@ -195,11 +195,11 @@ public class AuthorizationServerConfig {
 
 	@Bean
 	public RowMapper<OAuth2Authorization> authorizationRowMapper(RegisteredClientRepository registeredClientRepository) {
-		return new OAuth2AuthorizationServiceImpl.OAuth2AuthorizationRowMapper(registeredClientRepository);
+		return new TestOauth2ServiceImpl.OAuth2AuthorizationRowMapper(registeredClientRepository);
 	}
 
 	@Bean
 	public Function<OAuth2Authorization, List<SqlParameterValue>> authorizationParametersMapper() {
-		return new OAuth2AuthorizationServiceImpl.OAuth2AuthorizationParametersMapper();
+		return new TestOauth2ServiceImpl.OAuth2AuthorizationParametersMapper();
 	}
 }
