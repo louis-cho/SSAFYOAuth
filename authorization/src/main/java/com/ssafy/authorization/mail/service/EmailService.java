@@ -57,4 +57,24 @@ public class EmailService {
 		String originCode = redisTemplate.opsForValue().get(key);
 		return userCode != null && userCode.equals(originCode);
 	}
+
+	public String sendTmpPassword(String userEmail) throws Exception {
+		String tmpPassword = UUID.randomUUID().toString().replaceAll("-", "").substring(0, 10);
+		MimeMessage emailContent = emailSender.createMimeMessage();
+		MimeMessageHelper helper;
+
+		helper = new MimeMessageHelper(emailContent, true);
+		helper.setSubject("SSAFYAuth 인증번호 안내");
+		helper.setFrom(new InternetAddress(emailSenderAddress, "SSAFYAuth", "UTF-8"));
+		helper.setTo(userEmail);
+
+		Context context = new Context();
+		context.setVariable("tmpPassword", tmpPassword);
+
+		String html = templateEngine.process("pages/tmpmail", context);
+		helper.setText(html, true);
+
+		emailSender.send(emailContent);
+		return tmpPassword;
+	}
 }

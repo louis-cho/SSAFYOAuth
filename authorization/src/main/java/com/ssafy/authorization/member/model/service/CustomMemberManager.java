@@ -1,5 +1,6 @@
 package com.ssafy.authorization.member.model.service;
 
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 
@@ -88,6 +89,15 @@ public class CustomMemberManager implements UserDetailsManager {
 		}
 		else return null;
 
+	}
+
+	public void resetTmpPassword(String userEmail, String tmpPassword) {
+		Member member = memberRepository.findUserByEmail(userEmail);
+		if (member!=null) {
+			member.changePassword(passwordEncoder.encode(tmpPassword));
+		} else {
+			throw new NoSuchElementException();
+		}
 	}
 }
 

@@ -36,6 +36,7 @@ public class RedisConfig implements CachingConfigurer {
 		redisTemplate.setValueSerializer(new GenericToStringSerializer<>(Integer.class)); // 수정된 부분
 		return redisTemplate;
 	}
+
 	@Bean
 	public RedisConnectionFactory redisConnectionFactory() {
 		RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();

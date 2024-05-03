@@ -9,76 +9,96 @@ import org.apache.tomcat.util.threads.VirtualThreadExecutor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.authentication.AbstractUserDetailsReactiveAuthenticationManager;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
 public class LoginQueueManager implements Runnable {
-    private final LinkedList<PriorityQueueNode>[] procs;
+    private final ConcurrentLinkedQueue<PriorityQueueNode>[] procs;
     private final ConcurrentHashMap<Integer, PriorityQueueNode> teamNodes;
     private ConcurrentHashMap<Integer, AtomicInteger> teamTpsMap;
 
-
-
+    private final LoginController loginController;
     @Getter
     private AtomicInteger queueSize;
     private static final int NUM_PRIORITIES = 100;
 
 
+    @Autowired
+    public LoginQueueManager(@Lazy LoginController loginController) {
 
-
-
-    public LoginRequest processLoginRequests() {
-        LoginRequest request = dequeue();
-        return request;
-    }
-
-    public LoginQueueManager() {
-
-        this.procs = new LinkedList[NUM_PRIORITIES];
+        this.procs = (ConcurrentLinkedQueue<PriorityQueueNode>[]) new ConcurrentLinkedQueue[NUM_PRIORITIES];
         this.teamNodes = new ConcurrentHashMap<>();
         this.teamTpsMap = new ConcurrentHashMap<>();
         this.queueSize = new AtomicInteger(0);
         // 우선 순위에 따라 큐를 초기화합니다.
         for (int i = 0; i < NUM_PRIORITIES; i++) {
-            this.procs[i] = new LinkedList<>();
+            this.procs[i] = new ConcurrentLinkedQueue<>();
         }
+
+        this.loginController = loginController;
 
         schedulePriorityRestoration();
     }
 
     public LoginRequest dequeue() {
+
         for (int i = 0; i < NUM_PRIORITIES; i++) {
-            if (!procs[i].isEmpty()) {
-                PriorityQueueNode node = procs[i].poll();
-                node.setLastAccessTime(LocalDateTime.now());
-                LoginRequest request = node.getRequests().poll();
-                teamTpsMap.get(node.getTeamId()).getAndIncrement();
-                // 우선순위 변경 로직 (예: 우선순위 감소)
-                int newPriority = getCurrentPriority(node.getTeamId());
-                procs[newPriority].addLast(node);
-                return request;
-            }
+                if (!procs[i].isEmpty()) {
+                    PriorityQueueNode node = procs[i].poll();
+                    node.setLastAccessTime(LocalDateTime.now());
+                    LoginRequest request = node.getRequests().poll();
+                    teamTpsMap.get(node.getTeamId()).getAndIncrement();
+                    // 우선순위 변경 로직 (예: 우선순위 감소)
+                    if(node.getRequests().size() > 0) {
+                        int newPriority = getCurrentPriority(node.getTeamId());
+                        procs[newPriority].add(node);
+                    }
+
+                    return request;
+                }
+
         }
         return null;
     }
+
+    public LoginRequest processLoginRequest() {
+        LoginRequest request = dequeue(); // 큐에서 요청을 하나 가져옵니다.
+        if(request != null) {
+            loginController.notifyLoginResult(request);
+        }
+        return request;
+    }
+
     public boolean enqueue(LoginRequest request) {
-        int teamId = request.getTeamId();
-        PriorityQueueNode node = teamNodes.computeIfAbsent(teamId, k -> new PriorityQueueNode(teamId));
 
-        int currentPriority = getCurrentPriority(teamId);
-        procs[currentPriority].addLast(node);
-        node.getRequests().add(request);
+            int teamId = request.getTeamId();
+            PriorityQueueNode node = teamNodes.computeIfAbsent(teamId, k -> new PriorityQueueNode(teamId));
 
-        AtomicInteger tps = teamTpsMap.getOrDefault(teamId, new AtomicInteger(0));
-        tps.incrementAndGet();
-        teamTpsMap.put(teamId, tps);
+            int currentPriority = getCurrentPriority(teamId);
+            procs[currentPriority].add(node);
+
+            node.getRequests().add(request);
+
+
+            AtomicInteger tps = teamTpsMap.getOrDefault(teamId, new AtomicInteger(0));
+            tps.incrementAndGet();
+            teamTpsMap.put(teamId, tps);
+
         return true;
     }
 
@@ -98,48 +118,37 @@ public class LoginQueueManager implements Runnable {
 
     @Scheduled(fixedRate = 5000)
     private void schedulePriorityRestoration() {
-        ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
         LocalDateTime current = LocalDateTime.now();
-
         AtomicInteger qSize = new AtomicInteger();
-        for (LinkedList<PriorityQueueNode> queue : procs) {
-            for (PriorityQueueNode node : queue) {
+
+        for (ConcurrentLinkedQueue<PriorityQueueNode> queue : procs) {
+            Iterator<PriorityQueueNode> iterator = queue.iterator();
+            while (iterator.hasNext()) {
+                PriorityQueueNode node = iterator.next();
                 qSize.addAndGet(node.getRequests().size());
                 if (node.getLastAccessTime() != null && node.getLastAccessTime().plusSeconds(10).isBefore(current)) {
-                    restorePriority(node);
+                    restorePriority(node, iterator); // restorePriority에 iterator를 전달하여 제거 수행
                 }
             }
         }
         queueSize = qSize;
     }
 
-    private void restorePriority(PriorityQueueNode node) {
+    private void restorePriority(PriorityQueueNode node, Iterator<PriorityQueueNode> iterator) {
         int currentPriority = getCurrentPriority(node.getTeamId());
-
-        int newPriority = Math.max(0, currentPriority / 10); // 우선순위를 낮춤
+        int newPriority = Math.max(0, currentPriority / 10);
         teamTpsMap.get(node.getTeamId()).set(newPriority);
-        // 현재 우선순위 큐에서 해당 노드를 제거
-        for (LinkedList<PriorityQueueNode> queue : procs) {
-            if (queue.contains(node)) {
-                queue.remove(node);
-                break;
-            }
-        }
 
-        // 새로운 우선순위 큐에 노드를 삽입
-        procs[newPriority].addLast(node);
+        iterator.remove(); // 안전하게 현재 요소를 제거
+        procs[newPriority].add(node); // 새 우선순위에 노드를 추가
     }
 
     @Override
     public void run() {
         while(true) {
-            if (this.getQueueSize().intValue() > 0) {
-                System.out.println(this.processLoginRequests());
-            }
-            try {
-                Thread.sleep(10);
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
+            // Queue size를 확인하여 요청이 있는 경우에만 로그인 처리
+            if (this.getQueueSize().get() > 0) {
+                this.processLoginRequest();
             }
         }
     }

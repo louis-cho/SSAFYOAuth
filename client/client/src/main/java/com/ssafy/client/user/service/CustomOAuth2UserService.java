@@ -5,6 +5,8 @@ import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.ssafy.client.user.OAuth2Response.GoogleResponse;
 import com.ssafy.client.user.OAuth2Response.KakaoResponse;
@@ -14,6 +16,8 @@ import com.ssafy.client.user.OAuth2Response.SsafyResponse;
 import com.ssafy.client.user.domain.CustomOAuth2User;
 import com.ssafy.client.user.domain.UserDTO;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -29,9 +33,13 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         log.info("{} " , userRequest.getAdditionalParameters());
         OAuth2User oAuth2User = super.loadUser(userRequest);
-        log.info("oAuth2User = " + oAuth2User);
-        log.info("oAuth2User.getAttributes() = " + oAuth2User.getAttributes());
-        
+
+        // 세션에 임시로 저장하자
+        HttpServletRequest curRequest =
+            ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+        HttpSession session = curRequest.getSession();
+        session.setAttribute("access_token", userRequest.getAccessToken().getTokenValue());
+
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
         log.info("registrationId = " + registrationId);
 
@@ -57,9 +65,11 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         //리소스 서버에서 발급 받은 정보로 사용자를 특정할 아이디값을 만듬
         String username = oAuth2Response.getProvider()+" "+oAuth2Response.getProviderId();
         UserDTO userDTO = new UserDTO();
-        userDTO.setUsername("client");
-        userDTO.setName("client");
-        userDTO.setRole("ROLE_USER");
+        userDTO.setUsername((String) oAuth2User.getAttributes().get("email"));
+        log.info("ttt {}", oAuth2User.getAttributes().get("email"));
+        userDTO.setName(oAuth2User.getName());
+        log.info("ttt {} , ", oAuth2User.getName());
+        userDTO.setRole("USER_ROLE");
         return new CustomOAuth2User(userDTO);
         // UserEntity existData = userRepository.findByUsername(username);
         //
