@@ -19,42 +19,42 @@ import jakarta.servlet.http.HttpServletRequest;
 @EnableWebSecurity
 @Configuration(proxyBeanMethods = false)
 public class SecurityConfig {
-    @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.csrf(csrf -> csrf.disable());
+	@Bean
+	SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+		httpSecurity.csrf(csrf -> csrf.disable());
 
-        httpSecurity
-            .cors(corsCustomizer -> corsCustomizer.configurationSource(new CorsConfigurationSource() {
+		httpSecurity
+			.cors(corsCustomizer -> corsCustomizer.configurationSource(new CorsConfigurationSource() {
 
-                @Override
-                public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
+				@Override
+				public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
 
-                    CorsConfiguration configuration = new CorsConfiguration();
+					CorsConfiguration configuration = new CorsConfiguration();
 
-                    configuration.setAllowedOrigins(Collections.singletonList("http://localhost:8080"));
-                    configuration.setAllowedOrigins(Collections.singletonList("http://localhost:9000"));
-                    configuration.setAllowedOriginPatterns(Collections.singletonList("*"));
-                    configuration.setAllowedMethods(Collections.singletonList("*"));
-                    configuration.setAllowCredentials(true);
-                    configuration.setAllowedHeaders(Collections.singletonList("*"));
-                    configuration.setMaxAge(3600L);
+					configuration.setAllowedOrigins(Collections.singletonList("http://localhost:8080"));
+					configuration.setAllowedOrigins(Collections.singletonList("http://localhost:9000"));
+					configuration.setAllowedOriginPatterns(Collections.singletonList("*"));
+					configuration.setAllowedMethods(Collections.singletonList("*"));
+					configuration.setAllowCredentials(true);
+					configuration.setAllowedHeaders(Collections.singletonList("*"));
+					configuration.setMaxAge(3600L);
 
-                    configuration.setExposedHeaders(Collections.singletonList("Set-Cookie"));
-                    configuration.setExposedHeaders(Collections.singletonList("Authorization"));
+					configuration.setExposedHeaders(Collections.singletonList("Set-Cookie"));
+					configuration.setExposedHeaders(Collections.singletonList("Authorization"));
 
-                    return configuration;
-                }
-            }))
-                .authorizeHttpRequests(request -> request
-                        .requestMatchers("/user/**").hasAnyAuthority("SCOPE_profile", "SCOPE_email", "SCOPE_image")
-                        .requestMatchers("/userinfo").hasAnyAuthority("SCOPE_profile", "SCOPE_email", "SCOPE_image")
-                    .requestMatchers("/signup","/css/**", "/favicon.ico","/image/**","/api/**").permitAll())
-                .oauth2ResourceServer(resource -> resource.jwt(Customizer.withDefaults()));
-        return httpSecurity.build();
-    }
+					return configuration;
+				}
+			}))
+			.authorizeHttpRequests(request -> request
+				.requestMatchers("/user/**").hasAnyAuthority("SCOPE_profile", "SCOPE_email", "SCOPE_image")
+				.requestMatchers("/userinfo").hasAnyAuthority("SCOPE_profile", "SCOPE_email", "SCOPE_image")
+				.requestMatchers("/signup","/css/**", "/favicon.ico","/image/**","/api/**").permitAll())
+			.oauth2ResourceServer(resource -> resource.jwt(Customizer.withDefaults()));
+		return httpSecurity.build();
+	}
 
-    @Bean
-    PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+	@Bean
+	PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
+	}
 }
