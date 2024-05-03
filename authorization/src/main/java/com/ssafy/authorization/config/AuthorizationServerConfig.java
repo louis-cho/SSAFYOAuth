@@ -2,11 +2,16 @@ package com.ssafy.authorization.config;
 
 import static org.springframework.security.config.Customizer.*;
 
+import java.util.List;
+import java.util.function.Function;
+
 import org.springframework.context.annotation.Bean;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.SqlParameterValue;
 import org.springframework.jdbc.support.lob.DefaultLobHandler;
 import org.springframework.jdbc.support.lob.LobHandler;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -14,6 +19,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.server.authorization.JdbcOAuth2AuthorizationConsentService;
+import org.springframework.security.oauth2.server.authorization.OAuth2Authorization;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationConsentService;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
@@ -160,5 +166,15 @@ public class AuthorizationServerConfig {
 	@Bean
 	public LobHandler lobHandler() {
 		return new DefaultLobHandler();
+	}
+
+	@Bean
+	public RowMapper<OAuth2Authorization> authorizationRowMapper(RegisteredClientRepository registeredClientRepository) {
+		return new OAuth2AuthorizationServiceImpl.OAuth2AuthorizationRowMapper(registeredClientRepository);
+	}
+
+	@Bean
+	public Function<OAuth2Authorization, List<SqlParameterValue>> authorizationParametersMapper() {
+		return new OAuth2AuthorizationServiceImpl.OAuth2AuthorizationParametersMapper();
 	}
 }

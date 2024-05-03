@@ -58,7 +58,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 
 @Service
-@RequiredArgsConstructor
 public class OAuth2AuthorizationServiceImpl implements OAuth2AuthorizationService {
 
 	private static final String COLUMN_NAMES = "id, registered_client_id, principal_name, authorization_grant_type, authorized_scopes, attributes, state, authorization_code_value, authorization_code_issued_at, authorization_code_expires_at,authorization_code_metadata,access_token_value,access_token_issued_at,access_token_expires_at,access_token_metadata,access_token_type,access_token_scopes,oidc_id_token_value,oidc_id_token_issued_at,oidc_id_token_expires_at,oidc_id_token_metadata,refresh_token_value,refresh_token_issued_at,refresh_token_expires_at,refresh_token_metadata,user_code_value,user_code_issued_at,user_code_expires_at,user_code_metadata,device_code_value,device_code_issued_at,device_code_expires_at,device_code_metadata";
@@ -77,24 +76,56 @@ public class OAuth2AuthorizationServiceImpl implements OAuth2AuthorizationServic
 	private static final String UPDATE_AUTHORIZATION_SQL = "UPDATE oauth2_authorization SET registered_client_id = ?, principal_name = ?, authorization_grant_type = ?, authorized_scopes = ?, attributes = ?, state = ?, authorization_code_value = ?, authorization_code_issued_at = ?, authorization_code_expires_at = ?, authorization_code_metadata = ?, access_token_value = ?, access_token_issued_at = ?, access_token_expires_at = ?, access_token_metadata = ?, access_token_type = ?, access_token_scopes = ?, oidc_id_token_value = ?, oidc_id_token_issued_at = ?, oidc_id_token_expires_at = ?, oidc_id_token_metadata = ?, refresh_token_value = ?, refresh_token_issued_at = ?, refresh_token_expires_at = ?, refresh_token_metadata = ?, user_code_value = ?, user_code_issued_at = ?, user_code_expires_at = ?, user_code_metadata = ?, device_code_value = ?, device_code_issued_at = ?, device_code_expires_at = ?, device_code_metadata = ? WHERE id = ?";
 	private static final String REMOVE_AUTHORIZATION_SQL = "DELETE FROM oauth2_authorization WHERE id = ?";
 	private static Map<String, OAuth2AuthorizationServiceImpl.ColumnMetadata> columnMetadataMap;
+
 	private final JdbcOperations jdbcOperations;
 	private final LobHandler lobHandler;
-	private RowMapper<OAuth2Authorization> authorizationRowMapper;
-	private Function<OAuth2Authorization, List<SqlParameterValue>> authorizationParametersMapper;
+	private final RowMapper<OAuth2Authorization> authorizationRowMapper;
+	private final Function<OAuth2Authorization, List<SqlParameterValue>> authorizationParametersMapper;
+	private final RegisteredClientRepository registeredClientRepository;
+
+	public OAuth2AuthorizationServiceImpl(JdbcOperations jdbcOperations, LobHandler lobHandler, RowMapper<OAuth2Authorization> authorizationRowMapper, Function<OAuth2Authorization, List<SqlParameterValue>> authorizationParametersMapper, RegisteredClientRepository registeredClientRepository){
+		this.jdbcOperations = jdbcOperations;
+		this.lobHandler = lobHandler;
+		this.authorizationParametersMapper = authorizationParametersMapper;
+		this.authorizationRowMapper = authorizationRowMapper;
+		this.registeredClientRepository = registeredClientRepository;
+		initColumnMetadata(jdbcOperations);
+	}
 
 	@Override
 	public void save(OAuth2Authorization authorization) {
 		Assert.notNull(authorization, "authorization cannot be null");
-		OAuth2Authorization existingAuthorization = this.findById(authorization.getId());
-		if (existingAuthorization == null) {
-			this.insertAuthorization(authorization);
-		} else {
-			this.updateAuthorization(authorization);
+		RegisteredClient registeredClient = registeredClientRepository.findByClientId(authorization.getRegisteredClientId());
+		if(registeredClient != null){
+			OAuth2Authorization.Builder builder = OAuth2Authorization.withRegisteredClient(registeredClient)
+				.id(authorization.getId())
+				.accessToken(authorization.getAccessToken().getToken())
+				.authorizationGrantType(authorization.getAuthorizationGrantType())
+				.authorizedScopes(authorization.getAuthorizedScopes())
+				.principalName(authorization.getPrincipalName())
+				.refreshToken(authorization.getRefreshToken().getToken())
+				.attribute("redirectUri", authorization.getAttribute("redirectUri"));
+			OAuth2Authorization customAuthorization = builder.build();
+			OAuth2Authorization existingAuthorization = this.findById(customAuthorization.getId());
+			if (existingAuthorization == null) {
+				this.insertAuthorization(customAuthorization);
+			} else {
+				this.updateAuthorization(customAuthorization);
+			}
+		}else {
+
+			OAuth2Authorization existingAuthorization = this.findById(authorization.getId());
+			if (existingAuthorization == null) {
+				this.insertAuthorization(authorization);
+			} else {
+				this.updateAuthorization(authorization);
+			}
 		}
 
 	}
 
 	private void updateAuthorization(OAuth2Authorization authorization) {
+		// 레디스에서 찾아서 업데이트 하는 코드로 변경
 		List<SqlParameterValue> parameters = (List)this.authorizationParametersMapper.apply(authorization);
 		SqlParameterValue id = (SqlParameterValue)parameters.remove(0);
 		parameters.add(id);
@@ -118,10 +149,11 @@ public class OAuth2AuthorizationServiceImpl implements OAuth2AuthorizationServic
 		if (lobCreator != null) {
 			lobCreator.close();
 		}
-
+		// 레디스에서 찾아서 업데이트 하는 코드로 변경
 	}
 
 	private void insertAuthorization(OAuth2Authorization authorization) {
+		// 레디스에 삽입하는 코드로 변경
 		List<SqlParameterValue> parameters = (List)this.authorizationParametersMapper.apply(authorization);
 		LobCreator lobCreator = this.lobHandler.getLobCreator();
 
@@ -143,15 +175,17 @@ public class OAuth2AuthorizationServiceImpl implements OAuth2AuthorizationServic
 		if (lobCreator != null) {
 			lobCreator.close();
 		}
-
+		// 레디스에 삽입하는 코드로 변경
 	}
 
 	@Override
 	public void remove(OAuth2Authorization authorization) {
+		// 레디스에서 토큰 삭제하는 코드로 변경
 		Assert.notNull(authorization, "authorization cannot be null");
 		SqlParameterValue[] parameters = new SqlParameterValue[]{new SqlParameterValue(12, authorization.getId())};
 		PreparedStatementSetter pss = new ArgumentPreparedStatementSetter(parameters);
 		this.jdbcOperations.update("DELETE FROM oauth2_authorization WHERE id = ?", pss);
+		// 레디스에서 토큰 삭제 하는 코드로 변경
 	}
 
 	@Nullable
@@ -203,6 +237,7 @@ public class OAuth2AuthorizationServiceImpl implements OAuth2AuthorizationServic
 	}
 
 	private OAuth2Authorization findBy(String filter, List<SqlParameterValue> parameters) {
+		// 여기를 레디스에서 찾아서 authorization 객체 만들어서 반환하는 코드로 변경
 		LobCreator lobCreator = this.getLobHandler().getLobCreator();
 
 		OAuth2Authorization var6;
@@ -225,19 +260,31 @@ public class OAuth2AuthorizationServiceImpl implements OAuth2AuthorizationServic
 		if (lobCreator != null) {
 			lobCreator.close();
 		}
-
-		return var6;
+		// 여기를 레디스에서 찾아서 authorization 객체 만들어서 반환하는 코드로 변경
+		if(var6==null){
+			return null;
+		}
+		RegisteredClient registeredClient = registeredClientRepository.findByClientId(var6.getRegisteredClientId());
+		OAuth2Authorization.Builder builder = OAuth2Authorization.withRegisteredClient(registeredClient)
+			.id(var6.getId())
+			.accessToken(var6.getAccessToken().getToken())
+			.authorizationGrantType(var6.getAuthorizationGrantType())
+			.authorizedScopes(var6.getAuthorizedScopes())
+			.principalName(var6.getPrincipalName())
+			.refreshToken(var6.getRefreshToken().getToken())
+			.attribute("redirectUri", var6.getAttribute("redirectUri"));
+		return builder.build();
 	}
 
-	public final void setAuthorizationRowMapper(RowMapper<OAuth2Authorization> authorizationRowMapper) {
-		Assert.notNull(authorizationRowMapper, "authorizationRowMapper cannot be null");
-		this.authorizationRowMapper = authorizationRowMapper;
-	}
+	// public final void setAuthorizationRowMapper(RowMapper<OAuth2Authorization> authorizationRowMapper) {
+	// 	Assert.notNull(authorizationRowMapper, "authorizationRowMapper cannot be null");
+	// 	this.authorizationRowMapper = authorizationRowMapper;
+	// }
 
-	public final void setAuthorizationParametersMapper(Function<OAuth2Authorization, List<SqlParameterValue>> authorizationParametersMapper) {
-		Assert.notNull(authorizationParametersMapper, "authorizationParametersMapper cannot be null");
-		this.authorizationParametersMapper = authorizationParametersMapper;
-	}
+	// public final void setAuthorizationParametersMapper(Function<OAuth2Authorization, List<SqlParameterValue>> authorizationParametersMapper) {
+	// 	Assert.notNull(authorizationParametersMapper, "authorizationParametersMapper cannot be null");
+	// 	this.authorizationParametersMapper = authorizationParametersMapper;
+	// }
 
 	protected final JdbcOperations getJdbcOperations() {
 		return this.jdbcOperations;

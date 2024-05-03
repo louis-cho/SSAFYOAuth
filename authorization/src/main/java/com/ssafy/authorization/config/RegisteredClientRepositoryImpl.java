@@ -30,7 +30,6 @@ public class RegisteredClientRepositoryImpl implements RegisteredClientRepositor
 	public void save(RegisteredClient registeredClient) {
 		Assert.notNull(registeredClient, "registered client cannot be null");
 		DeveloperTeamEntity e = new DeveloperTeamEntity();
-		e.setSeq(Integer.parseInt(registeredClient.getId()));
 		e.setTeamName(registeredClient.getClientId());
 		e.setServiceName(registeredClient.getClientName());
 		e.setServiceKey(registeredClient.getClientSecret());
