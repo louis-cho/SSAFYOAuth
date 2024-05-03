@@ -19,11 +19,6 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
-    private final UserService userService;
-
-    public CustomOAuth2UserService(UserService userService) {
-        this.userService = userService;
-    }
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -31,7 +26,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         OAuth2User oAuth2User = super.loadUser(userRequest);
         log.info("oAuth2User = " + oAuth2User);
         log.info("oAuth2User.getAttributes() = " + oAuth2User.getAttributes());
-        
+        log.info("{} token", userRequest.getAccessToken().getTokenValue());
+
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
         log.info("registrationId = " + registrationId);
 
@@ -57,9 +53,11 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         //리소스 서버에서 발급 받은 정보로 사용자를 특정할 아이디값을 만듬
         String username = oAuth2Response.getProvider()+" "+oAuth2Response.getProviderId();
         UserDTO userDTO = new UserDTO();
-        userDTO.setUsername("client");
-        userDTO.setName("client");
-        userDTO.setRole("ROLE_USER");
+        userDTO.setUsername((String) oAuth2User.getAttributes().get("email"));
+        log.info("ttt {}", oAuth2User.getAttributes().get("email"));
+        userDTO.setName(oAuth2User.getName());
+        log.info("ttt {} , ", oAuth2User.getName());
+        userDTO.setRole("USER_ROLE");
         return new CustomOAuth2User(userDTO);
         // UserEntity existData = userRepository.findByUsername(username);
         //

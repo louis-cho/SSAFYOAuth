@@ -12,20 +12,21 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
+import com.ssafy.authorization.member.model.service.MemberService;
+
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class EmailService {
 
-	@Autowired
-	private JavaMailSender emailSender;
+	private final JavaMailSender emailSender;
 
-	@Autowired
-	private SpringTemplateEngine templateEngine;
+	private final SpringTemplateEngine templateEngine;
 
-	@Autowired
-	private RedisTemplate<String, String> redisTemplate;
+	private final RedisTemplate<String, String> redisTemplate;
 
 	@Value("${spring.mail.username}")
 	private String emailSenderAddress;
@@ -56,5 +57,26 @@ public class EmailService {
 		String key = "AuthCode : " + userEmail;
 		String originCode = redisTemplate.opsForValue().get(key);
 		return userCode != null && userCode.equals(originCode);
+	}
+
+	public String sendTmpPassword(String userEmail) throws Exception {
+		String tmpPassword = UUID.randomUUID().toString().replaceAll("-", "").substring(0, 5);
+		tmpPassword +=  "@"+UUID.randomUUID().toString().replaceAll("-", "").substring(0, 5);
+		MimeMessage emailContent = emailSender.createMimeMessage();
+		MimeMessageHelper helper;
+
+		helper = new MimeMessageHelper(emailContent, true);
+		helper.setSubject("SSAFYAuth 임시 비밀번호 안내");
+		helper.setFrom(new InternetAddress(emailSenderAddress, "SSAFYAuth", "UTF-8"));
+		helper.setTo(userEmail);
+
+		Context context = new Context();
+		context.setVariable("tmpPassword", tmpPassword);
+
+		String html = templateEngine.process("pages/tmpmail", context);
+		helper.setText(html, true);
+
+		emailSender.send(emailContent);
+		return tmpPassword;
 	}
 }

@@ -45,6 +45,6 @@ public class TestController {
 
 	@GetMapping("/forgot_password")
 	public String forgot_password(){
-		return "forgot_password";
+		return "reset_password";
 	}
 }
