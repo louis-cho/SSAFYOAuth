@@ -1,34 +1,37 @@
-package com.ssafy.resourceserver.team.entity;
+package com.ssafy.authorization.team.entity;
 
 import java.time.LocalDateTime;
 
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
+import org.hibernate.annotations.Immutable;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.IdClass;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "developer_team")
+@Table(name = "team_list")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class DeveloperTeamEntity {
+@IdClass(TeamListPK.class)
+@Immutable
+public class TeamListEntity {
 
 	@Id
 	@Column(name = "developer_team_seq", nullable = false)
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer seq;
+	private Integer teamSeq;
+
+	@Id
+	@Column(name = "member_seq", nullable = false)
+	private Integer memberSeq;
+
+	@Column(name = "is_accept", nullable = false)
+	private Boolean isAccept;
 
 	@Column(name = "team_name", nullable = false)
 	private String teamName;
@@ -36,26 +39,25 @@ public class DeveloperTeamEntity {
 	@Column(name = "service_key")
 	private String serviceKey;
 
-	@Column(name = "service_name", nullable = false)
+	@Column(name = "serviceName", nullable = false)
 	private String serviceName;
 
-	@Column(name = "service_image")
+	@Column(name = "serviceImage")
 	private String serviceImage;
 
+	@Column(name = "leader_member_seq")
+	private Integer leader;
+
 	@Column(name = "create_date", nullable = false)
-	@CreationTimestamp
 	private LocalDateTime createDate;
 
 	@Column(name = "delete_date")
 	private LocalDateTime deleteDate;
 
 	@Column(name = "modify_date")
-	@UpdateTimestamp
 	private LocalDateTime modifyDate;
 
-	@Column(name = "is_delete")
+	@Column(name = "is_delete", nullable = false)
 	private Boolean isDelete;
 
-	@Column(name = "leader_member_seq", nullable = false)
-	private Integer leader;
 }

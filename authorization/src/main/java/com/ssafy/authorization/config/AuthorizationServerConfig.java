@@ -5,17 +5,15 @@ import static org.springframework.security.config.Customizer.*;
 import java.util.List;
 import java.util.function.Function;
 
-import com.ssafy.authorization.member.login.filter.CustomAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.SqlParameterValue;
 import org.springframework.jdbc.support.lob.DefaultLobHandler;
 import org.springframework.jdbc.support.lob.LobHandler;
@@ -24,9 +22,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter;
-import org.springframework.security.oauth2.core.AuthorizationGrantType;
-import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
-import org.springframework.security.oauth2.core.oidc.OidcScopes;
 import org.springframework.security.oauth2.server.authorization.JdbcOAuth2AuthorizationConsentService;
 import org.springframework.security.oauth2.server.authorization.OAuth2Authorization;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationConsentService;
@@ -36,6 +31,8 @@ import org.springframework.security.oauth2.server.authorization.config.annotatio
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
+
+import com.ssafy.authorization.member.login.filter.CustomAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -133,58 +130,12 @@ public class AuthorizationServerConfig {
 		return new BCryptPasswordEncoder();
 	}
 
-	@Bean
-	RegisteredClientRepository jdbcRegisteredClientRepository(JdbcTemplate template) {
-		return new JdbcRegisteredClientRepository(template);
-	}
+	// @Bean
+	// RegisteredClientRepository jdbcRegisteredClientRepository(JdbcTemplate template) {
+	// 	return new JdbcRegisteredClientRepository(template);
+	// }
 
-	@Bean
-	OAuth2AuthorizationService jdbcOAuth2AuthorizationService(
-		JdbcOperations jdbcOperations,
-		RegisteredClientRepository registeredClientRepository) {
 
-		RegisteredClient registeredClient = RegisteredClient.withId(UUID.randomUUID().toString())
-			.clientId("1234")
-			.clientName("ssoauth")
-			.clientSecret(passwordEncoder().encode("secret"))
-			.clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
-			.clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_POST)
-			.authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-			.authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
-			.authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
-			.redirectUri(redirectBaseUrl+"/login/oauth2/code/client")
-			.postLogoutRedirectUri(redirectBaseUrl+"/logged-out")
-			.scope(OidcScopes.OPENID)
-			.scope(OidcScopes.PROFILE)
-			.scope("profile")
-			.scope("email")
-			.scope("image")
-			.scope("name")
-			.scope("gender")
-			.scope("phoneNumber")
-			.scope("studentId")
-			.clientSettings(ClientSettings.builder().requireAuthorizationConsent(true).build())
-			.build();
-
-		RegisteredClient deviceClient = RegisteredClient.withId(UUID.randomUUID().toString())
-			.clientId("device-1234")
-			.clientAuthenticationMethod(ClientAuthenticationMethod.NONE)
-			.authorizationGrantType(AuthorizationGrantType.DEVICE_CODE)
-			.authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
-			.scope("profile")
-			.scope("email")
-			.scope("image")
-			.scope("name")
-			.scope("gender")
-			.scope("phoneNumber")
-			.scope("studentId")
-			.build();
-
-		 // registeredClientRepository.save(registeredClient);
-		 // registeredClientRepository.save(deviceClient);
-
-		return new JdbcOAuth2AuthorizationService(jdbcOperations, registeredClientRepository);
-	}
 	// @Bean
 	// RegisteredClientRepository jdbcRegisteredClientRepository(JdbcTemplate template) {
 	// 	return new JdbcRegisteredClientRepository(template);

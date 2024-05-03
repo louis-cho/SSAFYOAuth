@@ -34,10 +34,9 @@ spring:
           client:
             provider: client
             client-id: 1234
-            client-secret: secret
+            client-secret: 1234
             authorization-grant-type: authorization_code
-            redirect-uri: "http://localhost:8080/login/oauth2/code/{registrationId}"
-            client-authentication-method: client_secret_post
+            redirect-uri: "http://localhost:8080/login/oauth2/code/1234"
             scope: email,image,name,gender,phoneNumber,studentId
             client-name: ssoauth
 

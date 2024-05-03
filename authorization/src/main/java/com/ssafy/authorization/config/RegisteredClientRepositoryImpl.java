@@ -10,6 +10,7 @@ import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
@@ -19,7 +20,7 @@ import com.ssafy.authorization.team.repository.DeveloperTeamRepository;
 
 import lombok.RequiredArgsConstructor;
 
-@Service
+@Repository
 @RequiredArgsConstructor
 public class RegisteredClientRepositoryImpl implements RegisteredClientRepository {
 
@@ -76,14 +77,15 @@ public class RegisteredClientRepositoryImpl implements RegisteredClientRepositor
 	@Override
 	public RegisteredClient findByClientId(String clientId) {
 		Assert.hasText(clientId, "client id cannot be empty");
-		List<DeveloperTeamEntity> list = developerTeamRepository.findAllByTeamName(clientId);
+		DeveloperTeamEntity client = developerTeamRepository.findByTeamName(clientId);
+		if(client == null) return null;
+
 		String[] scope = {"email", "studentId", "name", "track", "phoneNumber", "gender", "image"};
-		List<RegisteredClient> registeredClients = list.stream().map(e -> {
-			RegisteredClient.Builder builder = RegisteredClient.withId(e.getSeq().toString())
-				.clientId(e.getTeamName().toString())
-				.clientIdIssuedAt(e.getCreateDate().toInstant(ZoneOffset.UTC))
-				.clientSecret(e.getServiceKey())
-				.clientName(e.getServiceName())
+		RegisteredClient registeredClient = RegisteredClient.withId(client.getSeq().toString())
+				.clientId(client.getTeamName().toString())
+				.clientIdIssuedAt(client.getCreateDate().toInstant(ZoneOffset.UTC))
+				.clientSecret(client.getServiceKey())
+				.clientName(client.getServiceName())
 				.clientAuthenticationMethods(clientAuthenticationMethods -> {
 					clientAuthenticationMethods.add(ClientAuthenticationMethod.CLIENT_SECRET_BASIC);
 					clientAuthenticationMethods.add(ClientAuthenticationMethod.CLIENT_SECRET_POST);
@@ -99,15 +101,15 @@ public class RegisteredClientRepositoryImpl implements RegisteredClientRepositor
 					grantTypes.add(AuthorizationGrantType.REFRESH_TOKEN);
 				})
 				.redirectUris(uris -> {
-					redirectEntityRepository.findAllByTeamId(e.getSeq()).forEach(uri -> {
+					redirectEntityRepository.findAllByTeamId(client.getSeq()).forEach(uri -> {
 						uris.add(uri.getRedirect());
 					});
 				})
 				.scopes(scopes ->{
 					Arrays.stream(scope).toList().forEach(s -> {scopes.add(s);});
-				});
-			return builder.build();
-		}).collect(Collectors.toList());
-		return registeredClients.isEmpty() ? null : registeredClients.get(0);
+				}).build();
+
+
+		return registeredClient;
 	}
 }
