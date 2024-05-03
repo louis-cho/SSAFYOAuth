@@ -21,13 +21,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
 public class LoginQueueManager implements Runnable {
-    private final LinkedList<PriorityQueueNode>[] procs;
+    private final ConcurrentLinkedQueue<PriorityQueueNode>[] procs;
     private final ConcurrentHashMap<Integer, PriorityQueueNode> teamNodes;
     private ConcurrentHashMap<Integer, AtomicInteger> teamTpsMap;
 
@@ -40,13 +41,13 @@ public class LoginQueueManager implements Runnable {
     @Autowired
     public LoginQueueManager(@Lazy LoginController loginController) {
 
-        this.procs = new LinkedList[NUM_PRIORITIES];
+        this.procs = (ConcurrentLinkedQueue<PriorityQueueNode>[]) new ConcurrentLinkedQueue[NUM_PRIORITIES];
         this.teamNodes = new ConcurrentHashMap<>();
         this.teamTpsMap = new ConcurrentHashMap<>();
         this.queueSize = new AtomicInteger(0);
         // 우선 순위에 따라 큐를 초기화합니다.
         for (int i = 0; i < NUM_PRIORITIES; i++) {
-            this.procs[i] = new LinkedList<>();
+            this.procs[i] = new ConcurrentLinkedQueue<>();
         }
 
         this.loginController = loginController;
@@ -65,7 +66,7 @@ public class LoginQueueManager implements Runnable {
                     // 우선순위 변경 로직 (예: 우선순위 감소)
                     if(node.getRequests().size() > 0) {
                         int newPriority = getCurrentPriority(node.getTeamId());
-                        procs[newPriority].addLast(node);
+                        procs[newPriority].add(node);
                     }
 
                     return request;
@@ -89,7 +90,7 @@ public class LoginQueueManager implements Runnable {
             PriorityQueueNode node = teamNodes.computeIfAbsent(teamId, k -> new PriorityQueueNode(teamId));
 
             int currentPriority = getCurrentPriority(teamId);
-            procs[currentPriority].addLast(node);
+            procs[currentPriority].add(node);
 
             node.getRequests().add(request);
 
@@ -118,40 +119,28 @@ public class LoginQueueManager implements Runnable {
     @Scheduled(fixedRate = 5000)
     private void schedulePriorityRestoration() {
         LocalDateTime current = LocalDateTime.now();
-
         AtomicInteger qSize = new AtomicInteger();
 
-            for (LinkedList<PriorityQueueNode> queue : procs) {
-                    for (PriorityQueueNode node : queue) {
-                        qSize.addAndGet(node.getRequests().size());
-                        if (node.getLastAccessTime() != null && node.getLastAccessTime().plusSeconds(10).isBefore(current)) {
-                            restorePriority(node);
-
-                    }
-
+        for (ConcurrentLinkedQueue<PriorityQueueNode> queue : procs) {
+            Iterator<PriorityQueueNode> iterator = queue.iterator();
+            while (iterator.hasNext()) {
+                PriorityQueueNode node = iterator.next();
+                qSize.addAndGet(node.getRequests().size());
+                if (node.getLastAccessTime() != null && node.getLastAccessTime().plusSeconds(10).isBefore(current)) {
+                    restorePriority(node, iterator); // restorePriority에 iterator를 전달하여 제거 수행
+                }
             }
         }
         queueSize = qSize;
     }
 
-    private void restorePriority(PriorityQueueNode node) {
+    private void restorePriority(PriorityQueueNode node, Iterator<PriorityQueueNode> iterator) {
         int currentPriority = getCurrentPriority(node.getTeamId());
-
-        int newPriority = Math.max(0, currentPriority / 10); // 우선순위를 낮춤
+        int newPriority = Math.max(0, currentPriority / 10);
         teamTpsMap.get(node.getTeamId()).set(newPriority);
-        // 현재 우선순위 큐에서 해당 노드를 제거
-            for (LinkedList<PriorityQueueNode> queue : procs) {
-                    if (queue.contains(node)) {
-                        queue.remove(node);
-                        break;
-                    }
 
-
-        }
-
-        // 새로운 우선순위 큐에 노드를 삽입
-            procs[newPriority].addLast(node);
-
+        iterator.remove(); // 안전하게 현재 요소를 제거
+        procs[newPriority].add(node); // 새 우선순위에 노드를 추가
     }
 
     @Override
