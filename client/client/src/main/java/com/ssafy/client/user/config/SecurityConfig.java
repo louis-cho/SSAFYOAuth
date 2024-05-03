@@ -60,6 +60,10 @@ public class SecurityConfig {
         http
                 .httpBasic((auth) -> auth.disable());
 
+        // //JWTFilter 추가
+        http
+                .addFilterBefore(new JWTFilter(jwtUtil, jwtService), UsernamePasswordAuthenticationFilter.class);
+
 
         http.logout((logout) -> logout
                 .logoutUrl("/logout")
@@ -76,6 +80,7 @@ public class SecurityConfig {
 
         //oauth2
         http
+
                 .oauth2Login((oauth2) -> oauth2
                         .userInfoEndpoint((userInfoEndpointConfig) -> userInfoEndpointConfig
                                 .userService(customOAuth2UserService))
@@ -90,7 +95,7 @@ public class SecurityConfig {
                         // .requestMatchers("/nft/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_USER")
                         // .requestMatchers("/users/name").permitAll()
                         // .requestMatchers("/users").hasAnyAuthority("ROLE_ADMIN", "ROLE_USER")
-                        .requestMatchers("/css/**", "/favicon.ico", "/error", "/image/**", "/vendor/**","users/**","/**").permitAll()
+                        .requestMatchers("/css/**", "/favicon.ico", "/error", "/image/**", "/vendor/**","users/**").permitAll()
                         .anyRequest().authenticated());
 
         //세션 설정 : STATELESS

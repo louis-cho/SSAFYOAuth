@@ -37,7 +37,7 @@
                 <div th:if="${param.error}" class="alert alert-danger" role="alert">
                   로그인에 실패했습니다. 다시 시도해주세요.
                 </div>
-                <form class="user" th:action="@{/login}" method="post">
+                <form class="user" th:action="@{/login}" method="post" onsubmit="sendWaitSignal(event)">
                   <div class="form-group">
                     <input
                             type="email"
@@ -55,6 +55,13 @@
                             class="form-control form-control-user"
                             id="exampleInputPassword"
                             placeholder="비밀번호"
+                    />
+                  </div>
+                  <div class="form-group">
+                    <input
+                            type="hidden"
+                            name="teamId"
+                            value="1"
                     />
                   </div>
                   <div class="form-group">
@@ -93,6 +100,76 @@
   </div>
 </div>
 
-<!-- Scripts omitted for brevity -->
+<script>
+  // /waitSignal 엔드포인트로 요청을 보내는 함수
+  function sendWaitSignal(event) {
+      event.preventDefault();
+
+      var username = document.getElementById('username').value;
+      var teamId = document.getElementsByName('teamId')[0].value;
+
+      fetch('/api/auth/waitSignal', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+              username: username,
+              teamId: teamId
+          })
+      })
+      .then(response => {
+          if (response.ok) {
+              return response.text();
+          } else {
+              throw new Error('Failed to send wait signal');
+          }
+      })
+      .then(data => {
+          console.log(data);
+          // "Wait successful" 메시지를 받은 후에 로그인 요청을 보냅니다.
+          sendLoginRequest();
+      })
+      .catch(error => {
+          console.error('Error:', error);
+      });
+  }
+
+function sendLoginRequest() {
+    var form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '/login'; // 이 경로는 서버 설정에 따라 OAuth 로그인을 처리하는 실제 경로로 수정되어야 합니다.
+
+    appendInput(form, 'username', document.getElementById('username').value);
+    appendInput(form, 'password', document.getElementById('exampleInputPassword').value);
+
+    // CSRF 토큰 처리
+    var csrfToken = document.querySelector('input[name="_csrf"]');
+    if (csrfToken) {
+        appendInput(form, '_csrf', csrfToken.value);
+    }
+
+    document.body.appendChild(form);
+
+    console.log(document.getElementById('username').value);
+    console.log(document.getElementById('exampleInputPassword').value);
+    console.log(form);
+    setTimeout(function(){
+        console.log("Hello World");
+    }, 20000);
+    form.submit();
+}
+
+function appendInput(form, name, value) {
+    var input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = name;
+    input.value = value;
+    form.appendChild(input);
+}
+
+</script>
+
+
 </body>
 </html>

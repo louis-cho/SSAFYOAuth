@@ -80,7 +80,7 @@ public class TeamController {
 	@PatchMapping("/{team-seq}")
 	@ResponseBody
 	public Map ServiceNameUpdate(@PathVariable("team-seq") Integer teamSeq,
-                                 @RequestBody @Valid ServiceNameUpdateVo vo, Authentication authentication) {
+		@RequestBody @Valid ServiceNameUpdateVo vo, Authentication authentication) {
 		Map data = teamService.updateServiceName(teamSeq, vo, authentication);
 		return data;
 	}

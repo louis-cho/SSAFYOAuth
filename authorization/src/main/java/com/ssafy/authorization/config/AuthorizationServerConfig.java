@@ -5,9 +5,12 @@ import static org.springframework.security.config.Customizer.*;
 import java.util.Arrays;
 import java.util.UUID;
 
+import com.ssafy.authorization.member.login.filter.CustomAuthenticationFilter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcOperations;
@@ -16,6 +19,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.core.oidc.OidcScopes;
@@ -32,14 +36,17 @@ import org.springframework.security.oauth2.server.authorization.settings.ClientS
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.CorsUtils;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
 public class AuthorizationServerConfig {
+
+	private final RedisTemplate<String, String> redisTemplate;
+
+	@Autowired
+	public AuthorizationServerConfig(RedisTemplate<String, String> redisTemplate) {
+		this.redisTemplate = redisTemplate;
+	}
 
 //	@Bean
 //	public CorsConfigurationSource corsConfigurationSource() {
@@ -55,34 +62,37 @@ public class AuthorizationServerConfig {
 	@Bean
 	@Order(1)
 	SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http)
-		throws Exception {
+			throws Exception {
 		OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
 		http.getConfigurer(OAuth2AuthorizationServerConfigurer.class)
-			.authorizationEndpoint(auth -> auth
-				.consentPage("/oauth2/consent"));
+				.authorizationEndpoint(auth -> auth
+						.consentPage("/oauth2/consent"));
 		//				.oidc(withDefaults());
 		http
-			.exceptionHandling((exceptions) -> exceptions
-				.defaultAuthenticationEntryPointFor(
-					new LoginUrlAuthenticationEntryPoint("/login"),
-					new MediaTypeRequestMatcher(MediaType.TEXT_HTML)
+
+				.addFilterBefore(new CustomAuthenticationFilter(redisTemplate), OAuth2AuthorizationRequestRedirectFilter.class)
+				.exceptionHandling((exceptions) -> exceptions
+						.defaultAuthenticationEntryPointFor(
+								new LoginUrlAuthenticationEntryPoint("/login"),
+								new MediaTypeRequestMatcher(MediaType.TEXT_HTML)
+						)
 				)
-			)
-			.oauth2ResourceServer((resourceServer) -> resourceServer
-				.jwt(withDefaults()));
+				.oauth2ResourceServer((resourceServer) -> resourceServer
+						.jwt(withDefaults()));
 
 		return http.build();
 	}
 
 
-	 @Bean
+
+	@Bean
 	 @Order(2)
 	 SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http)
 	 		throws Exception {
 	 	http.csrf(csrf -> csrf.disable());
 	 	http
 	 			.authorizeHttpRequests((authorize) -> authorize
-	 					.requestMatchers("/css/**", "/favicon.ico", "/error","/image/**","/vendor/**",
+	 					.requestMatchers("/api/auth/waitSignal", "/css/**", "/favicon.ico", "/error","/image/**","/vendor/**",
 	 						"/test/**","/login","/signup", "/sendemail","/certify","/forgot_password","/forgot_user","/find_user"
 	 						,".well-known/jwks.json").permitAll()
 	 					.anyRequest().authenticated()
@@ -114,7 +124,7 @@ public class AuthorizationServerConfig {
 		// 		 );
 	 // 	return http.build();
 	 // }
-
+	
 	@Bean
 	PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();

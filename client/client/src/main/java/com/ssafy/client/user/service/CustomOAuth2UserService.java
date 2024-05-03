@@ -23,6 +23,11 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
+    private final UserService userService;
+
+    public CustomOAuth2UserService(UserService userService) {
+        this.userService = userService;
+    }
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {

@@ -1,5 +1,7 @@
 package com.ssafy.authorization.member.login.controller;
 
+import org.joda.time.DateTime;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -14,8 +16,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @RestController("LoginController")
@@ -23,20 +27,25 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class LoginController {
 
     private final LoginService loginService;
-    private final Map<Integer, SseEmitter> userEmitters;
+    private final Map<String, SseEmitter> userEmitters;
+
+    private final Map<String, LocalDateTime> loginRequest;
+
+    private RedisTemplate<String, String> redisTemplate;
 
 
     @Autowired
-    LoginController(LoginService loginService) {
+    LoginController(LoginService loginService, RedisTemplate<String, String> redisTemplate) {
         this.loginService = loginService;
         this.userEmitters = new ConcurrentHashMap<>();
+        this.loginRequest = new ConcurrentHashMap<>();
+        this.redisTemplate = redisTemplate;
     }
 
-
-    @PostMapping("/login")
-    public SseEmitter addLoginRequest(@RequestBody LoginRequest request) {
-        final SseEmitter emitter = new SseEmitter(Long.MAX_VALUE); // 긴 연결 시간 설정
-        userEmitters.put(request.getUserId(), emitter);
+    @PostMapping("/waitSignal")
+    public SseEmitter waitSignal(@RequestBody LoginRequest request) {
+        final SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
+        userEmitters.put(request.toString(), emitter);
 
         try {
             emitter.send(SseEmitter.event().name("STATUS").data("Request received"));
@@ -51,21 +60,44 @@ public class LoginController {
             emitter.completeWithError(e);
         }
 
-        emitter.onCompletion(() -> userEmitters.remove(request.getUserId()));
-        emitter.onTimeout(() -> userEmitters.remove(request.getUserId()));
+        emitter.onCompletion(() -> userEmitters.remove(request.toString()));
+        emitter.onTimeout(() -> userEmitters.remove(request.toString()));
 
         return emitter;
     }
+//    @PostMapping("/login")
+//    public SseEmitter addLoginRequest(@RequestBody LoginRequest request) {
+//        final SseEmitter emitter = new SseEmitter(Long.MAX_VALUE); // 긴 연결 시간 설정
+//        userEmitters.put(request.getUserId(), emitter);
+//
+//        try {
+//            emitter.send(SseEmitter.event().name("STATUS").data("Request received"));
+//            boolean enqueued = loginService.getLoginQueueManager().enqueue(request);
+//            if (enqueued) {
+//                emitter.send(SseEmitter.event().name("STATUS").data("Request enqueued"));
+//            } else {
+//                emitter.send(SseEmitter.event().name("STATUS").data("Queue is full"));
+//                emitter.complete();
+//            }
+//        } catch (IOException e) {
+//            emitter.completeWithError(e);
+//        }
+//
+//        emitter.onCompletion(() -> userEmitters.remove(request.getUserId()));
+//        emitter.onTimeout(() -> userEmitters.remove(request.getUserId()));
+//
+//        return emitter;
+//    }
 
-    public void notifyLoginResult(LoginRequest request, boolean success) {
-        SseEmitter emitter = userEmitters.get(request.getUserId());
+    public void notifyLoginResult(LoginRequest request) {
+        String key = request.toString();
+        redisTemplate.opsForValue().set(request.toString(), LocalDateTime.now().toString());
+        redisTemplate.expire(key, 300, TimeUnit.SECONDS);
+
+        SseEmitter emitter = userEmitters.get(request.toString());
         if (emitter != null) {
             try {
-                if (success) {
-                    emitter.send(SseEmitter.event().name("LOGIN_RESULT").data("Login successful"));
-                } else {
-                    emitter.send(SseEmitter.event().name("LOGIN_RESULT").data("Login failed"));
-                }
+                emitter.send(SseEmitter.event().name("WAIT_RESULT").data("Wait successful"));
                 emitter.complete();
             } catch (IOException e) {
                 emitter.completeWithError(e);

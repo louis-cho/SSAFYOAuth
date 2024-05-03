@@ -13,21 +13,25 @@ public class SsafyResponse  implements OAuth2Response {
 
 	@Override
 	public String getProvider() {
+
 		return "client";
 	}
 
 	@Override
 	public String getProviderId() {
-		return "client";
+
+		return attribute.get("email").toString();
 	}
 
 	@Override
 	public String getEmail() {
+
 		return attribute.get("email").toString();
 	}
 
 	@Override
 	public String getName() {
+
 		return attribute.get("name").toString();
 	}
 }

@@ -1,6 +1,5 @@
 package com.ssafy.authorization.config;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CachingConfigurer;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
@@ -14,7 +13,6 @@ import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
-import org.springframework.data.redis.serializer.GenericToStringSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
@@ -36,6 +34,7 @@ public class RedisConfig implements CachingConfigurer {
 		redisTemplate.setValueSerializer(new GenericToStringSerializer<>(Integer.class)); // 수정된 부분
 		return redisTemplate;
 	}
+
 	@Bean
 	public RedisConnectionFactory redisConnectionFactory() {
 		RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();

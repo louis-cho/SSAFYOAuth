@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 
@@ -16,6 +18,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(value = { "authorities" })
+@ToString
 public class Member{
 	@Id
 	@Column(name = "member_seq")
@@ -64,7 +67,24 @@ public class Member{
 	private Boolean credentialsNonExpired;
 	private Boolean enabled;
 
+	public void changePassword(String newPassword) {
+		this.password = newPassword;
+	}
 
+	public void changeProfile(String imageUrl) {
+		this.image = imageUrl;
+	}
 
+	public void changePhoneNumber(String phoneNumber) {
+		this.phoneNumber = phoneNumber;
+	}
+
+	public void changeName(String name) {
+		this.name = name;
+	}
+
+	public void changeGrade(Integer grade) {
+		this.grade = grade;
+	}
 }
 
