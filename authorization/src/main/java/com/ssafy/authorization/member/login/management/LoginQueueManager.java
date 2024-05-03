@@ -148,16 +148,7 @@ public class LoginQueueManager implements Runnable {
         while(true) {
             // Queue size를 확인하여 요청이 있는 경우에만 로그인 처리
             if (this.getQueueSize().get() > 0) {
-                LoginRequest request = this.processLoginRequest();
-                if (request != null) {
-                    System.out.println("Processed login request: " + request);
-                }
-            }
-            try {
-                Thread.sleep(1); // 큐가 비어있는 경우 CPU 사용을 줄이기 위해 대기
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt(); // 인터럽트 발생 시 스레드 인터럽트 상태를 복구
-                System.out.println("Thread interrupted: " + e.getMessage());
+                this.processLoginRequest();
             }
         }
     }
