@@ -2,40 +2,25 @@ package com.ssafy.authorization.config;
 
 import static org.springframework.security.config.Customizer.*;
 
-import java.util.Arrays;
-import java.util.UUID;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcOperations;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.lob.DefaultLobHandler;
+import org.springframework.jdbc.support.lob.LobHandler;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.core.AuthorizationGrantType;
-import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
-import org.springframework.security.oauth2.core.oidc.OidcScopes;
 import org.springframework.security.oauth2.server.authorization.JdbcOAuth2AuthorizationConsentService;
-import org.springframework.security.oauth2.server.authorization.JdbcOAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationConsentService;
-import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
-import org.springframework.security.oauth2.server.authorization.client.JdbcRegisteredClientRepository;
-import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
-import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
@@ -124,13 +109,13 @@ public class AuthorizationServerConfig {
 	// RegisteredClientRepository jdbcRegisteredClientRepository(JdbcTemplate template) {
 	// 	return new JdbcRegisteredClientRepository(template);
 	// }
-
+	//
 	// @Bean
 	// OAuth2AuthorizationService jdbcOAuth2AuthorizationService(
 	// 	JdbcOperations jdbcOperations,
 	// 	RegisteredClientRepository registeredClientRepository) {
 	//
-	// 	RegisteredClient registeredClient = registeredClientRepository.findById(id);
+	// 	// RegisteredClient registeredClient = registeredClientRepository.findById(id);
 	//
 	// 	RegisteredClient registeredClient = RegisteredClient.withId(UUID.randomUUID().toString())
 	// 		.clientId("client")
@@ -172,4 +157,8 @@ public class AuthorizationServerConfig {
 		return new JdbcOAuth2AuthorizationConsentService(jdbcOperations, registeredClientRepository);
 	}
 
+	@Bean
+	public LobHandler lobHandler() {
+		return new DefaultLobHandler();
+	}
 }
