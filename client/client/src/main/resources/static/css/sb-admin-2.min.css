@@ -7878,11 +7878,11 @@ a.bg-dark:focus, a.bg-dark:hover, button.bg-dark:focus, button.bg-dark:hover {
 }
 
 .m-5 {
-    /*margin: 3rem !important*/
+    margin: 3rem !important
 }
 
 .mt-5, .my-5 {
-    margin-top: 0rem !important
+    margin-top: 3rem !important
 }
 
 .mr-5, .mx-5 {
