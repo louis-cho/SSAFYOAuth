@@ -56,7 +56,6 @@ public class LoginQueueManager implements Runnable {
 
     public LoginRequest dequeue() {
 
-        synchronized (this.procs){
         for (int i = 0; i < NUM_PRIORITIES; i++) {
                 if (!procs[i].isEmpty()) {
                     PriorityQueueNode node = procs[i].poll();
@@ -71,7 +70,7 @@ public class LoginQueueManager implements Runnable {
 
                     return request;
                 }
-            }
+
         }
         return null;
     }
@@ -86,7 +85,6 @@ public class LoginQueueManager implements Runnable {
 
     public boolean enqueue(LoginRequest request) {
 
-        synchronized (this.procs) {
             int teamId = request.getTeamId();
             PriorityQueueNode node = teamNodes.computeIfAbsent(teamId, k -> new PriorityQueueNode(teamId));
 
@@ -99,7 +97,7 @@ public class LoginQueueManager implements Runnable {
             AtomicInteger tps = teamTpsMap.getOrDefault(teamId, new AtomicInteger(0));
             tps.incrementAndGet();
             teamTpsMap.put(teamId, tps);
-        }
+
         return true;
     }
 
@@ -125,11 +123,10 @@ public class LoginQueueManager implements Runnable {
 
             for (LinkedList<PriorityQueueNode> queue : procs) {
                     for (PriorityQueueNode node : queue) {
-                        synchronized (node) {
                         qSize.addAndGet(node.getRequests().size());
                         if (node.getLastAccessTime() != null && node.getLastAccessTime().plusSeconds(10).isBefore(current)) {
                             restorePriority(node);
-                        }
+
                     }
 
             }
@@ -144,19 +141,17 @@ public class LoginQueueManager implements Runnable {
         teamTpsMap.get(node.getTeamId()).set(newPriority);
         // 현재 우선순위 큐에서 해당 노드를 제거
             for (LinkedList<PriorityQueueNode> queue : procs) {
-                synchronized (queue) {
                     if (queue.contains(node)) {
                         queue.remove(node);
                         break;
                     }
-                }
+
 
         }
 
         // 새로운 우선순위 큐에 노드를 삽입
-        synchronized (this.procs[newPriority]) {
             procs[newPriority].addLast(node);
-        }
+
     }
 
     @Override
@@ -170,7 +165,7 @@ public class LoginQueueManager implements Runnable {
                 }
             }
             try {
-                Thread.sleep(100); // 큐가 비어있는 경우 CPU 사용을 줄이기 위해 대기
+                Thread.sleep(1); // 큐가 비어있는 경우 CPU 사용을 줄이기 위해 대기
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt(); // 인터럽트 발생 시 스레드 인터럽트 상태를 복구
                 System.out.println("Thread interrupted: " + e.getMessage());

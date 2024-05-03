@@ -17,5 +17,4 @@ public class LoginRequest {
         this.teamId = teamId;
     }
 
-    // getter 및 setter 메서드
 }
