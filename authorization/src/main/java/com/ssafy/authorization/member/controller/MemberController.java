@@ -1,14 +1,11 @@
 package com.ssafy.authorization.member.controller;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -24,6 +21,7 @@ import com.ssafy.authorization.member.model.domain.Member;
 import com.ssafy.authorization.member.model.dto.FindUserEmailDto;
 import com.ssafy.authorization.member.model.dto.ResetPasswordDto;
 import com.ssafy.authorization.member.model.dto.SignUpRequestDto;
+import com.ssafy.authorization.member.model.dto.UserEmailDto;
 import com.ssafy.authorization.member.model.service.CustomMemberManager;
 import com.ssafy.authorization.member.model.service.MemberService;
 
@@ -31,19 +29,6 @@ import jakarta.validation.Valid;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
-
-
 
 @Controller
 @Slf4j
@@ -104,9 +89,9 @@ public class MemberController {
 		return ResponseEntity.ok().body(response);
 	}
 
-	@GetMapping("/forgot_password")
-	public String forgotPassword() {
-		return "forgot_password";
+	@GetMapping("/reset_password")
+	public String resetPassword() {
+		return "reset_password";
 	}
 
 	//  @Valid 추가해야함
@@ -115,6 +100,29 @@ public class MemberController {
 		customMemberManager.changePassword(resetPasswordDto.getOldPassword(), resetPasswordDto.getNewPassword());
 		log.info("{} 비밀번호 바꾸기 성공4386731268579047945268754829624786584732958230475098243");
 		return "login";
+	}
+
+	@GetMapping("/forgot_password")
+	public String forgotPassword() {
+		return "forgot_password";
+	}
+
+	@PostMapping("/forgot_password")
+	public ResponseEntity<?> forgotPassword(@RequestBody UserEmailDto userEmailDto) {
+		String userEmail = userEmailDto.getUserEmail();
+		System.out.println(userEmail);
+		Map<String, Boolean> response = new HashMap<>();
+		if(customMemberManager.userExists(userEmail)) {
+			try {
+				emailService.sendTmpPassword(userEmail);
+				response.put("result", true);
+			} catch (Exception e) {
+				response.put("result", false);
+			}
+		} else { // 존재하지 않는 회원
+			response.put("result", false);
+		}
+		return ResponseEntity.ok().body(response);
 	}
 
 	@GetMapping("/forgot_user")
