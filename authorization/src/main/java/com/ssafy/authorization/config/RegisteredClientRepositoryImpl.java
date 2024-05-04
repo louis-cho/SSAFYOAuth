@@ -10,6 +10,7 @@ import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
+import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -43,7 +44,7 @@ public class RegisteredClientRepositoryImpl implements RegisteredClientRepositor
 		DeveloperTeamEntity client = developerTeamRepository.findBySeq(Integer.parseInt(id));
 		if(client == null) return null;
 		String[] scope = {"email", "studentId", "name", "track", "phoneNumber", "gender", "image"};
-		return  RegisteredClient.withId(client.getTeamName())
+		return  RegisteredClient.withId(id)
 				.clientId(client.getTeamName())
 				.clientIdIssuedAt(client.getCreateDate().toInstant(ZoneOffset.UTC))
 				.clientSecret(client.getServiceKey())
@@ -67,6 +68,10 @@ public class RegisteredClientRepositoryImpl implements RegisteredClientRepositor
 						uris.add(uri.getRedirect());
 					});
 				})
+				.clientSettings(ClientSettings.builder()
+						.requireAuthorizationConsent(true)
+						.requireProofKey(false)
+						.build())
 				.scopes(scopes ->{
 					Arrays.stream(scope).toList().forEach(s -> {scopes.add(s);});
 				}).build();
@@ -105,7 +110,12 @@ public class RegisteredClientRepositoryImpl implements RegisteredClientRepositor
 				})
 				.scopes(scopes ->{
 					Arrays.stream(scope).toList().forEach(s -> {scopes.add(s);});
-				}).build();
+				})
+				.clientSettings(ClientSettings.builder()
+						.requireAuthorizationConsent(true)
+						.requireProofKey(false)
+						.build())
+				.build();
 
 
 		return registeredClient;

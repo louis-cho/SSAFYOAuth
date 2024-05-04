@@ -233,7 +233,7 @@
   document.getElementById("emailVerificationBtn").addEventListener("click", function () {
     var userEmail = document.getElementById("exampleInputEmail").value; // 이메일 값 가져오기
     var xhr = new XMLHttpRequest(); // XMLHttpRequest 객체 생성
-    xhr.open("POST", "http://localhost:9000/sendemail", true); // POST 요청 준비
+    xhr.open("POST", "http://127.0.0.1:9000/sendemail", true); // POST 요청 준비
     xhr.setRequestHeader("Content-Type", "application/json"); // 요청 헤더 설정
     xhr.onreadystatechange = function () {
       if (xhr.readyState === 4 && xhr.status === 200) {
@@ -254,7 +254,7 @@
       "userCode": userCode
     }; // JSON 형식으로 이메일과 코드를 묶음
     var xhr = new XMLHttpRequest(); // XMLHttpRequest 객체 생성
-    xhr.open("POST", "http://localhost:9000/certify", true); // POST 요청 준비
+    xhr.open("POST", "http://127.0.0.1:9000/certify", true); // POST 요청 준비
     xhr.setRequestHeader("Content-Type", "application/json"); // 요청 헤더 설정
     xhr.onreadystatechange = function () {
       if (xhr.readyState === 4) {
@@ -317,7 +317,7 @@
 
             // AJAX를 사용하여 백엔드로 데이터 전송
             var xhr = new XMLHttpRequest();
-            xhr.open("POST", "http://localhost:9000/signup", true);
+            xhr.open("POST", "http://127.0.0.1:9000/signup", true);
             xhr.onreadystatechange = function () {
               if (xhr.readyState === 4 && xhr.status === 200) {
                 // 요청이 성공적으로 완료됨

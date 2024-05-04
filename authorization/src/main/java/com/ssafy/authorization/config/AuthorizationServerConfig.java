@@ -33,6 +33,7 @@ import org.springframework.security.web.authentication.LoginUrlAuthenticationEnt
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
 
 import com.ssafy.authorization.member.login.filter.CustomAuthenticationFilter;
+import org.springframework.web.cors.CorsUtils;
 
 @Configuration
 @EnableWebSecurity
@@ -48,17 +49,6 @@ public class AuthorizationServerConfig {
 		this.redisTemplate = redisTemplate;
 	}
 
-//	@Bean
-//	public CorsConfigurationSource corsConfigurationSource() {
-//		CorsConfiguration configuration = new CorsConfiguration();
-//		configuration.setAllowedOrigins(Arrays.asList("http://localhost:9000")); // 허용할 오리진
-//		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
-//		configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
-//
-//		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-//		source.registerCorsConfiguration("/**", configuration);
-//		return source;
-//	}
 	@Bean
 	@Order(1)
 	SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http)
@@ -90,6 +80,10 @@ public class AuthorizationServerConfig {
 	 SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http)
 	 		throws Exception {
 	 	http.csrf(csrf -> csrf.disable());
+
+		http
+				.authorizeHttpRequests((request) -> request.requestMatchers(CorsUtils::isPreFlightRequest).permitAll());
+
 	 	http
 	 			.authorizeHttpRequests((authorize) -> authorize
 	 					.requestMatchers("/api/auth/waitSignal", "/css/**", "/favicon.ico", "/error","/image/**","/vendor/**",
@@ -104,90 +98,11 @@ public class AuthorizationServerConfig {
 	 	return http.build();
 	 }
 
-	 // @Bean
-	 // @Order(2)
-	 // SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http)
-	 // 		throws Exception {
-		//  http
-		// 		 .csrf(httpSecurityCsrfConfigurer -> httpSecurityCsrfConfigurer.disable())
-		// 		 .authorizeHttpRequests(authorize -> authorize
-		// 				 .requestMatchers("/api/auth/login", "/login_test", "/css/**", "/favicon.ico", "/error", "/test/**", "/login", "/sign_up", ".well-known/jwks.json").permitAll()
-		// 				 .anyRequest().authenticated())
-		// 		 .formLogin(formLogin -> formLogin
-		// 				 .loginPage("/login_test")
-		// 				 .successHandler((request, response, authentication) -> {
-		// 					 System.out.println("Login success");
-		// 				 })
-		// 				 .failureHandler((request, response, exception) -> {
-		// 					 System.out.println("Login failed");
-		// 				 })
-		// 		 );
-	 // 	return http.build();
-	 // }
 	
 	@Bean
 	PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
-
-	// @Bean
-	// RegisteredClientRepository jdbcRegisteredClientRepository(JdbcTemplate template) {
-	// 	return new JdbcRegisteredClientRepository(template);
-	// }
-
-
-	// @Bean
-	// RegisteredClientRepository jdbcRegisteredClientRepository(JdbcTemplate template) {
-	// 	return new JdbcRegisteredClientRepository(template);
-	// }
-	//
-	// @Bean
-	// OAuth2AuthorizationService jdbcOAuth2AuthorizationService(
-	// 	JdbcOperations jdbcOperations,
-	// 	RegisteredClientRepository registeredClientRepository) {
-	//
-	// 	// RegisteredClient registeredClient = registeredClientRepository.findById(id);
-	//
-	// 	RegisteredClient registeredClient = RegisteredClient.withId(UUID.randomUUID().toString())
-	// 		.clientId("client")
-	// 		.clientName("client")
-	// 		.clientSecret(passwordEncoder().encode("secret"))
-	// 		.clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
-	// 		.clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_POST)
-	// 		.authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-	// 		.authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
-	// 		.authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
-	// 		.redirectUri("http://localhost:8080/login/oauth2/code/client")
-	// 		.postLogoutRedirectUri("http://localhost:8080/logged-out")
-	// 		.scope(OidcScopes.OPENID)
-	// 		.scope(OidcScopes.PROFILE)
-	// 		.scope("read")
-	// 		.scope("write")
-	// 		.clientSettings(ClientSettings.builder().requireAuthorizationConsent(true).build())
-	// 		.build();
-	//
-	// 	RegisteredClient deviceClient = RegisteredClient.withId(UUID.randomUUID().toString())
-	// 		.clientId("device-client")
-	// 		.clientAuthenticationMethod(ClientAuthenticationMethod.NONE)
-	// 		.authorizationGrantType(AuthorizationGrantType.DEVICE_CODE)
-	// 		.authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
-	// 		.scope("message.read")
-	// 		.scope("message.write")
-	// 		.build();
-	//
-	// 	//			 registeredClientRepository.save(registeredClient);
-	// 	//			 registeredClientRepository.save(deviceClient);
-	//
-	// 	return new JdbcOAuth2AuthorizationService(jdbcOperations, registeredClientRepository);
-	// }
-
-	@Bean
-	OAuth2AuthorizationConsentService jdbcOAuth2AuthorizationConsentService(
-		JdbcOperations jdbcOperations,
-		RegisteredClientRepository registeredClientRepository) {
-		return new JdbcOAuth2AuthorizationConsentService(jdbcOperations, registeredClientRepository);
-	}
-
 	@Bean
 	public LobHandler lobHandler() {
 		return new DefaultLobHandler();
@@ -202,4 +117,6 @@ public class AuthorizationServerConfig {
 	public Function<OAuth2Authorization, List<SqlParameterValue>> authorizationParametersMapper() {
 		return new TestOauth2ServiceImpl.OAuth2AuthorizationParametersMapper();
 	}
+
+
 }
