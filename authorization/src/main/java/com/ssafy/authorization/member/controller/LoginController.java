@@ -1,8 +1,11 @@
 package com.ssafy.authorization.member.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationConsent;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationConsentService;
+import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
+import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -17,13 +20,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Controller
+@RequiredArgsConstructor
 public class LoginController {
 
 	private final OAuth2AuthorizationConsentService authorizationConsentService;
-
-	public LoginController(OAuth2AuthorizationConsentService authorizationConsentService) {
-		this.authorizationConsentService = authorizationConsentService;
-	}
+	private final RegisteredClientRepository registeredClientRepository;
 
 	@GetMapping(value = "/login")
 	public String login() {
@@ -44,10 +45,10 @@ public class LoginController {
 			@RequestParam(OAuth2ParameterNames.CLIENT_ID) String clientId,
 			@RequestParam(OAuth2ParameterNames.STATE) String state
 	) {
-
 		Set<String> scopesToApprove = new HashSet<>();
 		Set<String> previouslyApprovedScopes = new HashSet<>();
-		OAuth2AuthorizationConsent previousConsent = this.authorizationConsentService.findById(clientId, principal.getName());
+		RegisteredClient client = registeredClientRepository.findByClientId(clientId);
+		OAuth2AuthorizationConsent previousConsent = this.authorizationConsentService.findById(client.getId(), principal.getName());
 		for (String scopeFromRequest : StringUtils.delimitedListToStringArray(scope, " ")) {
 			if (previousConsent != null && previousConsent.getScopes().contains(scopeFromRequest)) {
 				previouslyApprovedScopes.add(scopeFromRequest);

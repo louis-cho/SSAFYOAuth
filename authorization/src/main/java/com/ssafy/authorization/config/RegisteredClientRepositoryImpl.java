@@ -68,10 +68,6 @@ public class RegisteredClientRepositoryImpl implements RegisteredClientRepositor
 						uris.add(uri.getRedirect());
 					});
 				})
-				.clientSettings(ClientSettings.builder()
-						.requireAuthorizationConsent(true)
-						.requireProofKey(false)
-						.build())
 				.scopes(scopes ->{
 					Arrays.stream(scope).toList().forEach(s -> {scopes.add(s);});
 				}).build();
@@ -94,7 +90,6 @@ public class RegisteredClientRepositoryImpl implements RegisteredClientRepositor
 					clientAuthenticationMethods.add(ClientAuthenticationMethod.CLIENT_SECRET_POST);
 					clientAuthenticationMethods.add(ClientAuthenticationMethod.CLIENT_SECRET_JWT);
 					clientAuthenticationMethods.add(ClientAuthenticationMethod.PRIVATE_KEY_JWT);
-					clientAuthenticationMethods.add(ClientAuthenticationMethod.NONE);
 				})
 				.authorizationGrantTypes(grantTypes -> {
 					grantTypes.add(AuthorizationGrantType.AUTHORIZATION_CODE);
@@ -108,12 +103,14 @@ public class RegisteredClientRepositoryImpl implements RegisteredClientRepositor
 						uris.add(uri.getRedirect());
 					});
 				})
-				.scopes(scopes ->{
-					Arrays.stream(scope).toList().forEach(s -> {scopes.add(s);});
+				.scopes(scopes -> {
+					Arrays.stream(scope).toList().forEach(s -> {
+								scopes.add(s);
+							}
+					);
 				})
 				.clientSettings(ClientSettings.builder()
 						.requireAuthorizationConsent(true)
-						.requireProofKey(false)
 						.build())
 				.build();
 

@@ -29,9 +29,6 @@ public class JpaOAuth2AuthorizationConsentService implements OAuth2Authorization
     @Override
     public void save(OAuth2AuthorizationConsent authorizationConsent) {
         Assert.notNull(authorizationConsent, "authorizationConsent cannot be null");
-        if (findById(authorizationConsent.getRegisteredClientId(), authorizationConsent.getPrincipalName()) != null) {
-            return;
-        }
         this.authorizationConsentRepository.save(toEntity(authorizationConsent));
     }
 
