@@ -62,11 +62,7 @@ public class SecurityConfig {
             http
                     .httpBasic((auth) -> auth.disable());
 
-            // //JWTFilter 추가
-            // http
-            //         .addFilterBefore(new JWTFilter(jwtUtil, jwtService), UsernamePasswordAuthenticationFilter.class);
-
-
+            http.addFilterBefore(new TokenExpirationFilter(), UsernamePasswordAuthenticationFilter.class);
             http.logout((logout) -> logout
                     .logoutUrl("/logout")
                     .logoutSuccessUrl("https://localhost:8080")
@@ -88,22 +84,18 @@ public class SecurityConfig {
                                     .userService(customOAuth2UserService))
                             .successHandler(customSuccessHandler)
                             .failureHandler(customOAuth2FailHandler)
-                           // .authorizationEndpoint(e -> e.authorizationRequestRepository(oAuth2AuthorizationRequestRepository()))
                     );
 
             //경로별 인가 작업
             http
                     .authorizeHttpRequests((auth) -> auth
-                            // .requestMatchers("/nft/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_USER")
-                            // .requestMatchers("/users/name").permitAll()
-                            // .requestMatchers("/users").hasAnyAuthority("ROLE_ADMIN", "ROLE_USER")
-                            .requestMatchers("/css/**", "/favicon.ico", "/error", "/image/**", "/vendor/**","users/**","/**").permitAll()
+                            .requestMatchers("/css/**", "/favicon.ico", "/error", "/image/**", "/vendor/**","users/**").permitAll()
                             .anyRequest().authenticated());
 
             //세션 설정 : STATELESS
             http
                     .sessionManagement((session) -> session
-                            .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                            .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED));
 
             http
                     .cors(corsCustomizer -> corsCustomizer.configurationSource(new CorsConfigurationSource() {
@@ -131,26 +123,21 @@ public class SecurityConfig {
 
             return http.build();
         }
-    // @Bean
-    // OAuth2AuthorizedClientManager authorizedClientManager(
-    //         ClientRegistrationRepository clientRegistrationRepository,
-    //         OAuth2AuthorizedClientRepository authorizedClientRepository) {
-    //
-    //     OAuth2AuthorizedClientProvider authorizedClientProvider =
-    //             OAuth2AuthorizedClientProviderBuilder.builder()
-    //                     .authorizationCode()
-    //                     .refreshToken()
-    //                     .build();
-    //     DefaultOAuth2AuthorizedClientManager authorizedClientManager = new DefaultOAuth2AuthorizedClientManager(
-    //             clientRegistrationRepository, authorizedClientRepository);
-    //     authorizedClientManager.setAuthorizedClientProvider(authorizedClientProvider);
-    //
-    //     return authorizedClientManager;
-    // }
-    // @Bean
-    // HttpCookieOAuth2AuthorizationRequestRepository oAuth2AuthorizationRequestRepository() {
-    //     return new HttpCookieOAuth2AuthorizationRequestRepository();
-    // }
 
+    @Bean
+    public OAuth2AuthorizedClientManager authorizedClientManager(
+            ClientRegistrationRepository clientRegistrationRepository,
+            OAuth2AuthorizedClientRepository authorizedClientRepository) {
 
+        OAuth2AuthorizedClientProvider authorizedClientProvider = OAuth2AuthorizedClientProviderBuilder.builder()
+                .authorizationCode()
+                .refreshToken()
+                .build();
+
+        DefaultOAuth2AuthorizedClientManager authorizedClientManager = new DefaultOAuth2AuthorizedClientManager(
+                clientRegistrationRepository, authorizedClientRepository);
+        authorizedClientManager.setAuthorizedClientProvider(authorizedClientProvider);
+
+        return authorizedClientManager;
+    }
 }

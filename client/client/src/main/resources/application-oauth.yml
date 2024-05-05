@@ -31,18 +31,18 @@ spring:
             authorization-grant-type: authorization_code
             scope: profile,email
 
-          client:
-            provider: client
+          ssafyOAuth:
+            provider: ssafyOAuth
             client-id: 1234
             client-secret: 1234
             authorization-grant-type: authorization_code
             redirect-uri: "http://localhost:8080/login/oauth2/code/1234"
-            scope: email,image,name,gender,phoneNumber,studentId
-            client-name: ssoauth
+            scope: email,image
+            client-name: ssafyOAuth
 
 
         provider:
-          client:
+          ssafyOAuth:
             authorization-uri: http://127.0.0.1:9000/oauth2/authorize
             token-uri: http://127.0.0.1:9000/oauth2/token
             user-info-uri: http://127.0.0.1:8090/user/info
