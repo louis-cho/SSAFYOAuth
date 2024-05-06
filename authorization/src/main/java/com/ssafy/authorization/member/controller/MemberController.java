@@ -59,6 +59,12 @@ public class MemberController {
 	// 	return "index";
 	// }
 
+	// @GetMapping("/")
+	// public String getMyTeamList(Model model, Authentication authentication) {
+	//
+	// 	return "index";
+	// }
+
 	@GetMapping("/signup")
 	public String signUp() {
 		log.debug("signup 실행됨");
@@ -66,19 +72,11 @@ public class MemberController {
 	}
 
 	@PostMapping("/signup")
-	public String sign_Up(@ModelAttribute @Valid SignUpRequestDto signUpRequestDto, BindingResult result, Model model) {
-		if (result.hasErrors()) {
-			// 필드별 에러를 모델에 추가
-			Map<String, String> fieldErrors = new HashMap<>();
-			for (FieldError error : result.getFieldErrors()) {
-				fieldErrors.put(error.getField(), error.getDefaultMessage());
-				log.debug("field : {}, msg : {}", error.getField(), error.getDefaultMessage());
-			};
-			model.addAttribute("fieldErrors", fieldErrors);
-			return "signup";
-		}
-		memberService.save(Member.create(signUpRequestDto), signUpRequestDto);
-		return "login";
+	public ResponseEntity<?> sign_Up(@ModelAttribute @Valid SignUpRequestDto signUpRequestDto, BindingResult result, Model model) {
+		System.out.println(2312123);
+		System.out.println(signUpRequestDto);
+		Map<String, Boolean> response = memberService.save(Member.create(signUpRequestDto), signUpRequestDto);
+		return ResponseEntity.ok().body(response);
 	}
 
 	@PostMapping("/sendemail")

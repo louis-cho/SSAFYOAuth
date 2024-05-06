@@ -55,7 +55,15 @@ public class EmailService {
 	public boolean certify(String userEmail, String userCode) {
 		String key = "AuthCode : " + userEmail;
 		String originCode = redisTemplate.opsForValue().get(key);
-		return userCode != null && userCode.equals(originCode);
+		// 레디스에 있는지 확인후 해야함...
+		if (userCode != null && userCode.equals(originCode)) {
+			redisTemplate.delete(key);
+			redisTemplate.opsForValue().set(userEmail, "true");
+			redisTemplate.expire(key, 180, TimeUnit.SECONDS);
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	public String sendTmpPassword(String userEmail) throws Exception {
