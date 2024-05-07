@@ -23,8 +23,8 @@ public class MemberService {
         if (!dto.getProfileImage().isEmpty())
         {
             s = s3Uploader.uploadFile(dto.getProfileImage());
-            member.changeProfile(s);
-        }
+        } else s = "https://dagak.s3.ap-northeast-2.amazonaws.com/profile/youngjoo.png";
+        member.changeProfile(s);
         customMemberManager.createUser(member);
     }
 

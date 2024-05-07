@@ -1,19 +1,15 @@
 package com.ssafy.authorization.member.model.dto;
 
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
-import org.springframework.web.multipart.MultipartFile;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Setter
-@Builder
 public class SignUpRequestDto {
 	@NotBlank(message = "이메일은 필수 입력 값입니다.")
 	@Email(message = "이메일 입력이 올바르지 않습니다.")
