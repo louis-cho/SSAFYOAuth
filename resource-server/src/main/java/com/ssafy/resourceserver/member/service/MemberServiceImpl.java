@@ -1,7 +1,9 @@
 package com.ssafy.resourceserver.member.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.resourceserver.common.utils.S3Uploader;
 import com.ssafy.resourceserver.member.model.domain.Member;
+import com.ssafy.resourceserver.member.model.dto.ProfileInformationForUpdatesDto;
 import com.ssafy.resourceserver.member.model.dto.UserInfo;
 import com.ssafy.resourceserver.member.model.handler.ScopeHandler;
 import com.ssafy.resourceserver.member.model.handler.ScopeMethod;
@@ -21,6 +23,7 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -62,12 +65,11 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     @Transactional
-    public void updateUserProfile(String jwtEmail, Map<String, Object> userinfo) throws IOException {
+    public void updateUserProfile(String jwtEmail,ProfileInformationForUpdatesDto userinfo) throws IOException {
         Member member = memberRepository.findByEmail(jwtEmail).orElseThrow(() -> {
             throw new RuntimeException("회원정보없음");
         });
         System.out.println(member);
-        System.out.println(userinfo);
 
         String studentId;
         MultipartFile image;
@@ -76,12 +78,12 @@ public class MemberServiceImpl implements MemberService {
         String name;
         String email;
         try {
-            studentId = (String) userinfo.get("studentId");
-            image = (MultipartFile) userinfo.get("image");
-            phoneNumber = (String)userinfo.get("phoneNumber");
-            gender = (boolean)userinfo.get("gender");
-            name = (String)userinfo.get("name");
-            email = (String)userinfo.get("email");
+            studentId = userinfo.getStudentId();
+            image = userinfo.getImage();
+            phoneNumber = userinfo.getPhoneNumber();
+            gender = userinfo.getGender();
+            name = userinfo.getName();
+            email = userinfo.getEmail();
         } catch(Exception e) {
             log.info("요청 잘못됨");
             throw new RuntimeException("요청 잘못됨");
@@ -109,19 +111,17 @@ public class MemberServiceImpl implements MemberService {
             throw new RuntimeException("name 없으면 안되는데?");
         }
 
-        // if (image == null) {
-        //     log.info("이미지 없으면 안되는데?");
-        //     throw new RuntimeException("이거 없으면 안되는데?");
-        // }
-
         if (phoneNumber == null) {
             log.info("전화번호 없으면 안되는데?");
             throw new RuntimeException("전화번호 없으면 안되는데?");
         }
 
         String imageUrl = null;
-        if (image != null) {
-            imageUrl = s3Uploader.uploadFile(image);
+        if (image == null) {
+            imageUrl = "https://dagak.s3.ap-northeast-2.amazonaws.com/profile/youngjoo.png";
+        }
+        else{
+            imageUrl = s3Uploader.uploadFile((MultipartFile)image);
         }
 
         member.changeName(name);
@@ -158,4 +158,15 @@ public class MemberServiceImpl implements MemberService {
 
         member.changePassword(passwordEncoder.encode(newPassword));
     }
+
+    @Override
+    public ProfileInformationForUpdatesDto ProfileInforForUpdatesData(String email) {
+        Optional<Member> member = memberRepository.findByEmail(email);
+        if (member.isPresent()) {
+            Member existMember = member.get();
+            return existMember.EntityToProfileUpdatesDto();
+        }
+        return null;
+    }
+
 }

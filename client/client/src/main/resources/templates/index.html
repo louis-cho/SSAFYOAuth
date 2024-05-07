@@ -296,6 +296,7 @@
                 "Authorization": 'Bearer ' + token
             },
             success: function (response) {
+                console.log(response)
                 var teamName = response.vo.teamName || 'Name not returned'; // Fallback if response does not include the name
                 var serviceName = response.vo.serviceName || 'Service not specified';
                 var teamMember = response.vo.teamMember || 'No email returned';

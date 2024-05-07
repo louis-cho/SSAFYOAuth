@@ -7,6 +7,10 @@ import com.ssafy.authorization.member.model.dto.SignUpRequestDto;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,17 +19,32 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberService {
     private final CustomMemberManager customMemberManager;
     private final S3Uploader s3Uploader;
+    private final RedisTemplate<String, String> redisTemplate;
 
     @SneakyThrows
     @Transactional
-    public void save(Member member, SignUpRequestDto dto) {
+    public Map<String, Boolean> save(Member member, SignUpRequestDto dto) {
         String s;
-        if (!dto.getProfileImage().isEmpty())
-        {
-            s = s3Uploader.uploadFile(dto.getProfileImage());
-        } else s = "https://dagak.s3.ap-northeast-2.amazonaws.com/profile/youngjoo.png";
-        member.changeProfile(s);
-        customMemberManager.createUser(member);
+        Map<String, Boolean> response = new HashMap<>();
+        try {
+            if (!dto.getProfileImage().isEmpty()) {
+                s = s3Uploader.uploadFile(dto.getProfileImage());
+                member.changeProfile(s);
+            } else s = "https://dagak.s3.ap-northeast-2.amazonaws.com/profile/youngjoo.png";
+            String isCertified = redisTemplate.opsForValue().get(member.getEmail());
+            if ("true".equals(isCertified)) {
+                customMemberManager.createUser(member);
+                redisTemplate.delete(member.getEmail());
+                response.put("result", true);
+                return response;
+            } else {
+                response.put("result", false);
+                return response;
+            }
+        } catch (Exception e) {
+            response.put("result", false);
+            return response;
+        }
     }
 
     public String findMemberEmail(FindUserEmailDto dto) {
