@@ -15,36 +15,16 @@
 <!-- Page Wrapper -->
 <div id="wrapper">
     <!-- Sidebar -->
-    <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
-        <!-- Sidebar - Brand -->
-        <a class="sidebar-brand d-flex align-items-center justify-content-center" th:href="@{/static}">
-            <div class="sidebar-brand-icon rotate-n-15">
-                <i class="fas fa-laugh-wink"></i>
-            </div>
-            <div class="sidebar-brand-text mx-3">SSAFY Auth<sup>306</sup></div>
-        </a>
-        <!-- Divider -->
-        <hr class="sidebar-divider my-0">
-        <!-- Nav Item - Dashboard -->
-        <li class="nav-item active">
-            <a class="nav-link" th:href="@{/static}">
-                <i class="fas fa-fw fa-tachometer-alt"></i>
-                <span>나의 팀</span></a>
-        </li>
-        <!-- Other menu items -->
-    </ul>
 
-    <!-- Begin Page Content -->
+    <div class="header" th:replace="~{layouts/sidebar :: sidebar}"></div>
+
     <div class="container-fluid">
-        <!-- Page Heading -->
         <h1 class="h3 mb-4 text-gray-800">동의 항목</h1>
 
-        <!-- Consent Application Button -->
         <div class="mb-4">
             <button class="btn btn-success" type="button">심사 신청</button>
         </div>
 
-        <!-- Personal Information Table -->
         <h2>개인 정보</h2>
         <table class="table">
             <thead>
@@ -62,9 +42,10 @@
                 <td>PROFILE_NICKNAME</td>
                 <td>필수 항목!</td>
                 <td>Active</td>
-                <td><button class="btn btn-primary">Manage</button></td>
+                <td>
+                    <button class="btn btn-primary">Manage</button>
+                </td>
             </tr>
-            <!-- Additional rows can be added here -->
             </tbody>
         </table>
     </div>

@@ -20,7 +20,10 @@ public class TestController {
     public String index(OAuth2AuthenticationToken authentication) {
         try {
             String accessToken = tokenService.getAccessToken(authentication);
+
+            String refreshToken = tokenService.getRefreshToken(authentication);
             System.out.println(accessToken + " tttt");
+            System.out.println(refreshToken + "tttttttt");
             String s = apiService.callProtectedApi("http://127.0.0.1:8090/api/team");
             log.info("{} ttt",s);
         } catch (Exception e) {
