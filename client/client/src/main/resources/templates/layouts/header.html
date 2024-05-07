@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <!-- Bootstrap CSS 추가 -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
@@ -16,9 +16,12 @@
         </button>
 
         <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+            <div>
+            </div>
             <ul class="navbar-nav ml-auto"> <!-- ml-auto를 사용하여 오른쪽으로 정렬 -->
                 <li class="nav-item">
-                    <a class="nav-link" style="color: #212121; font-size: 20px" href="/">로그인</a>
+                    <a class="nav-link" style="color: #212121; font-size: 20px" sec:authorize="isAnonymous()" th:href="@{/login}">로그인</a>
+                    <a class="nav-link" style="color: #212121; font-size: 20px" sec:authorize="isAuthenticated()" th:href="@{/logout}">로그아웃</a>
                 </li>
             </ul>
         </div>

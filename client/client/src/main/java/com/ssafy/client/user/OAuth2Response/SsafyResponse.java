@@ -14,24 +14,24 @@ public class SsafyResponse  implements OAuth2Response {
 	@Override
 	public String getProvider() {
 
-		return "client";
+		return "ssafyOAuth";
 	}
 
 	@Override
 	public String getProviderId() {
 
-		return attribute.get("email").toString();
+		return (String)attribute.get("email");
 	}
 
 	@Override
 	public String getEmail() {
 
-		return attribute.get("email").toString();
+		return (String) attribute.get("email");
 	}
 
 	@Override
 	public String getName() {
 
-		return attribute.get("name").toString();
+		return (String) attribute.get("name");
 	}
 }
