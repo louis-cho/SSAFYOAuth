@@ -25,24 +25,14 @@ public class RedisConfig implements CachingConfigurer {
 	private final RedisProperties redisProperties;
 
 	@Value("${spring.data.redis.password}")
-	private String password;
-
-
-	@Bean
-	public RedisTemplate<String, Integer> redisIntegerTemplate(RedisConnectionFactory redisConnectionFactory) {
-		RedisTemplate<String, Integer> redisTemplate = new RedisTemplate<>();
-		redisTemplate.setConnectionFactory(redisConnectionFactory);
-		redisTemplate.setKeySerializer(new StringRedisSerializer());
-		redisTemplate.setValueSerializer(new GenericToStringSerializer<>(Integer.class)); // 수정된 부분
-		return redisTemplate;
-	}
+	private String PASSWORD;
 
 	@Bean
 	public RedisConnectionFactory redisConnectionFactory() {
 		RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
 		redisStandaloneConfiguration.setHostName(redisProperties.getHost());
 		redisStandaloneConfiguration.setPort(redisProperties.getPort());
-		redisStandaloneConfiguration.setPassword(password);
+		redisStandaloneConfiguration.setPassword(PASSWORD);
 		return new LettuceConnectionFactory(redisStandaloneConfiguration);
 
 	}
