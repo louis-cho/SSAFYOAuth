@@ -9,6 +9,8 @@ import com.ssafy.authorization.member.model.dto.UserEmailDto;
 import com.ssafy.authorization.member.model.service.CustomMemberManager;
 import com.ssafy.authorization.member.model.service.MemberFacade;
 import com.ssafy.authorization.member.model.service.MemberService;
+
+import ch.qos.logback.core.net.SyslogOutputStream;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -73,7 +75,7 @@ public class MemberController {
 			return ResponseEntity.badRequest().body(fieldErrors);
 		}
 		memberService.save(Member.create(signUpRequestDto), signUpRequestDto);
-		return ResponseEntity.ok("ok"); // 성공적인 경우, 로그인 페이지로 리다이렉트(혹은 적절한 응답 반환)
+		return ResponseEntity.ok("ok");
 	}
 
 
