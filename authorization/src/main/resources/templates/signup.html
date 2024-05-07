@@ -8,7 +8,6 @@
   <meta name="author" content=""/>
 
   <title>SSAFYAuth 회원가입</title>
-
   <!-- Custom fonts for this template-->
   <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css"/>
   <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
@@ -60,6 +59,7 @@
                 </div>
                 <form class="user" id="registrationForm" method="post">
                   <div class="form-group">
+                    <div id="userNameError" class="error-message text-danger"></div>
                     <input
                             type="text"
                             class="form-control form-control-user"
@@ -69,6 +69,7 @@
                     />
                   </div>
                   <div class="form-group">
+                    <div id="phoneNumberError" class="error-message text-danger"></div>
                     <input
                             type="text"
                             class="form-control form-control-user"
@@ -88,6 +89,7 @@
                     </select>
                   </div>
                   <div class="form-group">
+                    <div id="studentIdError" class="error-message text-danger"></div>
                     <input
                             type="text"
                             class="form-control form-control-user"
@@ -105,6 +107,7 @@
                     />
                   </div>
                   <div class="form-group">
+                    <div id="emailError" class="error-message text-danger"></div>
                     <div class="input-group">
                       <input
                               type="email"
@@ -155,6 +158,7 @@
                     ></div>
                   </div>
                   <div class="form-group row">
+                    <div id="passwordError" class="error-message text-danger"></div>
                     <div class="col-sm-6 mb-3 mb-sm-0">
                       <input
                               type="password"
@@ -190,7 +194,7 @@
                   <a class="small" href="forgot_password">비밀번호 찾기</a>
                 </div>
                 <div class="text-center">
-                  <a class="small" href="login">이미 계정이 있습니다.</a>
+                  <a class="small" href="login" onClick="window.close()">현재창 닫기</a>
                 </div>
               </div>
             </div>
@@ -205,39 +209,51 @@
 
 <!-- JavaScript to handle the visibility of the verification code input field -->
 <script>
-  document
-          .getElementById("emailVerificationBtn")
-          .addEventListener("click", function () {
-            document.getElementById("verificationCodeGroup").style.display =
-                    "block";
-            var countdown = 180; // 3분
-            var timer = setInterval(function () {
-              countdown--;
-              var minutes = Math.floor(countdown / 60);
-              var seconds = countdown % 60;
-              document.getElementById("verificationTimer").textContent =
-                      " (제한시간: " +
-                      minutes.toString().padStart(2, "0") +
-                      ":" +
-                      seconds.toString().padStart(2, "0") +
-                      ")";
-              if (countdown <= 0) {
-                clearInterval(timer);
-                document.getElementById("emailVerificationCode").placeholder =
-                        "시간이 초과되었습니다.";
-              }
-            }, 1000);
-          });
+  function sendEmail() {
+    document.getElementById("verificationCodeGroup").style.display =
+            "block";
+    var countdown = 180; // 3분
+    var timer = setInterval(function () {
+      countdown--;
+      var minutes = Math.floor(countdown / 60);
+      var seconds = countdown % 60;
+      document.getElementById("verificationTimer").textContent =
+              " (제한시간: " +
+              minutes.toString().padStart(2, "0") +
+              ":" +
+              seconds.toString().padStart(2, "0") +
+              ")";
+      if (countdown <= 0) {
+        clearInterval(timer);
+        document.getElementById("emailVerificationCode").placeholder =
+                "시간이 초과되었습니다.";
+      }
+    }, 1000);
+  }
 
   // 인증코드 이메일 보내기
   document.getElementById("emailVerificationBtn").addEventListener("click", function () {
-    var userEmail = document.getElementById("exampleInputEmail").value; // 이메일 값 가져오기
+    var userEmail = document.getElementById("exampleInputEmail").value.trim(); // 이메일 값 가져오기 및 공백 제거
+
+    if (!userEmail) {
+      alert("이메일 주소를 입력해주세요.");
+      return;
+    }
     var xhr = new XMLHttpRequest(); // XMLHttpRequest 객체 생성
-    xhr.open("POST", "http://localhost:9000/sendemail", true); // POST 요청 준비
+    xhr.open("POST", "/sendemail", true); // POST 요청 준비
     xhr.setRequestHeader("Content-Type", "application/json"); // 요청 헤더 설정
     xhr.onreadystatechange = function () {
-      if (xhr.readyState === 4 && xhr.status === 200) {
+      if (xhr.status === 200) {
         console.log(xhr.responseText); // 응답 데이터 콘솔 출력
+        sendEmail();
+      }
+      else if(xhr.status === 400){
+        var errors = JSON.parse(xhr.responseText);
+        displayErrors(errors);
+      }
+      else {
+        // 에러 처리: 서버에서 에러 응답을 반환한 경우
+        alert("서버에서 오류가 발생했습니다.");
       }
     };
     xhr.send(userEmail); // 문자열 형식의 이메일 주소를 보냄
@@ -254,7 +270,7 @@
       "userCode": userCode
     }; // JSON 형식으로 이메일과 코드를 묶음
     var xhr = new XMLHttpRequest(); // XMLHttpRequest 객체 생성
-    xhr.open("POST", "http://localhost:9000/certify", true); // POST 요청 준비
+    xhr.open("POST", "/certify", true); // POST 요청 준비
     xhr.setRequestHeader("Content-Type", "application/json"); // 요청 헤더 설정
     xhr.onreadystatechange = function () {
       if (xhr.readyState === 4) {
@@ -282,44 +298,87 @@
     xhr.send(JSON.stringify(requestBody)); // JSON 형식의 데이터를 문자열로 변환하여 보냄
   });
 
+
+
+
   document.getElementById("registrationForm").addEventListener("submit", function(event) {
-    event.preventDefault(); // 폼의 기본 제출 동작을 방지합니다.
+    event.preventDefault(); // 폼 기본 제출 방지
+    // 모든 에러 메시지를 초기화합니다.
 
-    var password = document.getElementById("exampleInputPassword").value; // 비밀번호 입력 필드의 값
-    var repeatPassword = document.getElementById("exampleRepeatPassword").value; // 비밀번호 확인 입력 필드의 값
+    var password = document.getElementById("exampleInputPassword").value;
+    var repeatPassword = document.getElementById("exampleRepeatPassword").value;
+    var errorMessage = document.getElementById("passwordErrorMessage");
 
-    var passwordError = document.getElementById("passwordErrorMessage"); // 비밀번호 에러 메시지를 표시할 요소
-
-    // 비밀번호와 비밀번호 확인이 일치하는지 검사
+    // 비밀번호와 재입력한 비밀번호가 일치하는지 확인
     if (password !== repeatPassword) {
-      passwordError.textContent = "비밀번호가 일치하지 않습니다. 다시 입력해주세요."; // 에러 메시지 표시
-      passwordError.style.display = "block"; // 에러 메시지를 보이게 설정
-      return; // 함수를 종료하고 폼 제출을 중단
+      errorMessage.textContent = "비밀번호가 일치하지 않습니다. 다시 입력해주세요.";
+      return; // 제출 중지
     } else {
-      passwordError.textContent = ""; // 에러 메시지 초기화
-      passwordError.style.display = "none"; // 에러 메시지 숨김
+      errorMessage.textContent = ""; // 에러 메시지 초기화
     }
 
-    // 모든 검사를 통과했다면, FormData 객체를 생성하고 서버로 데이터 전송
-    var formData = new FormData(this); // 폼의 데이터를 기반으로 FormData 객체 생성
-    fetch('http://localhost:9000/signup', {
-      method: 'POST',
-      body: formData
-    })
-            .then(response => response.json())
-            .then(data => {
-              if (data.result) {
-                alert("회원 가입에 성공했습니다."); // 성공 메시지 표시
-                window.location.href = 'login'; // 로그인 페이지로 이동
-              } else {
-                alert("회원 가입에 실패했습니다: "); // 실패 메시지 표시
-              }
-            })
-            .catch(error => {
-              console.error('Error:', error);
-              alert("회원 가입 중 문제가 발생했습니다."); // 에러 메시지 표시
-            });
+    var formData = new FormData(this); // 폼 데이터 생성
+    var userEmailValue = document.getElementById("exampleInputEmail").value; // 이메일 값 가져오기
+    if (userEmailValue) {
+      formData.append("userEmail", userEmailValue); // 이메일 추가
+    }
+
+    var submitButton = document.querySelector("button[type='submit']"); // 제출 버튼 선택
+    submitButton.disabled = true; // 버튼을 비활성화하여 중복 제출 방지
+    submitButton.textContent = '처리 중...'; // 버튼 텍스트 변경
+
+    // AJAX 요청 설정
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", "/signup", true);
+    xhr.onload = function() {
+      submitButton.disabled = false; // 버튼 다시 활성화
+      submitButton.textContent = '회원가입'; // 버튼 텍스트 원래대로 복구
+
+      if (xhr.status === 200) {
+        // 응답 처리: 성공적으로 처리된 경우
+        console.log("Server Response:", xhr.responseText); // 서버 응답 로그
+        alert("회원 가입에 성공했습니다.");
+        window.location.href = "/login";
+      }
+      else if(xhr.status === 400){
+        var errors = JSON.parse(xhr.responseText);
+        displayErrors(errors);
+      }
+      else {
+        // 에러 처리: 서버에서 에러 응답을 반환한 경우
+        alert("서버에서 오류가 발생했습니다. 중복된 사용자일수도 있어요");
+      }
+    };
+
+    xhr.onerror = function() {
+      // 네트워크 에러 처리
+      submitButton.disabled = false; // 버튼 다시 활성화
+      submitButton.textContent = '회원가입'; // 버튼 텍스트 원래대로 복구
+      alert("네트워크 오류가 발생했습니다.");
+    };
+
+    xhr.send(formData); // 폼 데이터 전송
   });
+  function displayErrors(errors) {
+    document.querySelectorAll('.error-message').forEach(function(el) {
+      el.textContent = '';
+    });
+
+    // 서버로부터 받은 에러 메시지를 각 필드에 표시합니다.
+    for (var key in errors) {
+      var errorElement = document.getElementById(key + "Error");
+      if (!errorElement) {
+        errorElement = document.createElement("div");
+        errorElement.id = key + "Error";
+        errorElement.className = "error-message text-danger"; // 에러 메시지 스타일 지정
+        var inputElement = document.getElementById("example" + key.charAt(0).toUpperCase() + key.slice(1));
+        if (inputElement) {
+          inputElement.parentNode.insertBefore(errorElement, inputElement.nextSibling);
+        }
+      }
+      errorElement.textContent = errors[key];
+    }
+  }
 
 </script>
 </body>

@@ -217,12 +217,10 @@ public class TeamServiceImpl implements TeamService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public Map listTeam(Authentication authentication) {
+	public Map listTeam(String email) {
 		Map<String, Object> data = new HashMap<>();
 		// 자신의 시퀀스 넘버를 확인
-		UserDetails userDetails = (UserDetails)authentication.getPrincipal();
-		String myEmail = userDetails.getUsername();
-		Integer mySeq =     memberRepository.findByEmail(myEmail).get().getMemberId();
+		Integer mySeq =     memberRepository.findByEmail(email).get().getMemberId();
 		List<TeamListEntity> entities = teamListRepository.findByMemberSeq(mySeq);
 		if (entities.isEmpty()) {
 			data.put("msg", "소속된 팀이 존재하지 않습니다.");

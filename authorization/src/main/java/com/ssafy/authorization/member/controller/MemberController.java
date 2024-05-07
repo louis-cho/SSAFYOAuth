@@ -1,26 +1,5 @@
 package com.ssafy.authorization.member.controller;
 
-import java.util.Collections;
-
-import java.util.ArrayList;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
-
 import com.ssafy.authorization.mail.service.EmailService;
 import com.ssafy.authorization.member.model.domain.Member;
 import com.ssafy.authorization.member.model.dto.FindUserEmailDto;
@@ -31,9 +10,22 @@ import com.ssafy.authorization.member.model.service.CustomMemberManager;
 import com.ssafy.authorization.member.model.service.MemberFacade;
 import com.ssafy.authorization.member.model.service.MemberService;
 
+import ch.qos.logback.core.net.SyslogOutputStream;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 
 @Controller
@@ -59,30 +51,45 @@ public class MemberController {
 	// 	return "index";
 	// }
 
-	// @GetMapping("/")
-	// public String getMyTeamList(Model model, Authentication authentication) {
-	//
-	// 	return "index";
-	// }
-
 	@GetMapping("/signup")
 	public String signUp() {
 		log.debug("signup 실행됨");
 		return "signup";
 	}
 
+
 	@PostMapping("/signup")
-	public ResponseEntity<?> sign_Up(@ModelAttribute @Valid SignUpRequestDto signUpRequestDto, BindingResult result, Model model) {
-		System.out.println(2312123);
-		System.out.println(signUpRequestDto);
-		Map<String, Boolean> response = memberService.save(Member.create(signUpRequestDto), signUpRequestDto);
-		return ResponseEntity.ok().body(response);
+	public ResponseEntity<?> signUp(@Valid @ModelAttribute SignUpRequestDto signUpRequestDto, BindingResult result) {
+		Map<String, String> fieldErrors = new HashMap<>();
+		if (result.hasErrors()) {
+			for (FieldError error : result.getFieldErrors()) {
+				fieldErrors.put(error.getField(), error.getDefaultMessage());
+			}
+			log.info("test {}", fieldErrors);
+			// 유효성 검사 실패 응답으로 400 상태 코드와 함께 에러 메시지를 반환
+			return ResponseEntity.badRequest().body(fieldErrors);
+		}
+		boolean exists = customMemberManager.userExists(signUpRequestDto.getUserEmail());
+		if(exists){
+			fieldErrors.put("email","이미 존재하는 유저입니다.");
+			return ResponseEntity.badRequest().body(fieldErrors);
+		}
+		memberService.save(Member.create(signUpRequestDto), signUpRequestDto);
+		return ResponseEntity.ok("ok");
 	}
 
+
+
 	@PostMapping("/sendemail")
-	public void sendEmail(@RequestBody String userEmail) throws Exception {
-		log.info("{} tttttttttttt", userEmail);
+	public ResponseEntity<?> sendEmail(@RequestBody String userEmail) throws Exception {
+		boolean exists = customMemberManager.userExists(userEmail);
+		if(exists){
+			Map<String, String> fieldErrors = new HashMap<>();
+			fieldErrors.put("email","이미 존재하는 유저입니다.");
+			return ResponseEntity.badRequest().body(fieldErrors);
+		}
 		emailService.sendEmail(userEmail);
+		return ResponseEntity.ok("ok");
 	}
 
 	@PostMapping("/certify")
