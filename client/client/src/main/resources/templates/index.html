@@ -74,21 +74,28 @@
         }
 
         function displayTeams(teams) {
-            var teamList = document.getElementById('teamList');
+            const teamList = document.getElementById('teamList');
             teamList.innerHTML = '';
             teams.forEach(function(team) {
-                var teamCard = document.createElement('div');
+                const teamCard = document.createElement('div');
                 teamCard.classList.add('col-md-4', 'mb-4', 'team-card');
                 teamCard.innerHTML = `<div class="card shadow h-100">
                     <div class="card-body">
                         <h5 class="card-title">${team.teamName}</h5>
                         <p class="card-text">서비스: ${team.serviceName}</p>
-                        <p class="card-text">팀원: ${team.teamMember}</p>
-                        <p class="card-text">도메인: ${team.domainUrl}</p>
-                        <p class="card-text">리다이렉트: ${team.redirectionUrl}</p>
+                        <p class="card-text">status: ${team.isLeader?'Leader':'Member'}</p>
+                        <p class="card-text">최초 게시일: ${team.createDate}</p>
+                        <p class="card-text">최종 수정일: ${team.modifyDate}</p>
+                        <div style="display: none;" class="team-seq">${team.teamSeq}</div>
+                        <button type="button">details</button>
                     </div>
                 </div>`;
                 teamList.appendChild(teamCard);
+            });
+            document.querySelectorAll('.card-body').forEach(teamItem =>{
+                teamItem.addEventListener('click', e => {
+
+                });
             });
         }
     </script>
