@@ -2,6 +2,8 @@ package com.ssafy.resourceserver.member.model.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.ssafy.resourceserver.member.model.dto.ProfileInformationForUpdatesDto;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -85,6 +87,18 @@ public class Member{
 
 	public void changeGrade(Integer grade) {
 		this.grade = grade;
+	}
+
+
+	public ProfileInformationForUpdatesDto EntityToProfileUpdatesDto(){
+		return ProfileInformationForUpdatesDto.builder()
+			.gender(gender)
+			.profileUrl(image)
+			.studentId(studentId)
+			.name(name)
+			.phoneNumber(phoneNumber)
+			.email(email)
+			.build();
 	}
 }
 

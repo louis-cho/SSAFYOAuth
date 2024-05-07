@@ -22,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.ssafy.resourceserver.common.utils.S3Uploader;
 import com.ssafy.resourceserver.member.model.domain.Member;
 import com.ssafy.resourceserver.member.model.domain.MemberRoleEnum;
+import com.ssafy.resourceserver.member.model.dto.ProfileInformationForUpdatesDto;
 import com.ssafy.resourceserver.member.model.repository.MemberRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -64,17 +65,18 @@ public class MemberServiceImplTest {
 		when(s3Uploader.uploadFile(any(MultipartFile.class))).thenReturn("http://example.com/newimage.jpg");
 
 		// 입력
-		Map<String, Object> userInfo = new HashMap<>();
-		userInfo.put("studentId", "test@example.com");
-		userInfo.put("phoneNumber", "010-9876-5432");
-		userInfo.put("name", "Updated test");
-		userInfo.put("gender", true);
-		userInfo.put("email", "test@example.com");
 		MultipartFile image = mock(MultipartFile.class);
-		userInfo.put("image", image);
+		ProfileInformationForUpdatesDto updatedTest = ProfileInformationForUpdatesDto.builder()
+			.studentId("test@example.com")
+			.phoneNumber("010-9876-5432")
+			.name("Updated test")
+			.gender(true)
+			.email("")
+			.image(mock(MultipartFile.class))
+			.build();
 
 		// 실행
-		memberService.updateUserProfile("test@example.com", userInfo);
+		memberService.updateUserProfile("test@example.com", updatedTest);
 
 		// 검증
 		assertEquals("Updated test", mockMember.getName());
@@ -110,18 +112,18 @@ public class MemberServiceImplTest {
 
 		// 입력
 		Map<String, Object> userInfo = new HashMap<>();
-		userInfo.put("studentId", "test@example.com");
-		userInfo.put("phoneNumber", "010-9876-5432");
-		userInfo.put("name", "Updated test");
-		userInfo.put("gender", false);
-		userInfo.put("email", "test@example.com");
-		MultipartFile image = mock(MultipartFile.class);
-		userInfo.put("image", image);
-
+		ProfileInformationForUpdatesDto updatedTest = ProfileInformationForUpdatesDto.builder()
+			.studentId("test@example.com")
+			.phoneNumber("010-9876-5432")
+			.name("Updated test")
+			.gender(false)
+			.email("test@example.com")
+			.image(mock(MultipartFile.class))
+			.build();
 		// 실행
 		// 실행 및 검증
 		Exception exception = assertThrows(RuntimeException.class, () -> {
-			memberService.updateUserProfile("test@example.com", userInfo);
+			memberService.updateUserProfile("test@example.com", updatedTest);
 		});
 		assertEquals("성별 바뀌면 안되는데?", exception.getMessage());
 

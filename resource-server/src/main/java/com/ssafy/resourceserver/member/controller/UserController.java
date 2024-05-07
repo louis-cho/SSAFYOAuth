@@ -1,5 +1,6 @@
 package com.ssafy.resourceserver.member.controller;
 
+import com.ssafy.resourceserver.member.model.dto.ProfileInformationForUpdatesDto;
 import com.ssafy.resourceserver.member.model.dto.UserInfo;
 import com.ssafy.resourceserver.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -10,9 +11,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -37,19 +40,26 @@ public class UserController {
         log.info("유저정보 스코프별: {} ",userProfile);
         return userProfile;
     }
+    @GetMapping("/data")
+    @ResponseBody
+    public ResponseEntity<?> getUpdateForUserData(@AuthenticationPrincipal Jwt jwt){
+        String email = jwt.getClaimAsString("sub");
+        ProfileInformationForUpdatesDto dto = memberService.ProfileInforForUpdatesData(email);
+        return ResponseEntity.ok(dto);
+    }
 
     @PostMapping("/info")
-    public ResponseEntity<?> updateUserProfile(@AuthenticationPrincipal Jwt jwt, @RequestBody Map<String, Object> user) {
+    public ResponseEntity<?> updateUserProfile(@AuthenticationPrincipal Jwt jwt, @ModelAttribute ProfileInformationForUpdatesDto userDto) {
         // Jwt에서 사용자 정보 추출
         log.info("test : {} ",jwt.getTokenValue());
         log.info("{} JWT TTT", jwt);
         String email = jwt.getClaimAsString("sub");
 
         try {
-            memberService.updateUserProfile(email, user);
+            memberService.updateUserProfile(email, userDto);
             return ResponseEntity.status(HttpStatus.OK).body(null);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.OK).body(null);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
     }
 
