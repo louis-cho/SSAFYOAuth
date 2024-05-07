@@ -1,5 +1,6 @@
 package com.ssafy.resourceserver.team.controller;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import com.ssafy.resourceserver.team.vo.ServiceNameUpdateVo;
@@ -37,7 +38,14 @@ public class TeamController {
 
 	private final TeamService teamService;
 
-
+	@GetMapping
+	@ResponseBody
+	public Map teamList(@AuthenticationPrincipal Jwt jwt) {
+		String email = jwt.getClaimAsString("sub");
+		Map data = teamService.listTeam(email);
+		log.info("data는 이거다 {}",data);
+		return data;
+	}
 
 	@PostMapping
 	@ResponseBody
@@ -48,13 +56,14 @@ public class TeamController {
 		Map data = teamService.addTeam(vo, email);
 		return data;
 	}
-	// @PostMapping("/test")
-	// @ResponseBody
-	// public Map teamAdd(@RequestBody @Valid TeamAddVo vo) {
-	// 	log.info("팀 추가에서 넘어온 값 : {} ", vo);
-	// 	Map data = teamService.addTeam(vo,);
-	// 	return null;
-	// }
+	@GetMapping("/test")
+	@ResponseBody
+	public Map teamAdd() {
+		log.info("Testsetstestestse");
+		Map data = new HashMap();
+		data.put("123", "#@!");
+		return data;
+	}
 	@GetMapping("/{team-seq}")
 	@ResponseBody
 	public Map teamDetail(@PathVariable("team-seq") Integer teamSeq, Authentication authentication) {

@@ -17,7 +17,7 @@ public interface TeamService {
 
 	Map updateTeamName(Integer teamSeq, TeamNameUpdateVo vo, Authentication authentication);
 
-	Map listTeam(Authentication authentication);
+	Map listTeam(String email);
 
 	Map detailTeam(Integer teamSeq, Authentication authentication);
 

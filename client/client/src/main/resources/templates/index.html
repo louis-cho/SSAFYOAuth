@@ -24,11 +24,76 @@
 
     <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <script th:src="@{/js/jquery.min.js}"></script>
+
     <style>
         .my-team-title {
             margin: 50px 0 15px 0;
         }
     </style>
+
+
+    <!-- 페이지 로딩될 때 데이터 fetch -->
+    <script>
+        function getCookie(name) {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = cookies[i];
+                while (cookie.charAt(0) === ' ') {
+                    cookie = cookie.substring(1);
+                }
+                if (cookie.indexOf(name + "=") === 0) {
+                    return cookie.substring(name.length + 1, cookie.length);
+                }
+            }
+            // 해당 이름의 쿠키가 없으면 undefined 반환
+            return undefined;
+        }
+        window.onload = function () {
+            loadData();
+        };
+
+        function loadData() {
+            var token = getCookie("access_token")
+            console.log(token)
+            $.ajax({
+                url: 'http://localhost:8090/api/team',
+                type: 'GET',
+                contentType: 'application/json',
+                headers: {
+                    "Authorization": 'Bearer ' + token
+                },
+                success: function (response) {
+                    console.log(response.list)
+                    displayTeams(response.list);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error loading data:', error);
+                }
+            });
+        }
+
+        function displayTeams(teams) {
+            var teamList = document.getElementById('teamList');
+            teamList.innerHTML = '';
+            teams.forEach(function(team) {
+                var teamCard = document.createElement('div');
+                teamCard.classList.add('col-md-4', 'mb-4', 'team-card');
+                teamCard.innerHTML = `<div class="card shadow h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">${team.teamName}</h5>
+                        <p class="card-text">서비스: ${team.serviceName}</p>
+                        <p class="card-text">팀원: ${team.teamMember}</p>
+                        <p class="card-text">도메인: ${team.domainUrl}</p>
+                        <p class="card-text">리다이렉트: ${team.redirectionUrl}</p>
+                    </div>
+                </div>`;
+                teamList.appendChild(teamCard);
+            });
+        }
+    </script>
+
+
 </head>
 
 <body id="page-top" th:class="${bodyClass}">
@@ -174,7 +239,8 @@
             contentType: 'application/json',
             data: formData,
             headers: {
-                "Authorization": 'Bearer ' + token},
+                "Authorization": 'Bearer ' + token
+            },
             success: function (response) {
                 console.log(response)
                 var teamName = response.vo.teamName || 'Name not returned'; // Fallback if response does not include the name
@@ -208,17 +274,13 @@
     }
 
     function getCookie(name) {
-        // 쿠키 문자열을 ';'로 분할하여 배열 생성
         var cookies = document.cookie.split(';');
 
-        // 쿠키 배열을 순회
         for (var i = 0; i < cookies.length; i++) {
             var cookie = cookies[i];
-            // 쿠키의 앞 공백을 제거
             while (cookie.charAt(0) === ' ') {
                 cookie = cookie.substring(1);
             }
-            // 쿠키 이름으로 시작하는 값을 찾으면 반환
             if (cookie.indexOf(name + "=") === 0) {
                 return cookie.substring(name.length + 1, cookie.length);
             }
@@ -240,6 +302,8 @@
         group.appendChild(inputGroup);
     }
 </script>
+
+
 </body>
 
 </html>
