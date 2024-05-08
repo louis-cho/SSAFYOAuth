@@ -67,7 +67,7 @@
         <div class="container my-team-title col-lg-9 mb-4" id="team-container">
             <!-- 팀 이름 section start -->
             <div id="team-name-container" class="card shadow bg-primary rounded">
-                <h1 id="team-name" class="card-header">Team Name</h1>
+                <h1 id="team-name" class="card-header text-light">Team Name</h1>
             </div>
             <!-- 팀 이름 section end -->
             <!-- 팀 정보 section start -->
@@ -77,7 +77,7 @@
                     <img class="rounded-circle col-12 card-img img-content" src="/image/noimage.jpg" id="service-image">
                     <div class="col-12 justify-content-center d-flex img-content">
                         <button type="button" class="btn btn-outline-primary" style="margin-right: 10%;" data-bs-toggle="modal" data-bs-target="#image-update-modal">수정</button>
-                        <btoon type="button" class="btn btn-outline-danger" id="image-delete-btn">삭제</btoon>
+                        <btoon type="button" class="btn btn-outline-danger" id="service-image-delete-btn">삭제</btoon>
                     </div>
                 </div>
                 <!-- 팀 사진 card end -->
@@ -86,15 +86,15 @@
                     <!-- service name start -->
                     <div id="service-name-container" class="input-group team-content">
                         <label for="service-name" class="input-group-text">Service Name</label>
-                        <input type="text" class="form-control rounded" disabled id="service-name">
+                        <input type="text" class="form-control" disabled id="service-name">
                         <button type="button" class="btn btn-outline-primary input-group-append">수정</button>
                     </div>
                     <!-- service name end -->
                     <!-- client id start -->
                     <div id="client-id-container" class="team-content input-group">
-                        <label form="client-id" class="input-group-text">Client id</label>
+                        <label form="client-id" class="input-group-text">Client ID</label>
                         <input id="client-id" class="form-control" disabled type="text"/>
-                        <button id="client-id-copy-btn" class="btn btn-success input-group-append">copy</button>
+                        <button id="client-id-copy-btn" class="btn btn-success input-group-append">Copy</button>
                     </div>
                     <!-- client id end -->
                     <!-- redirect urls start -->
@@ -148,7 +148,21 @@
 <!-- 이미지 업데이트 모달 end -->
 </body>
 <script>
-    const access_token = getCookie('access_token');
+    function getCookie(name) {
+        let cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            let cookie = cookies[i];
+            while (cookie.charAt(0) === ' ') {
+                cookie = cookie.substring(1);
+            }
+            if (cookie.indexOf(name + "=") === 0) {
+                return cookie.substring(name.length + 1, cookie.length);
+            }
+        }
+        // 해당 이름의 쿠키가 없으면 undefined 반환
+        return undefined;
+    }
+    let access_token = getCookie('access_token');
     const teamSeq  = [[${teamSeq}]];
     console.log(teamSeq);
     fetch(`http://localhost:8090/api/team/${teamSeq}`, {
@@ -197,21 +211,7 @@
             document.getElementById("service-image").src = team.image;
         }
     });
-    document.getElementById("")
-    function getCookie(name) {
-        let cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            let cookie = cookies[i];
-            while (cookie.charAt(0) === ' ') {
-                cookie = cookie.substring(1);
-            }
-            if (cookie.indexOf(name + "=") === 0) {
-                return cookie.substring(name.length + 1, cookie.length);
-            }
-        }
-        // 해당 이름의 쿠키가 없으면 undefined 반환
-        return undefined;
-    }
+
     let updatedImageUrl = '';
     document.getElementById("temp-service-image").addEventListener('change', event =>{
         if(event.target.files[0]) {
@@ -251,6 +251,22 @@
             document.getElementById("close-image-update-modal-btn").click();
             document.getElementById("service-image").src = updatedImageUrl;
         });
+    });
+    document.getElementById("service-image-delete-btn").addEventListener('click', event => {
+        if(confirm("서비스 이미지를 삭제 하시겠습니까?")){
+            fetch(`http://localhost:8090/api/team/${teamSeq}/image`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${access_token}`,
+                },
+            }).then(res => res.json()).then(data => {
+                if(data.msg){
+                    alert(data.msg);
+                    return;
+                }
+                document.getElementById('service-image').src = '/image/noimage.jpg';
+            });
+        }
     });
 </script>
 </html>
