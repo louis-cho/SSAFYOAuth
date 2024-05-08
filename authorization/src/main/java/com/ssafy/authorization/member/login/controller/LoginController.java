@@ -3,6 +3,8 @@ package com.ssafy.authorization.member.login.controller;
 import org.joda.time.DateTime;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.web.bind.annotation.RestController;
 
 
@@ -44,6 +46,12 @@ public class LoginController {
     public SseEmitter waitSignal(@RequestBody LoginRequest request) {
 
         final SseEmitter emitter = new SseEmitter(5 * 60 * 1000L);
+        final String key = request.toString();
+
+        if(userEmitters.isEmpty() == false && userEmitters.get(key) != null) {
+            userEmitters.remove(key);
+        }
+
         userEmitters.put(request.toString(), emitter);
 
         try {
@@ -89,17 +97,20 @@ public class LoginController {
 //    }
 
     public void notifyLoginResult(LoginRequest request) {
-        String key = request.toString();
+        final String key = request.toString();
         redisTemplate.opsForValue().set(request.toString(), LocalDateTime.now().toString());
         redisTemplate.expire(key, 300, TimeUnit.SECONDS);
 
-        SseEmitter emitter = userEmitters.get(request.toString());
+
+        SseEmitter emitter = userEmitters.get(key);
         if (emitter != null) {
             try {
                 emitter.send(SseEmitter.event().name("WAIT_RESULT").data("Wait successful"));
                 emitter.complete();
+                userEmitters.remove(key);
             } catch (IOException e) {
                 emitter.completeWithError(e);
+                userEmitters.remove(key);
             }
         }
     }
@@ -108,11 +119,15 @@ public class LoginController {
     public void sendQueueUpdates() {
         AtomicInteger queueSize = loginService.getLoginQueueManager().getQueueSize();  // 대기열 크기를 가져옵니다
 
+        if(userEmitters.isEmpty())
+            return;
+
         userEmitters.forEach((userId, emitter) -> {
             try {
                 emitter.send(SseEmitter.event().name("queue-update").data(queueSize));
             } catch (IOException e) {
                 emitter.completeWithError(e);
+                userEmitters.remove(userId);
             }
         });
     }
