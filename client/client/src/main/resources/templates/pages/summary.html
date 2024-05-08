@@ -2,328 +2,293 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-
+    <style>
+        .card-body>.row>.col-12 {
+            margin-top: 50px;
+            /* 위쪽 마진을 조절합니다. */
+            margin-bottom: 10px;
+            /* 아래쪽 마진을 조절합니다. */
+        }
+    </style>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
-
     <title>SSAFY Auth - Dashboard</title>
-
     <!-- Custom fonts for this template-->
     <link th:href="@{/vendor/fontawesome-free/css/all.min.css}" rel="stylesheet" type="text/css">
     <link th:href="@{https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i}"
           rel="stylesheet">
-
     <!-- Custom styles for this template-->
     <link rel="stylesheet" th:href="@{/css/footer.css}">
     <link rel="stylesheet" type="text/css" th:href="@{/css/header.css}">
     <link th:href="@{/css/sb-admin-2.min.css}" rel="stylesheet">
     <link th:href="@{/css/main.css}" rel="stylesheet">
-
     <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <script th:src="@{/vendor/jquery/jquery.min.js}"></script>
+    <script th:src="@{/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
+    <script th:src="@{/vendor/jquery-easing/jquery.easing.min.js}"></script>
+    <!-- 페이지 로딩될 때 데이터 fetch -->
+    <script th:src="@{/js/sb-admin-2.min.js}"></script>
+    <script th:inline="javascript">
+        function getCookie(name) {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = cookies[i];
+                while (cookie.charAt(0) === ' ') {
+                    cookie = cookie.substring(1);
+                }
+                if (cookie.indexOf(name + "=") === 0) {
+                    return cookie.substring(name.length + 1, cookie.length);
+                }
+            }
+            // 해당 이름의 쿠키가 없으면 undefined 반환
+            return undefined;
+        }
 
+        window.onload = function () {
+            loadData();
+            loadTeams();
+            var teamSeq = window.location.pathname.match(/\/teams\/(\d+)\/summary/)[1];
+            loadTeamData(teamSeq);
+        };
+
+        function loadData() {
+            var token = getCookie("access_token")
+            $.ajax({
+                url: 'http://localhost:8090/api/team',
+                type: 'GET',
+                contentType: 'application/json',
+                headers: {
+                    "Authorization": 'Bearer ' + token
+                },
+                success: function (response) {
+                    // console.log(response.list)
+                    displayTeams(response.list);
+                    displayTeamInfo(response.list[0]); // 팀 정보를 가져와서 첫 번째 팀의 정보를 표시합니다.
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error loading data:', error);
+                }
+            });
+        }
+
+        function loadTeams() {
+            var token = getCookie("access_token");
+
+            $.ajax({
+                url: 'http://localhost:8090/api/team',
+                type: 'GET',
+                headers: {
+                    "Authorization": 'Bearer ' + token
+                },
+                success: function (response) {
+
+                    populateSidebar(response.list);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error loading data:', error);
+                }
+            });
+        }
+
+        function populateSidebar(data) {
+            var container = document.getElementById('teamNavContainer');
+            container.innerHTML = ''; // Clear previous entries
+            // console.log(data)
+            data.forEach(function (team, index) {
+                var teamNavItem = document.createElement('li');
+                teamNavItem.classList.add('nav-item');
+                teamNavItem.innerHTML = `
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapse${index}"
+                    aria-expanded="true" aria-controls="collapse${index}">
+                    <i class="fas fa-fw fa-cog"></i>
+                    <span>${team.teamName}</span>
+                </a>
+                <div id="collapse${index}" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <h6 class="collapse-header">관리</h6>
+                        <a class="collapse-item" href="/teams/${team.teamSeq}/summary">요약 정보</a>
+                        <a class="collapse-item" href="/teams/${team.teamSeq}/dashboard">대시보드</a>
+                        <a class="collapse-item" href="/teams/${team.teamSeq}/consents">동의 항목</a>
+                        <a class="collapse-item" href="/teams/${team.teamSeq}/country-ip">국가 아이피 관리</a>
+                        <a class="collapse-item" href="/teams/${team.teamSeq}/management">팀 관리</a>
+                        <a class="collapse-item" href="/teams/${team.teamSeq}/settings">설정</a>
+                    </div>
+                </div>`;
+                container.appendChild(teamNavItem);
+            });
+        }
+
+        function getCookie(name) {
+            let value = `; ${document.cookie}`;
+            let parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        }
+
+        var teamDetail;
+
+        function loadTeamData(teamSeq) {
+            // access token 가져오기
+            var token = getCookie("access_token");
+
+            // access token이 없으면 함수 종료
+            if (!token) {
+                console.error("Access token이 없습니다.");
+                return;
+            }
+
+            // URL에 teamSeq를 포함하여 완성
+            var url = 'http://localhost:8090/api/team/' + teamSeq;
+
+            // 서버에 GET 요청 보내기
+            $.ajax({
+                url: url,
+                type: 'GET',
+                contentType: 'application/json',
+                headers: {
+                    "Authorization": 'Bearer ' + token
+                },
+                success: function (response) {
+                    console.log("서버에서 받은 데이터:", response);
+                    teamDetail = response.value;
+                    displayTeamInfo(response.team);
+                    // 받은 데이터를 처리하는 함수 호출
+
+                },
+                error: function (xhr, status, error) {
+                    console.error('데이터를 불러오는 중 오류가 발생했습니다:', error);
+                }
+            });
+        }
+
+        function displayTeamInfo(teamDetail) {
+            document.getElementById('teamNameHeading').innerText = teamDetail.teamName;
+            document.getElementById('serviceName').innerText = teamDetail.serviceName;
+            document.getElementById('serviceKey').innerText = teamDetail.serviceKey;
+        }
+
+        function copyServiceKey() {
+            var serviceKeyElement = document.getElementById('serviceKey');
+            var serviceKey = serviceKeyElement.innerText;
+
+            // 임시 textarea 엘리먼트 생성하여 서비스 키 복사
+            var tempTextArea = document.createElement('textarea');
+            tempTextArea.value = serviceKey;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempTextArea);
+
+            alert('서비스 키가 복사되었습니다.');
+        }
+
+        function reclaimServiceKey() {
+            var teamSeq = window.location.pathname.match(/\/teams\/(\d+)\/summary/)[1];
+            var token = getCookie("access_token");
+
+            $.ajax({
+                url: 'http://localhost:8090/api/team/key/reclaim/' + teamSeq,
+                type: 'POST',
+                contentType: 'application/json',
+                headers: {
+                    "Authorization": 'Bearer ' + token
+                },
+                success: function (response) {
+                    if (response.result) {
+                        // 성공적으로 서비스 키가 재발급된 경우
+                        alert('서비스 키가 성공적으로 재발급되었습니다.');
+                    } else {
+                        alert('서비스 키 재발급 중 오류가 발생했습니다.');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error reclaiming service key:', error);
+                    alert('서비스 키 재발급 중 오류가 발생했습니다.');
+                }
+            });
+        }
+    </script>
 </head>
 
 <body id="page-top" th:class="${bodyClass}">
 <div class="header" th:replace="~{layouts/header :: header}"></div>
-
-<!-- Page Wrapper -->
 <div id="wrapper">
-    <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
-
-        <!-- Sidebar - Brand -->
-        <a class="sidebar-brand d-flex align-items-center justify-content-center" th:href="@{/static}">
-            <div class="sidebar-brand-icon rotate-n-15">
-                <i class="fas fa-laugh-wink"></i>
-            </div>
-            <div class="sidebar-brand-text mx-3">SSAFY Auth<sup>306</sup></div>
-        </a>
-
-        <!-- Divider -->
-        <hr class="sidebar-divider my-0">
-
-        <!-- Nav Item - Dashboard -->
-        <li class="nav-item active">
-            <a class="nav-link" th:href="@{/static}">
-                <i class="fas fa-fw fa-tachometer-alt"></i>
-                <span>나의 팀</span></a>
-        </li>
-
-        <!-- Divider -->
-        <hr class="sidebar-divider">
-
-        <!-- Heading -->
-        <div class="sidebar-heading" style="font-size: large">
-            나의 팀
-        </div>
-
-        <!-- Nav Item - Pages Collapse Menu -->
-        <li class="nav-item">
-            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
-               aria-expanded="true" aria-controls="collapseTwo">
-                <i class="fas fa-fw fa-cog"></i>
-                <span>개쩌는 팀1</span>
-            </a>
-            <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
-                <div class="bg-white py-2 collapse-inner rounded">
-                    <h6 class="collapse-header">관리</h6>
-                    <a class="collapse-item" th:href="@{/buttons}">요약 정보</a>
-                    <a class="collapse-item" th:href="@{/buttons}">대시보드</a>
-                    <a class="collapse-item" th:href="@{/cards}">동의 항목</a>
-                    <a class="collapse-item" th:href="@{/cards}">팀 관리</a>
-                    <a class="collapse-item" th:href="@{/cards}">설정</a>
-                </div>
-            </div>
-        </li>
-
-        <li class="nav-item">
-            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseThree"
-               aria-expanded="true" aria-controls="collapseThree">
-                <i class="fas fa-fw fa-cog"></i>
-                <span>개쩌는 팀2</span>
-            </a>
-            <div id="collapseThree" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
-                <div class="bg-white py-2 collapse-inner rounded">
-                    <h6 class="collapse-header">관리</h6>
-                    <a class="collapse-item" th:href="@{/buttons}">요약 정보</a>
-                    <a class="collapse-item" th:href="@{/buttons}">대시보드</a>
-                    <a class="collapse-item" th:href="@{/cards}">동의 항목</a>
-                    <a class="collapse-item" th:href="@{/cards}">팀 관리</a>
-                    <a class="collapse-item" th:href="@{/cards}">설정</a>
-                </div>
-            </div>
-        </li>
-
-        <!-- Nav Item - Utilities Collapse Menu -->
-<!--        <li class="nav-item">-->
-<!--            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"-->
-<!--               aria-expanded="true" aria-controls="collapseUtilities">-->
-<!--                <i class="fas fa-fw fa-wrench"></i>-->
-<!--                <span>Utilities</span>-->
-<!--            </a>-->
-<!--            <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities"-->
-<!--                 data-parent="#accordionSidebar">-->
-<!--                <div class="bg-white py-2 collapse-inner rounded">-->
-<!--                    <h6 class="collapse-header">Custom Utilities:</h6>-->
-<!--                    <a class="collapse-item" th:href="@{/utilities-color}">Colors</a>-->
-<!--                    <a class="collapse-item" th:href="@{/utilities-border}">Borders</a>-->
-<!--                    <a class="collapse-item" th:href="@{/utilities-animation}">Animations</a>-->
-<!--                    <a class="collapse-item" th:href="@{/utilities-other}">Other</a>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </li>-->
-
-        <!-- Divider -->
-        <hr class="sidebar-divider">
-
-        <!-- Heading -->
-        <div class="sidebar-heading" style="font-size: large">
-            내 정보 관리
-        </div>
-
-        <!-- Nav Item - Pages Collapse Menu -->
-<!--        <li class="nav-item">-->
-<!--            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages"-->
-<!--               aria-expanded="true" aria-controls="collapsePages">-->
-<!--                <i class="fas fa-fw fa-folder"></i>-->
-<!--                <span>Pages</span>-->
-<!--            </a>-->
-<!--            <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">-->
-<!--                <div class="bg-white py-2 collapse-inner rounded">-->
-<!--                    <h6 class="collapse-header">Login Screens:</h6>-->
-<!--                    <a class="collapse-item" th:href="@{/login}">Login</a>-->
-<!--                    <a class="collapse-item" th:href="@{/register}">Register</a>-->
-<!--                    <a class="collapse-item" th:href="@{/forgot-password}">Forgot Password</a>-->
-<!--                    <div class="collapse-divider"></div>-->
-<!--                    <h6 class="collapse-header">Other Pages:</h6>-->
-<!--                    <a class="collapse-item" th:href="@{/404}">404 Page</a>-->
-<!--                    <a class="collapse-item" th:href="@{/blank}">Blank Page</a>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </li>-->
-
-        <!-- Nav Item - Charts -->
-        <li class="nav-item">
-            <a class="nav-link" th:href="@{/charts}">
-                <i class="fas fa-fw fa-chart-area"></i>
-                <span>로그아웃</span></a>
-        </li>
-
-        <!-- Nav Item - Tables -->
-        <li class="nav-item">
-            <a class="nav-link" th:href="@{/tables}">
-                <i class="fas fa-fw fa-table"></i>
-                <span>Tables</span></a>
-        </li>
-
-        <!-- Divider -->
-        <hr class="sidebar-divider d-none d-md-block">
-
-        <!-- Sidebar Toggler (Sidebar) -->
-        <div class="text-center d-none d-md-inline">
-            <button class="rounded-circle border-0" id="sidebarToggle"></button>
-        </div>
-
-
-    </ul>
-
-    <!-- Content Wrapper -->
-    <div id="content-wrapper" class="d-flex flex-column">c
-        <!-- Main Content -->
+    <div class="header" th:replace="~{layouts/sidebar :: sidebar}"></div>
+    <div id="content-wrapper" class="d-flex flex-column">
         <div id="content">
-
-            <!-- Begin Page Content -->
-            <div class="container-fluid mb-4" style="max-width: 100%; padding-top: 60px; padding-left: 50px; padding-right: 50px;">
+            <div class="container-fluid mb-4"
+                 style="max-width: 100%; padding-top: 60px; padding-left: 50px; padding-right: 50px;">
                 <div class="row">
                     <div class="col-lg-12 mb-4">
                         <div style="margin-bottom: 30px;">
-                            <h1 class="h3 text-gray-800">개쩌는 팀1</h1>
+                            <h1 class="h3 text-gray-800" id="teamNameHeading">팀 이름</h1>
                         </div>
                         <div class="card border-left-primary shadow h-100 py-2">
                             <div class="card-body">
                                 <div class="row no-gutters align-items-center">
-                                    <div class="col mr-2">
-                                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                    <div class="col-12 mb-3">
+                                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1"
+                                             style="margin-bottom: 10px;">
                                             서비스 이름
                                         </div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800">내가 만든 개쩌는 서비스</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="serviceName">서비스
+                                            이름</div>
                                     </div>
-                                    <div class="col mr-2">
-                                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                    <div class="col-12 mb-3">
+                                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1"
+                                             style="margin-bottom: 10px;">
                                             서비스 키
                                         </div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800">asjedwkohrfsaikuedwolfhjsakdfhkjl</div>
-                                    </div>
-                                    <div class="col mr-2">
-                                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                            앱 ID
+                                        <div class="input-group">
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="serviceKey">서비스
+                                                키</div>
+                                            <div class="input-group-append">
+                                                <button class="btn btn-primary" onclick="copyServiceKey()">복사</button>
+                                                <button class="btn btn-danger" onclick="reclaimServiceKey()">재발급</button>
+                                            </div>
                                         </div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800">dfcgh nesujfycntghrkujdshcgnyjdirfm</div>
-                                    </div>
-                                    <div class="col-auto">
-                                        <i class="fas fa-calendar fa-2x text-gray-300"></i>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <!-- Page Heading -->
-                <!--                <div class="d-sm-flex align-items-center justify-content-between mb-4">-->
-                <!--                    <div class="team-card">-->
-                <!--                        <div class="card shadow h-100 add-team-card" style="cursor:pointer;">-->
-                <!--                            <div class="card-body d-flex align-items-center">-->
-                <!--                                &lt;!&ndash; "+" 아이콘 추가. FontAwesome 라이브러리를 사용합니다. &ndash;&gt;-->
-                <!--                                <i class="fas fa-plus-circle fa-2x"></i>-->
-                <!--                                <h5 class="card-title ml-3">팀 추가하기</h5>-->
-                <!--                            </div>-->
-                <!--                        </div>-->
-                <!--                    </div>-->
-                <!--                </div>-->
-
-                <!-- Team List -->
-                <div class="align-items-center mb-4">
-                    <div id="teamList" class="row">
-                        <!-- Team Card Example will be appended here -->
-                    </div>
-                </div>
-                <!-- /.row -->
-
             </div>
-            <!-- /.container-fluid -->
-
         </div>
-        <!-- End of Main Content -->
-
-        <!-- Footer -->
         <div class="footer" th:replace="~{layouts/footer :: footer}"></div>
-        <!-- End of Footer -->
-
-    </div>
-    <!-- End of Content Wrapper -->
-
-</div>
-<!-- End of Page Wrapper -->
-
-<!-- Team Add Modal -->
-<div class="modal fade" id="teamAddModal" tabindex="-1" role="dialog" aria-labelledby="teamAddModalLabel"
-     aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="teamAddModalLabel">팀 추가</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="teamForm">
-                    <div class="form-group">
-                        <label for="teamName">팀 이름</label>
-                        <input type="text" class="form-control" id="teamName" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="serviceName">서비스 이름</label>
-                        <input type="text" class="form-control" id="serviceName" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="email">이메일 추가</label>
-                        <input type="email" class="form-control" id="email" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="domainUrl">도메인 URL</label>
-                        <input type="url" class="form-control" id="domainUrl" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="redirectUrl">리다이렉트 URL</label>
-                        <input type="url" class="form-control" id="redirectUrl" required>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
-                <button type="button" class="btn btn-primary" onclick="addTeam()">저장</button>
-            </div>
-        </div>
     </div>
 </div>
-
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<script th:src="@{/vendor/jquery/jquery.min.js}"></script>
+<script th:src="@{/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/vendor/jquery-easing/jquery.easing.min.js}"></script>
+<script th:src="@{/js/sb-admin-2.min.js}"></script>
 <script th:inline="javascript">
-    // document.querySelector('.add-team-card').addEventListener('click', function () {
-    //     $('#teamAddModal').modal('show');
-    // });
-    //
-    // function addTeam() {
-    //     var teamName = document.getElementById('teamName').value;
-    //     var serviceName = document.getElementById('serviceName').value;
-    //     var email = document.getElementById('email').value;
-    //     var domainUrl = document.getElementById('domainUrl').value;
-    //     var redirectUrl = document.getElementById('redirectUrl').value;
-    //
-    //     var teamList = document.getElementById('teamList');
-    //     var teamCard = document.createElement('div');
-    //     teamCard.classList.add('col-md-4', 'mb-4', 'team-card');
-    //     teamCard.innerHTML = `<div class="card shadow h-100">
-    //         <div class="card-body">
-    //             <h5 class="card-title">${teamName}</h5>
-    //             <p class="card-text">서비스: ${serviceName}</p>
-    //             <p class="card-text">이메일: ${email}</p>
-    //             <p class="card-text">도메인: ${domainUrl}</p>
-    //             <p class="card-text">리다이렉트: ${redirectUrl}</p>
-    //         </div>
-    //     </div>`;
-    //     teamList.appendChild(teamCard);
-    //     $('#teamAddModal').modal('hide');
-    //     document.getElementById('teamForm').reset();
-    // }
-</script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelector('.add-team-card').addEventListener('click', function () {
+            $('#teamAddModal').modal('show');
+        });
+    });
 
+    function updateTeamCount() {
+        var teamCount = document.getElementById('teamCount');
+        var currentCount = parseInt(teamCount.textContent.replace(/\D/g, ''));
+        teamCount.textContent = ` (${currentCount + 1})`;
+    }
+
+    function addInputField(groupId) {
+        var group = document.getElementById(groupId);
+        var inputGroup = group.querySelector('.input-group').cloneNode(true);
+        inputGroup.querySelector('input').value = '';
+        group.appendChild(inputGroup);
+    }
+</script>
+<link th:href="@{/js/sidebar.js}">
 </body>
 
 </html>
