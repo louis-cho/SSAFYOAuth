@@ -57,7 +57,6 @@ public class TeamServiceImpl implements TeamService {
 	private final AmazonS3Client s3client;
 	private final MemberRepository memberRepository;
 	private final RedirectService redirectService;
-
 	private boolean test = true;
 
 	@Value("${cloud.aws.s3.bucket}")

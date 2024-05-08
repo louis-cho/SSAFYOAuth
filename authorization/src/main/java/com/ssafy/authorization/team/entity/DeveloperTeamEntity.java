@@ -55,4 +55,9 @@ public class DeveloperTeamEntity {
 
 	@Column(name = "leader_member_seq", nullable = false)
 	private Integer leader;
+
+	@Column(nullable = false, unique = true)
+	private String clientId;
+
+
 }

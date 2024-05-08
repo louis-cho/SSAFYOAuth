@@ -11,15 +11,18 @@ import jakarta.persistence.IdClass;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Table(name = "team_list")
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @IdClass(TeamListPK.class)
 @Immutable
+@Getter
+@ToString
 public class TeamListEntity {
 
 	@Id
@@ -60,4 +63,6 @@ public class TeamListEntity {
 	@Column(name = "is_delete", nullable = false)
 	private Boolean isDelete;
 
+	@Column
+	private String clientId;
 }
