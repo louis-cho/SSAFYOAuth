@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>SSAFY Auth - Dashboard</title>
+
+    <!-- Custom fonts for this template-->
+    <link th:href="@{/vendor/fontawesome-free/css/all.min.css}" rel="stylesheet" type="text/css">
+    <link th:href="@{https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i}" rel="stylesheet">
+
+    <!-- Custom styles for this template-->
+    <link rel="stylesheet" th:href="@{/css/footer.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/header.css}">
+    <link th:href="@{/css/sb-admin-2.min.css}" rel="stylesheet">
+    <link th:href="@{/css/main.css}" rel="stylesheet">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+
+    <style>
+        .team-contents {
+            display: flex;
+            flex-direction: row;
+        }
+        .my-team-title {
+            margin: 50px 0 15px 0;
+        }
+        .team-content {
+            margin: 1%;
+        }
+        #team-name-container {
+            margin-bottom: 3%;
+        }
+        .img-content {
+            padding: 10%;
+        }
+    </style>
+</head>
+<body id="page-top" th:class="${bodyClass}">
+<!-- 헤더 -->
+<div class="header" th:replace="~{layouts/header :: header}"></div>
+<!-- 헤더 -->
+<div id="wrapper">
+    <!-- 사이드 바 start -->
+    <div class="header" th:replace="~{layouts/sidebar :: sidebar}"></div>
+    <!-- 사이드 바 end -->
+    <!-- 메인 컨텐츠 start -->
+    <div id="content-wrapper" class="d-flex flex-column align-items-center">
+        <div class="container my-team-title col-lg-9 mb-4" id="team-container">
+            <div id="team-name-container" class="card shadow bg-primary rounded">
+                <h1 id="team-name" class="card-header">Team Name</h1>
+            </div>
+            <div class="team-contents shadow bg-body-tertiary rounded card">
+                <div class="col-3 team-content">
+                    <img class="rounded-circle col-12 card-img img-content" src="/image/noimage.jpg">
+                    <div class="col-12 justify-content-center d-flex img-content">
+                        <button type="button" class="btn btn-outline-primary">수정</button>
+                        <btoon type="button" class="btn btn-outline-danger">삭제</btoon>
+                    </div>
+                </div>
+                <div class="col-9 card-body" id="team-detail">
+                    <div id="service-name-container" class="form-floating input-group team-content">
+                        <label for="service-name">Service Name (서비스 명)</label>
+                        <input type="text" class="form-control rounded" id="service-name" disabled>
+                        <button type="button" class="btn btn-outline-primary input-group-append" style="margin-right: 2%">수정</button>
+                    </div>
+                    <div id="service-key-container" class="form-floating team-content">
+                        <label form="service-key">Service Key (서비스 키)</label>
+                        <div class="input-group">
+                            <textarea id="service-key" class="form-control" disabled></textarea>
+                            <div class="d-flex input-group-append">
+                                <button id="service-key-copy-btn" class="btn btn-outline-success">copy</button>
+                                <button id="service-key-refresh-btn" class="btn btn-outline-warning">refresh</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="domain-url-container" class="team-content">
+                        <label for="domain-url-list">Domain Urls</label>
+                        <ul id="domain-url-list" class="list-group list-group-flush">
+                        </ul>
+                        <button type="button" class="btn btn-outline-primary">수정</button>
+                    </div>
+                    <div id="redirect-url-container" class="team-content">
+                        <label for="redirect-url-list">Redirect Urls</label>
+                        <ul id="redirect-url-list" class="list-group list-group-flush">
+                        </ul>
+                        <button type="button" class="btn btn-outline-primary">수정</button>
+                    </div>
+                    <div id="members-container" class="team-content">
+                        <label for="member-list">Members</label>
+                        <ul id="member-list" class="list-group list-group-flush">
+                        </ul>
+                        <button type="button" class="btn btn-outline-primary">수정</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 메인 컨텐츠 end-->
+</div>
+<!-- 푸터 start -->
+<div class="footer" th:replace="~{layouts/footer :: footer}"></div>
+<!-- 푸터 end -->
+</body>
+<script>
+    const access_token = getCookie('access_token');
+
+    function getCookie(name) {
+        let cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            let cookie = cookies[i];
+            while (cookie.charAt(0) === ' ') {
+                cookie = cookie.substring(1);
+            }
+            if (cookie.indexOf(name + "=") === 0) {
+                return cookie.substring(name.length + 1, cookie.length);
+            }
+        }
+        // 해당 이름의 쿠키가 없으면 undefined 반환
+        return undefined;
+    }
+</script>
+</html>

@@ -86,8 +86,9 @@
                         <p class="card-text">status: ${team.isLeader?'Leader':'Member'}</p>
                         <p class="card-text">최초 게시일: ${team.createDate}</p>
                         <p class="card-text">최종 수정일: ${team.modifyDate}</p>
-                        <div style="display: none;" class="team-seq">${team.teamSeq}</div>
-                        <button type="button">details</button>
+                        <form method="get" action='/team/detail/${team.teamSeq}'>
+                            <button type="submit" class="btn btn-primary">details</button>
+                        </form>
                     </div>
                 </div>`;
                 teamList.appendChild(teamCard);
