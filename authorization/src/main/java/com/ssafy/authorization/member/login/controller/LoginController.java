@@ -29,7 +29,6 @@ public class LoginController {
     private final LoginService loginService;
     private final Map<String, SseEmitter> userEmitters;
 
-    private final Map<String, LocalDateTime> loginRequest;
 
     private RedisTemplate<String, String> redisTemplate;
 
@@ -38,13 +37,13 @@ public class LoginController {
     LoginController(LoginService loginService, RedisTemplate<String, String> redisTemplate) {
         this.loginService = loginService;
         this.userEmitters = new ConcurrentHashMap<>();
-        this.loginRequest = new ConcurrentHashMap<>();
         this.redisTemplate = redisTemplate;
     }
 
     @PostMapping("/waitSignal")
     public SseEmitter waitSignal(@RequestBody LoginRequest request) {
-        final SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
+
+        final SseEmitter emitter = new SseEmitter(5 * 60 * 1000L);
         userEmitters.put(request.toString(), emitter);
 
         try {
@@ -107,9 +106,10 @@ public class LoginController {
 
     @Scheduled(fixedRate = 5000)
     public void sendQueueUpdates() {
+        AtomicInteger queueSize = loginService.getLoginQueueManager().getQueueSize();  // 대기열 크기를 가져옵니다
+
         userEmitters.forEach((userId, emitter) -> {
             try {
-                AtomicInteger queueSize = loginService.getLoginQueueManager().getQueueSize();  // 대기열 크기를 가져옵니다
                 emitter.send(SseEmitter.event().name("queue-update").data(queueSize));
             } catch (IOException e) {
                 emitter.completeWithError(e);
