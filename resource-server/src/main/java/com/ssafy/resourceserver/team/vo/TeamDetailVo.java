@@ -17,4 +17,5 @@ public class TeamDetailVo {
 	private List<String> domainUrl;
 	private List<String> redirectUrl;
 	private List<TeamMemberVo> members;
+	private String image;
 }
