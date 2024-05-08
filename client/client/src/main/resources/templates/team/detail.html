@@ -79,14 +79,11 @@
                         <input type="text" class="form-control rounded" disabled id="service-name">
                         <button type="button" class="btn btn-outline-primary input-group-append">수정</button>
                     </div>
-<!--                    <div id="service-key-container" class="team-content input-group">-->
-<!--                        <label form="service-key" class="input-group-text">Service Key&emsp;</label>-->
-<!--                        <textarea id="service-key" class="form-control" disabled></textarea>-->
-<!--                        <div class="d-flex input-group-append">-->
-<!--                            <button id="service-key-copy-btn" class="btn btn-outline-success">copy</button>-->
-<!--                            <button id="service-key-refresh-btn" class="btn btn-outline-warning">refresh</button>-->
-<!--                        </div>-->
-<!--                    </div>-->
+                    <div id="client-id-container" class="team-content input-group">
+                        <label form="client-id" class="input-group-text">Client id</label>
+                        <input id="client-id" class="form-control" disabled type="text"/>
+                        <button id="client-id-copy-btn" class="btn btn-success input-group-append">copy</button>
+                    </div>
                     <div id="redirect-url-container" class="team-content">
                         <label for="redirect-url-list">Redirect Urls</label>
                         <ul id="redirect-url-list" class="list-group list-group-flush">
@@ -127,7 +124,7 @@
         console.log(team);
         document.getElementById("team-name").innerText = team.teamName;
         document.getElementById("service-name").value = team.serviceName;
-        // document.getElementById("service-key").value = team.serviceKey;
+        document.getElementById("client-id").value = team.clientId;
         let redirectUrl = team.redirectUrl;
         if(redirectUrl != null) {
             let liUrl = '';

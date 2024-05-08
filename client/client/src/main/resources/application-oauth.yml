@@ -33,10 +33,10 @@ spring:
 
           ssafyOAuth:
             provider: ssafyOAuth
-            client-id: 1234
+            client-id: ssafyauthDeveloperSystem
             client-secret: 1234
             authorization-grant-type: authorization_code
-            redirect-uri: "http://localhost:8080/login/oauth2/code/1234"
+            redirect-uri: "http://localhost:8080/login/oauth2/code/ssafyOAuth"
             scope: email,image
             client-name: ssafyOAuth
 
