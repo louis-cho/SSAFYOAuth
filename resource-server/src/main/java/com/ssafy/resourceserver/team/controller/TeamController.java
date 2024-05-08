@@ -155,4 +155,5 @@ public class TeamController {
 		model.addAllAttributes(data);
 		return "team/invite";
 	}
+
 }
