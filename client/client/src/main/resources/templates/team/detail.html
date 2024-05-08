@@ -32,7 +32,7 @@
             margin: 50px 0 15px 0;
         }
         .team-content {
-            margin: 1%;
+            margin-bottom: 1%;
         }
         #team-name-container {
             margin-bottom: 2%;
@@ -49,6 +49,9 @@
         .main-card {
             padding-right: 5%;
         }
+        label {
+            padding-top: 1%;
+        }
     </style>
 </head>
 <body id="page-top" th:class="${bodyClass}">
@@ -62,42 +65,60 @@
     <!-- 메인 컨텐츠 start -->
     <div id="content-wrapper" class="d-flex flex-column align-items-center">
         <div class="container my-team-title col-lg-9 mb-4" id="team-container">
+            <!-- 팀 이름 section start -->
             <div id="team-name-container" class="card shadow bg-primary rounded">
                 <h1 id="team-name" class="card-header">Team Name</h1>
             </div>
+            <!-- 팀 이름 section end -->
+            <!-- 팀 정보 section start -->
             <div class="team-contents shadow bg-body-tertiary rounded card">
+                <!-- 팀 사진 card start -->
                 <div class="col-3 team-content">
                     <img class="rounded-circle col-12 card-img img-content" src="/image/noimage.jpg" id="service-image">
                     <div class="col-12 justify-content-center d-flex img-content">
-                        <button type="button" class="btn btn-outline-primary" style="margin-right: 10%;">수정</button>
-                        <btoon type="button" class="btn btn-outline-danger">삭제</btoon>
+                        <button type="button" class="btn btn-outline-primary" style="margin-right: 10%;" data-bs-toggle="modal" data-bs-target="#image-update-modal">수정</button>
+                        <btoon type="button" class="btn btn-outline-danger" id="image-delete-btn">삭제</btoon>
                     </div>
                 </div>
+                <!-- 팀 사진 card end -->
+                <!-- 팀 정보 상세 card start -->
                 <div class="col-9 card-body main-card" id="team-detail">
+                    <!-- service name start -->
                     <div id="service-name-container" class="input-group team-content">
                         <label for="service-name" class="input-group-text">Service Name</label>
                         <input type="text" class="form-control rounded" disabled id="service-name">
                         <button type="button" class="btn btn-outline-primary input-group-append">수정</button>
                     </div>
+                    <!-- service name end -->
+                    <!-- client id start -->
                     <div id="client-id-container" class="team-content input-group">
                         <label form="client-id" class="input-group-text">Client id</label>
                         <input id="client-id" class="form-control" disabled type="text"/>
                         <button id="client-id-copy-btn" class="btn btn-success input-group-append">copy</button>
                     </div>
+                    <!-- client id end -->
+                    <!-- redirect urls start -->
                     <div id="redirect-url-container" class="team-content">
-                        <label for="redirect-url-list">Redirect Urls</label>
+                        <div class="d-flex justify-content-between">
+                            <label for="redirect-url-list">Redirect Urls</label><button type="button" class="btn btn-outline-primary" style="margin-top: 1%; margin-bottom: 1%;">수정</button>
+                        </div>
                         <ul id="redirect-url-list" class="list-group list-group-flush">
                         </ul>
-                        <button type="button" class="btn btn-outline-primary">수정</button>
                     </div>
+                    <!-- redirect urls end -->
+                    <!-- members start -->
                     <div id="members-container" class="team-content">
-                        <label for="member-list">Members</label>
+                        <div class="d-flex justify-content-between">
+                            <label for="member-list">Members</label><button type="button" class="btn btn-outline-primary" style="margin-top: 1%; margin-bottom: 1%;">수정</button>
+                        </div>
                         <ul id="member-list" class="list-group list-group-flush">
                         </ul>
-                        <button type="button" class="btn btn-outline-primary">수정</button>
                     </div>
+                    <!-- members end -->
                 </div>
+                <!-- 팀 정보 상세 card start -->
             </div>
+            <!-- 팀 정보 section end -->
         </div>
     </div>
     <!-- 메인 컨텐츠 end-->
@@ -105,6 +126,26 @@
 <!-- 푸터 start -->
 <div class="footer" th:replace="~{layouts/footer :: footer}"></div>
 <!-- 푸터 end -->
+<!-- 이미지 업데이트 모달 start -->
+<div class="modal fade" id="image-update-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- 모달 header start -->
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Upload Image</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="close-image-update-modal-btn"></button>
+            </div>
+            <!-- 모달 header end -->
+            <div class="modal-body">
+                <input type="file" class="form-control-file form-control" id="temp-service-image">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="service-image-update-btn">수정</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 이미지 업데이트 모달 end -->
 </body>
 <script>
     const access_token = getCookie('access_token');
@@ -137,7 +178,7 @@
         }
         let members = team.members;
         let liMember = '';
-        for(let i = 0; i < 1; i++){
+        for(let i = 0; i < members.length; i++){
             liMember += `<li class="list-group-item d-flex">
                             <div tabindex="0" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-content="${members[i].email}">
                                 <button type="button" class="member-btn" disabled>${members[i].name}(${members[i].email})</button>
@@ -156,6 +197,7 @@
             document.getElementById("service-image").src = team.image;
         }
     });
+    document.getElementById("")
     function getCookie(name) {
         let cookies = document.cookie.split(';');
         for (let i = 0; i < cookies.length; i++) {
@@ -170,5 +212,45 @@
         // 해당 이름의 쿠키가 없으면 undefined 반환
         return undefined;
     }
+    let updatedImageUrl = '';
+    document.getElementById("temp-service-image").addEventListener('change', event =>{
+        if(event.target.files[0]) {
+            let data = new FormData();
+            data.append('image', event.target.files[0]);
+            fetch('http://localhost:8090/api/team/image', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${access_token}`,
+                },
+                body: data
+            }).then(res => res.json()).then(data => {
+                if(data.msg){
+                    alert(data.msg);
+                    return;
+                }
+                updatedImageUrl = data.url;
+            });
+        }
+    });
+    document.getElementById("service-image-update-btn").addEventListener('click', event => {
+        let data = {
+            url: updatedImageUrl,
+        };
+        fetch(`http://localhost:8090/api/team/[[${teamSeq}]]/image`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${access_token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        }).then(res => res.json()).then(data => {
+            if(data.msg){
+                alert(msg);
+                return;
+            }
+            document.getElementById("close-image-update-modal-btn").click();
+            document.getElementById("service-image").src = updatedImageUrl;
+        });
+    });
 </script>
 </html>
