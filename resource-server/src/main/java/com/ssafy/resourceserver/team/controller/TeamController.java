@@ -135,7 +135,7 @@ public class TeamController {
 
 	@PostMapping("/{team-seq}/image")
 	@ResponseBody
-	public Map teamImageModify(@RequestParam("team-seq") Integer teamSeq, @RequestBody @Valid TeamImageVo vo, @AuthenticationPrincipal Jwt jwt) {
+	public Map teamImageModify(@PathVariable("team-seq") Integer teamSeq, @RequestBody @Valid TeamImageVo vo, @AuthenticationPrincipal Jwt jwt) {
 		String email = jwt.getClaimAsString("sub");
 		Map data = teamService.modifyTeamImage(teamSeq, vo, email);
 		return data;

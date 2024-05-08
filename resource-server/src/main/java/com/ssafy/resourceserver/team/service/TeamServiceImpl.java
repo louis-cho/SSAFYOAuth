@@ -269,6 +269,7 @@ public class TeamServiceImpl implements TeamService {
 		vo.setServiceName(team.getServiceName());
 		vo.setServiceKey(team.getServiceKey());
 		vo.setImage(team.getServiceImage());
+		vo.setClientId(team.getClientId());
 		List<TeamMemberVo> memberList = teamMemberWithInfoRepository.findAllByTeamSeq(teamSeq).stream().map(entity -> {
 			TeamMemberVo memberVo = new TeamMemberVo();
 			memberVo.setEmail(entity.getEmail());
