@@ -21,6 +21,7 @@ import com.ssafy.resourceserver.team.vo.TeamAddVo;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -118,12 +119,8 @@ public class TeamServiceImpl implements TeamService {
 		dto.setLeaderMemberSeq(mySeq);
 
 		// 팀 생성
-		DeveloperTeamEntity entity = new DeveloperTeamEntity();
-		entity.setServiceName(dto.getServiceName());
-		entity.setTeamName(dto.getTeamName());
-		entity.setServiceName(dto.getServiceName());
-		entity.setIsDelete(false);
-		entity.setLeader(mySeq);
+		DeveloperTeamEntity entity = DeveloperTeamEntity.CreateTeam(dto, mySeq,UUID.randomUUID().toString());
+
 		System.out.println(entity);
 		Integer teamSeq = developerTeamRepository.save(entity).getSeq();
 
@@ -234,6 +231,8 @@ public class TeamServiceImpl implements TeamService {
 			vo.setIsAccept(entity.getIsAccept());
 			vo.setCreateDate(entity.getCreateDate());
 			vo.setModifyDate(entity.getModifyDate());
+			vo.setClientId(entity.getClientId());
+			vo.setServiceKey(entity.getServiceKey());
 			return vo;
 		}).collect(Collectors.toList());
 		data.put("msg", null);

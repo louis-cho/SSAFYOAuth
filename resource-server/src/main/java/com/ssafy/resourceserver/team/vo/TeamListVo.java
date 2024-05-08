@@ -17,4 +17,6 @@ public class TeamListVo {
 	private LocalDateTime createDate;
 	private LocalDateTime modifyDate;
 	private Boolean isAccept;
+	private String serviceKey;
+	private String clientId;
 }
