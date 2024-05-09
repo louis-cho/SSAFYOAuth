@@ -42,6 +42,8 @@ public class RedirectServiceImpl implements RedirectService {
 			if (count < 6) {
 				RedirectEntity redirectEntity = new RedirectEntity(teamId, 0, redirectUrl);
 				redirectEntityRepository.save(redirectEntity);
+			}else{
+				return -1;
 			}
 		} catch (Exception e) {
 			return -1;
