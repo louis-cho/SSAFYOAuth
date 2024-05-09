@@ -1,5 +1,6 @@
 package com.ssafy.client.user.config;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
@@ -20,6 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.CorsUtils;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.ssafy.client.user.CustomOAuth2FailHandler;
 import com.ssafy.client.user.CustomSuccessHandler;
@@ -98,29 +100,36 @@ public class SecurityConfig {
                             .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED));
 
             http
-                    .cors(corsCustomizer -> corsCustomizer.configurationSource(new CorsConfigurationSource() {
+                .cors(corsCustomizer -> corsCustomizer.configurationSource(new CorsConfigurationSource() {
 
-                        @Override
-                        public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
+                    @Override
+                    public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
+                        // CORS 설정 예시
+                        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+                        CorsConfiguration configuration = new CorsConfiguration();
 
-                            CorsConfiguration configuration = new CorsConfiguration();
+                        // 모든 출처 허용
+                        configuration.setAllowedOriginPatterns(Collections.singletonList("*"));
+                        // 모든 메소드 허용
+                        configuration.setAllowedMethods(
+                            Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+                        // 허용할 헤더 설정
+                        configuration.setAllowedHeaders(
+                            Arrays.asList("Authorization", "Cache-Control", "Content-Type", "Accept",
+                                "X-Requested-With", "remember-me"));
+                        // 브라우저가 응답에서 접근할 수 있는 헤더 설정
+                        configuration.setExposedHeaders(Arrays.asList("Set-Cookie", "Authorization"));
+                        // 자격 증명 허용 설정
+                        configuration.setAllowCredentials(true);
+                        // 사전 요청의 캐시 시간(초) 설정
+                        configuration.setMaxAge(3600L);
 
-                            configuration.setAllowedOrigins(Collections.singletonList("http://localhost:9000"));
-                            configuration.setAllowedOrigins(Collections.singletonList("http://localhost:8080"));
-                            configuration.setAllowedOrigins(Collections.singletonList("https://ssafyauth-resource.duckdns.org"));
-                            configuration.setAllowedOriginPatterns(Collections.singletonList("*"));
-                            configuration.setAllowedMethods(Collections.singletonList("*"));
-                            configuration.setAllowCredentials(true);
-                            configuration.setAllowedHeaders(Collections.singletonList("*"));
-                            configuration.setMaxAge(3600L);
+                        // 모든 URL에 대해 CORS 설정 적용
+                        source.registerCorsConfiguration("/**", configuration);
 
-                            configuration.setExposedHeaders(Collections.singletonList("Set-Cookie"));
-                            configuration.setExposedHeaders(Collections.singletonList("Authorization"));
-
-                            return configuration;
-                        }
-                    }));
-
+                        return configuration;
+                    }
+                }));
 
             return http.build();
         }
