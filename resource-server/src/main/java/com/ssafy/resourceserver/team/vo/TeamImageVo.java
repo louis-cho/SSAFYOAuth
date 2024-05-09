@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class TeamImageVo {
 
 	@NotBlank
-	@Pattern(regexp = "^(https?:\\/\\/)?([\\da-z\\.-]+)\\.([a-z\\.]{2,6})([\\/\\w \\.-]*)*\\/?$")
+	// @Pattern(regexp = "^(https?:\\/\\/)?([\\da-z\\.-]+)\\.([a-z\\.]{2,6})([\\/\\w \\.-]*)*\\/?$")
 	private String url;
 
 }

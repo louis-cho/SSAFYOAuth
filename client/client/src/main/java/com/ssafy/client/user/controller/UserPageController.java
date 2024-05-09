@@ -22,7 +22,6 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class UserPageController {
-	private final TokenService tokenService;
 	private final ApiService apiService;
 	private final ObjectMapper objectMapper;
 	private final String RESOURCES_URL = "http://localhost:8090";

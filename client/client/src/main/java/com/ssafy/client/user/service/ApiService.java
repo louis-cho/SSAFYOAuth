@@ -27,8 +27,8 @@ public class ApiService {
     }
 
 
-    public ArrayList<?> callListApi(String apiUrl) {
-        return restTemplate.getForObject(apiUrl, ArrayList.class);
+    public String callBlockedCountry(String apiUrl) {
+        return restTemplate.getForObject(apiUrl, String.class);
     }
 
     public String callPostFileApi(String apiUrl, ProfileInformationForUpdatesDto dto) {

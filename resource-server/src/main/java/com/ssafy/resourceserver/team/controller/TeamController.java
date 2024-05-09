@@ -2,12 +2,15 @@ package com.ssafy.resourceserver.team.controller;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.ssafy.resourceserver.team.vo.ServiceNameUpdateVo;
 import com.ssafy.resourceserver.team.vo.TeamAddVo;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -69,31 +72,35 @@ public class TeamController {
 	}
 	@GetMapping("/{team-seq}")
 	@ResponseBody
-	public Map teamDetail(@PathVariable("team-seq") Integer teamSeq, Authentication authentication) {
-		Map data = teamService.detailTeam(teamSeq, authentication);
+	public Map teamDetail(@PathVariable("team-seq") Integer teamSeq, @AuthenticationPrincipal Jwt jwt) {
+		String email = jwt.getClaimAsString("sub");
+		Map data = teamService.detailTeam(teamSeq, email);
 		return data;
 	}
 
 	@DeleteMapping("/{team-seq}")
 	@ResponseBody
-	public Map teamDelete(@PathVariable("team-seq") Integer teamSeq, Authentication authentication) {
-		Map data = teamService.deleteTeam(teamSeq, authentication);
+	public Map teamDelete(@PathVariable("team-seq") Integer teamSeq, @AuthenticationPrincipal Jwt jwt) {
+		String email = jwt.getClaimAsString("sub");
+		Map data = teamService.deleteTeam(teamSeq, email);
 		return data;
 	}
 
 	@PutMapping("/{team-seq}")
 	@ResponseBody
 	public Map teamNameUpdate(@PathVariable("team-seq") Integer teamSeq,
-		@RequestBody @Valid TeamNameUpdateVo vo, Authentication authentication) {
-		Map data = teamService.updateTeamName(teamSeq, vo, authentication);
+		@RequestBody @Valid TeamNameUpdateVo vo, @AuthenticationPrincipal Jwt jwt) {
+		String email = jwt.getClaimAsString("sub");
+		Map data = teamService.updateTeamName(teamSeq, vo, email);
 		return data;
 	}
 
 	@PatchMapping("/{team-seq}")
 	@ResponseBody
 	public Map ServiceNameUpdate(@PathVariable("team-seq") Integer teamSeq,
-		@RequestBody @Valid ServiceNameUpdateVo vo, Authentication authentication) {
-		Map data = teamService.updateServiceName(teamSeq, vo, authentication);
+		@RequestBody @Valid ServiceNameUpdateVo vo, @AuthenticationPrincipal Jwt jwt) {
+		String email = jwt.getClaimAsString("sub");
+		Map data = teamService.updateServiceName(teamSeq, vo, email);
 		return data;
 	}
 
@@ -106,15 +113,17 @@ public class TeamController {
 	@PostMapping("/{team-seq}/member/{email}")
 	@ResponseBody
 	public Map memberAdd(@PathVariable("team-seq") Integer teamSeq,
-		@PathVariable("email") String email, Authentication authentication) {
-		return teamService.addMember(teamSeq, email, authentication);
+		@PathVariable("email") String email, @AuthenticationPrincipal Jwt jwt) {
+		String myEmail = jwt.getClaimAsString("sub");
+		return teamService.addMember(teamSeq, email, myEmail);
 	}
 
 	@DeleteMapping("/{team-seq}/member/{email}")
 	@ResponseBody
 	public Map memberDelete(@PathVariable("team-seq") Integer teamSeq,
-		@PathVariable("email") String email, Authentication authentication) {
-		return teamService.deleteMember(teamSeq, email, authentication);
+		@PathVariable("email") String email, @AuthenticationPrincipal Jwt jwt) {
+		String myEmail = jwt.getClaimAsString("sub");
+		return teamService.deleteMember(teamSeq, email, myEmail);
 	}
 
 	@PostMapping("/image")
@@ -125,47 +134,49 @@ public class TeamController {
 
 	@DeleteMapping("/{team-seq}/image")
 	@ResponseBody
-	public Map teamImageDelete(@PathVariable("team-seq") Integer teamSeq, Authentication authentication) {
-		Map data = teamService.deleteTeamImage(teamSeq, authentication);
+	public Map teamImageDelete(@PathVariable("team-seq") Integer teamSeq, @AuthenticationPrincipal Jwt jwt) {
+		String email = jwt.getClaimAsString("sub");
+		Map data = teamService.deleteTeamImage(teamSeq, email);
 		return data;
 	}
 
 	@PostMapping("/{team-seq}/image")
 	@ResponseBody
-	public Map teamImageModify(@RequestParam("team-seq") Integer teamSeq, @RequestBody @Valid TeamImageVo vo,
-		Authentication authentication) {
-		Map data = teamService.modifyTeamImage(teamSeq, vo, authentication);
+	public Map teamImageModify(@PathVariable("team-seq") Integer teamSeq, @RequestBody @Valid TeamImageVo vo, @AuthenticationPrincipal Jwt jwt) {
+		String email = jwt.getClaimAsString("sub");
+		Map data = teamService.modifyTeamImage(teamSeq, vo, email);
 		return data;
 	}
 
 	@GetMapping("/invite")
-	public String invitedTeamList(Model model, Authentication authentication){
-		Map data = teamService.listInvitedTeam(authentication);
+	public String invitedTeamList(Model model, @AuthenticationPrincipal Jwt jwt){
+		String email = jwt.getClaimAsString("sub");
+		Map data = teamService.listInvitedTeam(email);
 		model.addAllAttributes(data);
 		return "team/invite";
 	}
 
 	@PatchMapping("/invite/{team-seq}")
-	public String acceptInvitation(@PathVariable("team-seq") Integer teamSeq, Model model, Authentication authentication){
-		Map data = teamService.acceptInvite(teamSeq, authentication);
+	public String acceptInvitation(@PathVariable("team-seq") Integer teamSeq, Model model, @AuthenticationPrincipal Jwt jwt){
+		String email = jwt.getClaimAsString("sub");
+		Map data = teamService.acceptInvite(teamSeq, email);
 		model.addAllAttributes(data);
 		return "team/invite";
 	}
 
 	@DeleteMapping("/invite/{team-seq}")
-	public String rejectInvitation(@PathVariable("team-seq") Integer teamSeq, Model model, Authentication authentication){
-		Map data = teamService.rejectInvite(teamSeq, authentication);
+	public String rejectInvitation(@PathVariable("team-seq") Integer teamSeq, Model model, @AuthenticationPrincipal Jwt jwt){
+		String email = jwt.getClaimAsString("sub");
+		Map data = teamService.rejectInvite(teamSeq, email);
 		model.addAllAttributes(data);
 		return "team/invite";
 	}
 
 	@GetMapping("/{teamSeq}/country-ip")
 	@ResponseBody
-	public ArrayList<String> getAllBlockedCountries(@PathVariable Integer teamSeq) {
-		ArrayList<String> arr = new ArrayList<>();
-		log.debug("blocked Countries 들어옴");
-		arr.add("KR");
-		arr.add("UR");
-		return arr;
+	public ResponseEntity<?> getAllBlockedCountries(@PathVariable Integer teamSeq ,@AuthenticationPrincipal Jwt jwt) {
+		List<String> arr = teamService.getBlockedCountriesByTeamId(teamSeq);
+
+		return ResponseEntity.status(HttpStatus.OK).body(arr);
 	}
 }

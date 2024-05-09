@@ -11,6 +11,9 @@ import org.springframework.security.oauth2.client.authentication.OAuth2Authentic
 
 import java.io.IOException;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class OAuth2Interceptor implements ClientHttpRequestInterceptor {
 
     @Autowired
@@ -23,9 +26,13 @@ public class OAuth2Interceptor implements ClientHttpRequestInterceptor {
         if (authenticationToken != null) {
             String accessToken = tokenService.getAccessToken(authenticationToken);
             request.getHeaders().setBearerAuth(accessToken);
+            log.info("API 쏘기전 token {} ",accessToken);
+
         }
+        log.info("API 쏘기전 request {} ",request.getURI());
 
         return execution.execute(request, body);
+
     }
 
     private OAuth2AuthenticationToken getAuthenticationToken() {

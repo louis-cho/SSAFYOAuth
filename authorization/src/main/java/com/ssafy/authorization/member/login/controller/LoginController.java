@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.authorization.member.login.model.LoginRequest;
 import com.ssafy.authorization.member.login.service.LoginService;
+import com.ssafy.authorization.stats.login.model.LoginStats;
+import com.ssafy.authorization.stats.login.service.LoginStatsService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -33,13 +37,16 @@ public class LoginController {
 
 
     private RedisTemplate<String, String> redisTemplate;
+    private final LoginStatsService loginStatsService;
 
 
     @Autowired
-    LoginController(LoginService loginService, RedisTemplate<String, String> redisTemplate) {
+    LoginController(LoginService loginService, RedisTemplate<String, String> redisTemplate
+    ,LoginStatsService loginStatsService) {
         this.loginService = loginService;
         this.userEmitters = new ConcurrentHashMap<>();
         this.redisTemplate = redisTemplate;
+        this.loginStatsService = loginStatsService;
     }
 
     @PostMapping("/waitSignal")
@@ -104,11 +111,16 @@ public class LoginController {
 
         SseEmitter emitter = userEmitters.get(key);
         if (emitter != null) {
+            LoginStats loginStats = new LoginStats(request.getUsername(), String.valueOf(request.getTeamId()),
+                Instant.now());
             try {
                 emitter.send(SseEmitter.event().name("WAIT_RESULT").data("Wait successful"));
                 emitter.complete();
+                loginStats.isSuccess(true);
                 userEmitters.remove(key);
+                loginStatsService.save(loginStats);
             } catch (IOException e) {
+                loginStats.isSuccess(false);
                 emitter.completeWithError(e);
                 userEmitters.remove(key);
             }
