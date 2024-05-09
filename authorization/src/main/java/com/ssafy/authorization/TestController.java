@@ -18,6 +18,8 @@ public class TestController {
 		// emailService.sendEmail("kdn1030@naver.com");
 		return "signup";
 	}
+
+
 	@GetMapping("/my_team_member")
 	public String my_team_member() throws Exception {
 		// emailService.sendEmail("kdn1030@naver.com");
@@ -47,4 +49,5 @@ public class TestController {
 	public String forgot_password(){
 		return "forgot_password";
 	}
+
 }
