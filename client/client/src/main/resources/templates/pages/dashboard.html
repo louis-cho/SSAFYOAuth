@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>SSAFY Auth - 대시보드</title>
+
+    <!-- Custom fonts for this template-->
+    <link th:href="@{/vendor/fontawesome-free/css/all.min.css}" rel="stylesheet" type="text/css">
+    <link th:href="@{https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i}"
+          rel="stylesheet">
+
+    <!-- Custom styles for this template-->
+    <link rel="stylesheet" th:href="@{/css/footer.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/header.css}">
+    <link th:href="@{/css/sb-admin-2.min.css}" rel="stylesheet">
+    <link th:href="@{/css/main.css}" rel="stylesheet">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <script th:src="@{/vendor/jquery/jquery.min.js}"></script>
+    <script th:src="@{/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
+    <script th:src="@{/vendor/jquery-easing/jquery.easing.min.js}"></script>
+    <!-- 페이지 로딩될 때 데이터 fetch -->
+    <script th:src="@{/js/sb-admin-2.min.js}"></script>
+    <script th:inline="javascript">
+        function getCookie(name) {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = cookies[i];
+                while (cookie.charAt(0) === ' ') {
+                    cookie = cookie.substring(1);
+                }
+                if (cookie.indexOf(name + "=") === 0) {
+                    return cookie.substring(name.length + 1, cookie.length);
+                }
+            }
+            return undefined;
+        }
+
+        window.onload = function () {
+            loadData();
+            loadTeams();
+            var teamSeq = window.location.pathname.match(/\/teams\/(\d+)\/summary/)[1];
+            loadTeamData(teamSeq);
+        };
+
+        function loadData() {
+            var token = getCookie("access_token")
+            $.ajax({
+                url: 'http://localhost:8090/api/team',
+                type: 'GET',
+                contentType: 'application/json',
+                headers: {
+                    "Authorization": 'Bearer ' + token
+                },
+                success: function (response) {
+                    displayTeams(response.list);
+                    displayTeamInfo(response.list[0]);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error loading data:', error);
+                }
+            });
+        }
+
+        function loadTeams() {
+            var token = getCookie("access_token");
+            $.ajax({
+                url: 'http://localhost:8090/api/team',
+                type: 'GET',
+                headers: {
+                    "Authorization": 'Bearer ' + token
+                },
+                success: function (response) {
+                    populateSidebar(response.list);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error loading data:', error);
+                }
+            });
+        }
+
+        function populateSidebar(data) {
+            var container = document.getElementById('teamNavContainer');
+            container.innerHTML = '';
+            data.forEach(function (team, index) {
+                var teamNavItem = document.createElement('li');
+                teamNavItem.classList.add('nav-item');
+                teamNavItem.innerHTML = `
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapse${index}"
+                    aria-expanded="true" aria-controls="collapse${index}">
+                    <i class="fas fa-fw fa-cog"></i>
+                    <span>${team.teamName}</span>
+                </a>
+                <div id="collapse${index}" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <h6 class="collapse-header">관리</h6>
+                        <a class="collapse-item" href="/teams/${team.teamSeq}/summary">요약 정보</a>
+                        <a class="collapse-item" href="/teams/${team.teamSeq}/dashboard">대시보드</a>
+                        <a class="collapse-item" href="/teams/${team.teamSeq}/consents">동의 항목</a>
+                        <a class="collapse-item" href="/teams/${team.teamSeq}/country-ip">국가 아이피 관리</a>
+                        <a class="collapse-item" href="/teams/${team.teamSeq}/management">팀 관리</a>
+                        <a class="collapse-item" href="/teams/${team.teamSeq}/settings">설정</a>
+                    </div>
+                </div>`;
+                container.appendChild(teamNavItem);
+            });
+        }
+
+    </script>
+</head>
+
+<body id="page-top" th:class="${bodyClass}">
+<div class="header" th:replace="~{layouts/header :: header}"></div>
+
+<!-- Page Wrapper -->
+<div id="wrapper">
+    <!-- Sidebar -->
+    <div class="header" th:replace="~{layouts/sidebar :: sidebar}"></div>
+
+<!--    <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">-->
+
+<!--        &lt;!&ndash; Sidebar - Brand &ndash;&gt;-->
+<!--        <a class="sidebar-brand d-flex align-items-center justify-content-center" th:href="@{/static}">-->
+<!--            <div class="sidebar-brand-icon rotate-n-15">-->
+<!--                <i class="fas fa-laugh-wink"></i>-->
+<!--            </div>-->
+<!--            <div class="sidebar-brand-text mx-3">SSAFY Auth<sup>306</sup></div>-->
+<!--        </a>-->
+
+<!--        &lt;!&ndash; Divider &ndash;&gt;-->
+<!--        <hr class="sidebar-divider my-0">-->
+
+<!--        &lt;!&ndash; Nav Item - Dashboard &ndash;&gt;-->
+<!--        <li class="nav-item active">-->
+<!--            <a class="nav-link" th:href="@{/static}">-->
+<!--                <i class="fas fa-fw fa-tachometer-alt"></i>-->
+<!--                <span>나의 팀</span></a>-->
+<!--        </li>-->
+
+<!--        &lt;!&ndash; Divider &ndash;&gt;-->
+<!--        <hr class="sidebar-divider">-->
+
+<!--        &lt;!&ndash; Heading &ndash;&gt;-->
+<!--        <div class="sidebar-heading" style="font-size: large">-->
+<!--            나의 팀-->
+<!--        </div>-->
+
+<!--        &lt;!&ndash; Nav Item - Pages Collapse Menu &ndash;&gt;-->
+<!--        <li class="nav-item">-->
+<!--            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"-->
+<!--               aria-expanded="true" aria-controls="collapseTwo">-->
+<!--                <i class="fas fa-fw fa-cog"></i>-->
+<!--                <span>개쩌는 팀1</span>-->
+<!--            </a>-->
+<!--            <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">-->
+<!--                <div class="bg-white py-2 collapse-inner rounded">-->
+<!--                    <h6 class="collapse-header">관리</h6>-->
+<!--                    <a class="collapse-item" th:href="@{/buttons}">요약 정보</a>-->
+<!--                    <a class="collapse-item" th:href="@{/buttons}">대시보드</a>-->
+<!--                    <a class="collapse-item" th:href="@{/cards}">동의 항목</a>-->
+<!--                    <a class="collapse-item" th:href="@{/cards}">팀 관리</a>-->
+<!--                    <a class="collapse-item" th:href="@{/cards}">설정</a>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </li>-->
+
+<!--        <li class="nav-item">-->
+<!--            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseThree"-->
+<!--               aria-expanded="true" aria-controls="collapseThree">-->
+<!--                <i class="fas fa-fw fa-cog"></i>-->
+<!--                <span>개쩌는 팀2</span>-->
+<!--            </a>-->
+<!--            <div id="collapseThree" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">-->
+<!--                <div class="bg-white py-2 collapse-inner rounded">-->
+<!--                    <h6 class="collapse-header">관리</h6>-->
+<!--                    <a class="collapse-item" th:href="@{/buttons}">요약 정보</a>-->
+<!--                    <a class="collapse-item" th:href="@{/buttons}">대시보드</a>-->
+<!--                    <a class="collapse-item" th:href="@{/cards}">동의 항목</a>-->
+<!--                    <a class="collapse-item" th:href="@{/cards}">팀 관리</a>-->
+<!--                    <a class="collapse-item" th:href="@{/cards}">설정</a>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </li>-->
+
+<!--        &lt;!&ndash; Nav Item - Utilities Collapse Menu &ndash;&gt;-->
+<!--        <li class="nav-item">-->
+<!--            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"-->
+<!--               aria-expanded="true" aria-controls="collapseUtilities">-->
+<!--                <i class="fas fa-fw fa-wrench"></i>-->
+<!--                <span>Utilities</span>-->
+<!--            </a>-->
+<!--            <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities"-->
+<!--                 data-parent="#accordionSidebar">-->
+<!--                <div class="bg-white py-2 collapse-inner rounded">-->
+<!--                    <h6 class="collapse-header">Custom Utilities:</h6>-->
+<!--                    <a class="collapse-item" th:href="@{/utilities-color}">Colors</a>-->
+<!--                    <a class="collapse-item" th:href="@{/utilities-border}">Borders</a>-->
+<!--                    <a class="collapse-item" th:href="@{/utilities-animation}">Animations</a>-->
+<!--                    <a class="collapse-item" th:href="@{/utilities-other}">Other</a>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </li>-->
+
+<!--        &lt;!&ndash; Divider &ndash;&gt;-->
+<!--        <hr class="sidebar-divider">-->
+
+<!--        &lt;!&ndash; Heading &ndash;&gt;-->
+<!--        <div class="sidebar-heading" style="font-size: large">-->
+<!--            내 정보 관리-->
+<!--        </div>-->
+
+<!--        &lt;!&ndash; Nav Item - Pages Collapse Menu &ndash;&gt;-->
+<!--        <li class="nav-item">-->
+<!--            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages"-->
+<!--               aria-expanded="true" aria-controls="collapsePages">-->
+<!--                <i class="fas fa-fw fa-folder"></i>-->
+<!--                <span>Pages</span>-->
+<!--            </a>-->
+<!--            <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">-->
+<!--                <div class="bg-white py-2 collapse-inner rounded">-->
+<!--                    <h6 class="collapse-header">Login Screens:</h6>-->
+<!--                    <a class="collapse-item" th:href="@{/login}">Login</a>-->
+<!--                    <a class="collapse-item" th:href="@{/register}">Register</a>-->
+<!--                    <a class="collapse-item" th:href="@{/forgot-password}">Forgot Password</a>-->
+<!--                    <div class="collapse-divider"></div>-->
+<!--                    <h6 class="collapse-header">Other Pages:</h6>-->
+<!--                    <a class="collapse-item" th:href="@{/404}">404 Page</a>-->
+<!--                    <a class="collapse-item" th:href="@{/blank}">Blank Page</a>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </li>-->
+
+<!--        &lt;!&ndash; Nav Item - Charts &ndash;&gt;-->
+<!--        <li class="nav-item">-->
+<!--            <a class="nav-link" th:href="@{/charts}">-->
+<!--                <i class="fas fa-fw fa-chart-area"></i>-->
+<!--                <span>Charts</span></a>-->
+<!--        </li>-->
+
+<!--        &lt;!&ndash; Nav Item - Tables &ndash;&gt;-->
+<!--        <li class="nav-item">-->
+<!--            <a class="nav-link" th:href="@{/tables}">-->
+<!--                <i class="fas fa-fw fa-table"></i>-->
+<!--                <span>Tables</span></a>-->
+<!--        </li>-->
+
+<!--        &lt;!&ndash; Divider &ndash;&gt;-->
+<!--        <hr class="sidebar-divider d-none d-md-block">-->
+
+<!--        &lt;!&ndash; Sidebar Toggler (Sidebar) &ndash;&gt;-->
+<!--        <div class="text-center d-none d-md-inline">-->
+<!--            <button class="rounded-circle border-0" id="sidebarToggle"></button>-->
+<!--        </div>-->
+
+
+<!--    </ul>-->
+
+    <div class="row">
+
+        <!-- Area Chart -->
+        <div class="col-xl-8 col-lg-7">
+            <div class="card shadow mb-4">
+                <!-- Card Header - Dropdown -->
+                <div
+                        class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Earnings Overview</h6>
+                    <div class="dropdown no-arrow">
+                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
+                             aria-labelledby="dropdownMenuLink">
+                            <div class="dropdown-header">Dropdown Header:</div>
+                            <a class="dropdown-item" href="#">Action</a>
+                            <a class="dropdown-item" href="#">Another action</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="#">Something else here</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- Card Body -->
+                <div class="card-body">
+                    <div class="chart-area">
+                        <canvas id="myAreaChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pie Chart -->
+        <div class="col-xl-4 col-lg-5">
+            <div class="card shadow mb-4">
+                <!-- Card Header - Dropdown -->
+                <div
+                        class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Revenue Sources</h6>
+                    <div class="dropdown no-arrow">
+                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
+                             aria-labelledby="dropdownMenuLink">
+                            <div class="dropdown-header">Dropdown Header:</div>
+                            <a class="dropdown-item" href="#">Action</a>
+                            <a class="dropdown-item" href="#">Another action</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="#">Something else here</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- Card Body -->
+                <div class="card-body">
+                    <div class="chart-pie pt-4 pb-2">
+                        <canvas id="myPieChart"></canvas>
+                    </div>
+                    <div class="mt-4 text-center small">
+                                        <span class="mr-2">
+                                            <i class="fas fa-circle text-primary"></i> Direct
+                                        </span>
+                        <span class="mr-2">
+                                            <i class="fas fa-circle text-success"></i> Social
+                                        </span>
+                        <span class="mr-2">
+                                            <i class="fas fa-circle text-info"></i> Referral
+                                        </span>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+
+
+        <!-- line Chart -->
+        <div class="col-xl-4 col-lg-5">
+            <div class="card shadow mb-4">
+                <!-- Card Header - Dropdown -->
+                <div
+                        class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Request Sources</h6>
+                    <div class="dropdown no-arrow">
+                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
+                             aria-labelledby="dropdownMenuLink">
+                            <div class="dropdown-header">Dropdown Header:</div>
+                            <a class="dropdown-item" href="#">Action</a>
+                            <a class="dropdown-item" href="#">Another action</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="#">Something else here</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- Card Body -->
+                <div class="card-body">
+                    <div class="chart-area pt-4 pb-2">
+                        <canvas id="logChart"></canvas>
+                    </div>
+                    <div class="mt-4 text-center small">
+                                        <span class="mr-2">
+                                            <i class="fas fa-circle text-primary"></i> Direct
+                                        </span>
+                        <span class="mr-2">
+                                            <i class="fas fa-circle text-success"></i> Social
+                                        </span>
+                        <span class="mr-2">
+                                            <i class="fas fa-circle text-info"></i> Referral
+                                        </span>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+
+    </div>
+    <!-- /.container-fluid -->
+
+</div>
+<!-- End of Main Content -->
+
+<!-- Footer -->
+<div class="footer" th:replace="~{layouts/footer :: footer}"></div>
+<!-- End of Footer -->
+
+</div>
+<!-- End of Content Wrapper -->
+
+</div>
+<!-- End of Page Wrapper -->
+
+<!-- Team Add Modal -->
+<div class="modal fade" id="teamAddModal" tabindex="-1" role="dialog" aria-labelledby="teamAddModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="teamAddModalLabel">팀 추가</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="teamForm">
+                    <div class="form-group">
+                        <label for="teamName">팀 이름</label>
+                        <input type="text" class="form-control" id="teamName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="serviceName">서비스 이름</label>
+                        <input type="text" class="form-control" id="serviceName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">이메일 추가</label>
+                        <input type="email" class="form-control" id="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="domainUrl">도메인 URL</label>
+                        <input type="url" class="form-control" id="domainUrl" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="redirectUrl">리다이렉트 URL</label>
+                        <input type="url" class="form-control" id="redirectUrl" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+                <button type="button" class="btn btn-primary" onclick="addTeam()">저장</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap core JavaScript-->
+<script th:src="@{/vendor/jquery/jquery.min.js}"></script>
+<script th:src="@{/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
+
+<!-- Core plugin JavaScript-->
+<script th:src="@{/vendor/jquery-easing/jquery.easing.min.js}"></script>
+
+<!-- Custom scripts for all pages-->
+<script th:src="@{/js/sb-admin-2.min.js}"></script>
+
+<!-- Page level plugins -->
+<script th:src="@{/vendor/chart.js/Chart.min.js}"></script>
+
+<!-- Page level custom scripts -->
+<script th:src="@{/js/demo/chart-area-demo.js}"></script>
+<script th:src="@{/js/demo/chart-pie-demo.js}"></script>
+<script th:src="@{/js/demo/chart-line-demo.js}"></script>
+
+
+</body>
+
+</html>

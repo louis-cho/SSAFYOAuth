@@ -1,5 +1,6 @@
 package com.ssafy.resourceserver.config;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 import org.springframework.context.annotation.Bean;
@@ -13,6 +14,7 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -28,19 +30,25 @@ public class SecurityConfig {
 
                 @Override
                 public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
-
+                    // CORS 설정 예시
+                    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
                     CorsConfiguration configuration = new CorsConfiguration();
 
-                    configuration.setAllowedOrigins(Collections.singletonList("http://localhost:8080"));
-                    configuration.setAllowedOrigins(Collections.singletonList("http://localhost:9000"));
+                    // 모든 출처 허용
                     configuration.setAllowedOriginPatterns(Collections.singletonList("*"));
-                    configuration.setAllowedMethods(Collections.singletonList("*"));
+                    // 모든 메소드 허용
+                    configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+                    // 허용할 헤더 설정
+                    configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type", "Accept", "X-Requested-With", "remember-me"));
+                    // 브라우저가 응답에서 접근할 수 있는 헤더 설정
+                    configuration.setExposedHeaders(Arrays.asList("Set-Cookie", "Authorization"));
+                    // 자격 증명 허용 설정
                     configuration.setAllowCredentials(true);
-                    configuration.setAllowedHeaders(Collections.singletonList("*"));
+                    // 사전 요청의 캐시 시간(초) 설정
                     configuration.setMaxAge(3600L);
 
-                    configuration.setExposedHeaders(Collections.singletonList("Set-Cookie"));
-                    configuration.setExposedHeaders(Collections.singletonList("Authorization"));
+                    // 모든 URL에 대해 CORS 설정 적용
+                    source.registerCorsConfiguration("/**", configuration);
 
                     return configuration;
                 }

@@ -25,7 +25,6 @@
     <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
 
-
     <style>
         .my-team-title {
             margin: 50px 0 15px 0;
@@ -49,13 +48,14 @@
             // 해당 이름의 쿠키가 없으면 undefined 반환
             return undefined;
         }
+
         window.onload = function () {
             loadData();
+            loadTeams();
         };
 
         function loadData() {
             var token = getCookie("access_token")
-            console.log(token)
             $.ajax({
                 url: 'http://localhost:8090/api/team',
                 type: 'GET',
@@ -76,8 +76,8 @@
         function displayTeams(teams) {
             const teamList = document.getElementById('teamList');
             teamList.innerHTML = '';
-            teams.forEach(function(team) {
-                const teamCard = document.createElement('div');
+            teams.forEach(function (team) {
+                var teamCard = document.createElement('div');
                 teamCard.classList.add('col-md-4', 'mb-4', 'team-card');
                 teamCard.innerHTML = `<div class="card shadow h-100">
                     <div class="card-body">
@@ -93,14 +93,57 @@
                 </div>`;
                 teamList.appendChild(teamCard);
             });
-            document.querySelectorAll('.card-body').forEach(teamItem =>{
-                teamItem.addEventListener('click', e => {
+        }
 
-                });
+
+        function loadTeams() {
+            var token = getCookie("access_token");
+
+            $.ajax({
+                url: 'http://localhost:8090/api/team',
+                type: 'GET',
+                headers: {
+                    "Authorization": 'Bearer ' + token
+                },
+                success: function (response) {
+
+                    populateSidebar(response.list);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error loading data:', error);
+                }
             });
         }
-    </script>
 
+        function populateSidebar(data) {
+            var container = document.getElementById('teamNavContainer');
+            container.innerHTML = ''; // Clear previous entries
+            console.log(data)
+            data.forEach(function (team, index) {
+                var teamNavItem = document.createElement('li');
+                teamNavItem.classList.add('nav-item');
+                teamNavItem.innerHTML = `
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapse${index}"
+                   aria-expanded="true" aria-controls="collapse${index}">
+                    <i class="fas fa-fw fa-cog"></i>
+                    <span>${team.teamName}</span>
+                </a>
+                <div id="collapse${index}" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <h6 class="collapse-header">관리</h6>
+                          <a class="collapse-item" href="/teams/${team.teamSeq}/summary">요약 정보</a>
+                            <a class="collapse-item" href="/teams/${team.teamSeq}/dashboard">대시보드</a>
+                            <a class="collapse-item" href="/teams/${team.teamSeq}/consents">동의 항목</a>
+                            <a class="collapse-item" href="/teams/${team.teamSeq}/country-ip">국가 아이피 관리</a>
+                            <a class="collapse-item" href="/teams/${team.teamSeq}/management">팀 관리</a>
+                            <a class="collapse-item" href="/teams/${team.teamSeq}/settings">설정</a>
+                        </div>
+                </div>`;
+                container.appendChild(teamNavItem);
+            });
+        }
+
+    </script>
 
 </head>
 

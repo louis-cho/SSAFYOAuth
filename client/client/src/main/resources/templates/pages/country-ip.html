@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>SSAFY Auth - Country IP</title>
+
+    <!-- Custom fonts for this template-->
+    <link th:href="@{/vendor/fontawesome-free/css/all.min.css}" rel="stylesheet" type="text/css">
+    <link th:href="@{https://fonts.googleapis.com/css?family=Nunito}" rel="stylesheet">
+
+    <!-- Custom styles for this template-->
+    <link rel="stylesheet" th:href="@{/css/footer.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/header.css}">
+    <link th:href="@{/css/sb-admin-2.min.css}" rel="stylesheet">
+    <link th:href="@{/css/main.css}" rel="stylesheet">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        .country-block-manager {
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .blocked-country {
+            padding: 8px 16px;
+            background-color: #dc3545;
+            color: white;
+            border-radius: 15px;
+            margin: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .blocked-country button {
+            border: none;
+            background: none;
+            color: white;
+            cursor: pointer;
+        }
+
+        .blocked-country button:hover {
+            color: #ccc;
+        }
+
+        @media (max-width: 768px) {
+            .form-inline, .form-inline .form-group {
+                flex-direction: column;
+                align-items: stretch;
+                width: 100%;
+            }
+
+            .form-inline .btn {
+                width: 100%;
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+<body id="page-top" th:class="${bodyClass}">
+<div class="header" th:replace="~{layouts/header :: header}"></div>
+<div id="wrapper">
+    <div class="header" th:replace="~{layouts/sidebar :: sidebar}"></div>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-md-10">
+                <div class="country-block-manager">
+                    <h1 class="mb-4 text-center">차단할 국가를 선택하세요.</h1>
+                    <form id="country-block-form" class="form-inline justify-content-center mb-4">
+                        <div class="form-group">
+                            <label for="country-select" class="mr-2">나라 선택하세요:</label>
+                            <select id="country-select" name="country" class="custom-select">
+                                <option value="KR" th:unless="${#lists.contains(blockedCountries, 'KR')}">South Korea</option>
+                                <option value="US" th:unless="${#lists.contains(blockedCountries, 'US')}">United States</option>
+                                <option value="CN" th:unless="${#lists.contains(blockedCountries, 'CN')}">China</option>
+                            </select>
+                            <button type="button" class="btn btn-primary ml-2">추가하기</button>
+                        </div>
+                    </form>
+                    <div id="blocked-countries-list" class="d-flex flex-wrap justify-content-start">
+                        <div th:each="country : ${blockedCountries}" class="blocked-country">
+                            <span th:text="${country}"></span>
+                            <button type="button" class="remove-country btn btn-sm btn-light" th:attr="data-value=${country}">&times;</button>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-success mt-3" onclick="saveChanges()">저장 완료</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="footer" th:replace="~{layouts/footer :: footer}"></div>
+<script>
+    function saveChanges() {
+        alert('변경사항이 저장되었습니다.');
+        // 이곳에서 서버로 데이터를 전송하는 AJAX 요청을 구현할 수 있습니다.
+    }
+
+    document.querySelector('#country-block-form button').addEventListener('click', function (e) {
+        e.preventDefault();
+        const countrySelect = document.getElementById('country-select');
+        const countryText = countrySelect.options[countrySelect.selectedIndex].text;
+        const countryValue = countrySelect.value;
+        const listElement = document.createElement('div');
+        listElement.className = 'blocked-country';
+        listElement.innerHTML = `${countryText} <button type="button" class="remove-country btn btn-sm btn-light" data-value="${countryValue}">&times;</button>`;
+
+        listElement.querySelector('.remove-country').addEventListener('click', function () {
+            const value = this.getAttribute('data-value');
+            // 이 부분을 수정하여 버튼이 포함된 텍스트 대신 순수 텍스트만 select 박스에 추가됩니다.
+            const text = this.parentElement.childNodes[0].textContent.trim();
+            countrySelect.options.add(new Option(text, value));
+            this.parentNode.remove();
+        });
+
+        document.getElementById('blocked-countries-list').appendChild(listElement);
+        countrySelect.remove(countrySelect.selectedIndex);
+    });
+</script>
+</body>
+</html>

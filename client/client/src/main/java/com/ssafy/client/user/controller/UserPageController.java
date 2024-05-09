@@ -22,11 +22,10 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class UserPageController {
-	private final TokenService tokenService;
 	private final ApiService apiService;
 	private final ObjectMapper objectMapper;
 	private final String RESOURCES_URL = "http://localhost:8090";
-
+	private final String Authorization_URL = "http://localhost:9000";
 	@GetMapping("/user/update")
 	public String updateUserPage(Model model) {
 		try {
@@ -54,4 +53,15 @@ public class UserPageController {
 		}
 		return "redirect:/user/update";
 	}
+
+	@GetMapping("/user/logout")
+	public String logout() {
+		try {
+			apiService.callProtectedApi(Authorization_URL+"/logout");
+		} catch (Exception e) {
+			log.error("Error while logout: ", e);
+		}
+		return "redirect:/login";
+	}
+
 }

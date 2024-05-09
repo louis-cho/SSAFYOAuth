@@ -2,17 +2,14 @@ package com.ssafy.authorization.config;
 
 import java.time.ZoneOffset;
 import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
 import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import com.ssafy.authorization.redirect.repository.RedirectEntityRepository;
@@ -27,6 +24,7 @@ public class RegisteredClientRepositoryImpl implements RegisteredClientRepositor
 
 	private final DeveloperTeamRepository developerTeamRepository;
 	private final RedirectEntityRepository redirectEntityRepository;
+	private final PasswordEncoder passwordEncoder;
 
 	@Override
 	public void save(RegisteredClient registeredClient) {
@@ -47,7 +45,7 @@ public class RegisteredClientRepositoryImpl implements RegisteredClientRepositor
 		return  RegisteredClient.withId(id)
 				.clientId(client.getTeamName())
 				.clientIdIssuedAt(client.getCreateDate().toInstant(ZoneOffset.UTC))
-				.clientSecret(client.getServiceKey())
+				.clientSecret(passwordEncoder.encode(client.getServiceKey()))
 				.clientName(client.getServiceName())
 				.clientAuthenticationMethods(clientAuthenticationMethods -> {
 					clientAuthenticationMethods.add(ClientAuthenticationMethod.CLIENT_SECRET_BASIC);
@@ -65,7 +63,12 @@ public class RegisteredClientRepositoryImpl implements RegisteredClientRepositor
 				})
 				.redirectUris(uris -> {
 					redirectEntityRepository.findAllByTeamId(client.getSeq()).forEach(uri -> {
-						uris.add(uri.getRedirect());
+						uris.add(uri.getRedirect()+"/login/oauth2/code/ssafyOAuth");
+					});
+				})
+				.postLogoutRedirectUris(uris ->{
+					redirectEntityRepository.findAllByTeamId(client.getSeq()).forEach(uri -> {
+						uris.add(uri.getRedirect()+"/logout");
 					});
 				})
 				.scopes(scopes ->{
@@ -76,14 +79,14 @@ public class RegisteredClientRepositoryImpl implements RegisteredClientRepositor
 	@Override
 	public RegisteredClient findByClientId(String clientId) {
 		Assert.hasText(clientId, "client id cannot be empty");
-		DeveloperTeamEntity client = developerTeamRepository.findByTeamName(clientId);
+		DeveloperTeamEntity client = developerTeamRepository.findByClientId(clientId);
 		if(client == null) return null;
 
 		String[] scope = {"email", "studentId", "name", "track", "phoneNumber", "gender", "image"};
 		RegisteredClient registeredClient = RegisteredClient.withId(client.getSeq().toString())
-				.clientId(client.getTeamName().toString())
+				.clientId(client.getClientId())
 				.clientIdIssuedAt(client.getCreateDate().toInstant(ZoneOffset.UTC))
-				.clientSecret(client.getServiceKey())
+				.clientSecret(passwordEncoder.encode(client.getServiceKey()))
 				.clientName(client.getServiceName())
 				.clientAuthenticationMethods(clientAuthenticationMethods -> {
 					clientAuthenticationMethods.add(ClientAuthenticationMethod.CLIENT_SECRET_BASIC);
@@ -100,9 +103,14 @@ public class RegisteredClientRepositoryImpl implements RegisteredClientRepositor
 				})
 				.redirectUris(uris -> {
 					redirectEntityRepository.findAllByTeamId(client.getSeq()).forEach(uri -> {
-						uris.add(uri.getRedirect());
+						uris.add(uri.getRedirect()+"/login/oauth2/code/ssafyOAuth");
 					});
 				})
+			.postLogoutRedirectUris(uris ->{
+				redirectEntityRepository.findAllByTeamId(client.getSeq()).forEach(uri -> {
+					uris.add(uri.getRedirect()+"/logout");
+				});
+			})
 				.scopes(scopes -> {
 					Arrays.stream(scope).toList().forEach(s -> {
 								scopes.add(s);

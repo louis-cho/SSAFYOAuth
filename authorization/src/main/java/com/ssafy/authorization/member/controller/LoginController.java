@@ -1,6 +1,8 @@
 package com.ssafy.authorization.member.controller;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationConsent;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationConsentService;
@@ -21,6 +23,7 @@ import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
+@Slf4j
 public class LoginController {
 
 	private final OAuth2AuthorizationConsentService authorizationConsentService;
@@ -36,6 +39,11 @@ public class LoginController {
 		return "login_test";
 	}
 
+	@GetMapping()
+	public String logout(){
+		log.debug("logout 호출");
+		return "login";
+	}
 
 	@GetMapping(value = "/oauth2/consent")
 	public String consent(

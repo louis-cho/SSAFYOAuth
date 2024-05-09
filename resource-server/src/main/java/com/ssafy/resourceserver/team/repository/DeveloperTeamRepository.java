@@ -13,4 +13,6 @@ public interface DeveloperTeamRepository extends JpaRepository<DeveloperTeamEnti
 	List<DeveloperTeamEntity> findBySeqAndIsDeleteFalse(Integer teamSeq);
 
 	List<DeveloperTeamEntity> findAllByTeamName(String TeamName);
+
+	DeveloperTeamEntity findBySeq(Integer teamSeq);
 }

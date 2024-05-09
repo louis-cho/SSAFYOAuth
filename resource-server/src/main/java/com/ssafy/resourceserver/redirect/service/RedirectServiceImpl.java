@@ -40,8 +40,10 @@ public class RedirectServiceImpl implements RedirectService {
 			int count = countRedirectUrl(teamId);
 			// 도메인 URL 개수가 6개 미만인 경우에만 URL 추가
 			if (count < 6) {
-				RedirectEntity redirectEntity = new RedirectEntity(teamId, userId, redirectUrl);
+				RedirectEntity redirectEntity = new RedirectEntity(teamId, 0, redirectUrl);
 				redirectEntityRepository.save(redirectEntity);
+			}else{
+				return -2;
 			}
 		} catch (Exception e) {
 			return -1;
@@ -63,7 +65,7 @@ public class RedirectServiceImpl implements RedirectService {
 		}
 
 		try {
-			RedirectEntity redirectEntity = new RedirectEntity(teamId, userId, redirectUrl);
+			RedirectEntity redirectEntity = new RedirectEntity(teamId, 0, redirectUrl);
 			redirectEntityRepository.delete(redirectEntity);
 		} catch (Exception e) {
 			return -1;

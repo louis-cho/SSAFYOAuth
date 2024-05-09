@@ -9,54 +9,50 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ssafy.resourceserver.key.model.domain.ServiceKey;
+import com.ssafy.resourceserver.member.model.domain.Member;
+import com.ssafy.resourceserver.member.model.repository.MemberRepository;
+import com.ssafy.resourceserver.team.entity.DeveloperTeamEntity;
+import com.ssafy.resourceserver.team.repository.DeveloperTeamRepository;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class ServiceKeyServiceImpl implements ServiceKeyService {
 
-	@Autowired
-	private ServiceKeyRepository serviceKeyRepository;
+	private final ServiceKeyRepository serviceKeyRepository;
+
+	private final DeveloperTeamRepository developerTeamRepository;
+
+	private final MemberRepository memberRepository;
 
 	private static final Random random = new Random();
 
 	@Override
-	public String createServiceKey(Long teamId, Long clientId) {
-		// 클라이언트 요청 검증, 팀에 속해 있는 유저의 요청인지 확인
-		if (!verifyClient(clientId, teamId)) {
-			throw new IllegalArgumentException("팀원이 맞아?");
-		}
-
-		// 서비스 키 발급 시도
-		ServiceKey serviceKey = new ServiceKey();
-		serviceKey.setTeamId(teamId);
-		serviceKey.setKey(generateUniqueServiceKey());
-		serviceKeyRepository.save(serviceKey);
-
-		// 생성된 서비스 키 반환
-		return serviceKey.getKey();
+	public boolean createServiceKey(Integer teamId, String userEmail){
+		Member member = memberRepository.findByEmail(userEmail).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+		if (!verifyLeader(teamId, member.getMemberId())) throw new IllegalArgumentException("팀원이 맞아?");
+		DeveloperTeamEntity team = developerTeamRepository.findById(teamId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 팀입니다."));
+		team.setServiceKey(generateUniqueServiceKey());
+		developerTeamRepository.save(team);
+		return true;
 	}
 
 	@Override
-	public String reCreateServiceKey(Long teamId, Long clientId) {
-		// 클라이언트 요청 검증, 팀에 속해 있는 유저의 요청인지 확인
-		if (!verifyClient(clientId, teamId)) {
-			throw new IllegalArgumentException("팀원이 맞아?");
-		}
-		// 서비스 키 재발급
-		Optional<ServiceKey> optionalServiceKey = serviceKeyRepository.findById(teamId);
-		if (optionalServiceKey.isPresent()) {
-			ServiceKey serviceKey = optionalServiceKey.get();
-			serviceKey.setKey(generateUniqueServiceKey());
-			serviceKeyRepository.save(serviceKey);
-			return serviceKey.getKey();
-		} else {
-			throw new IllegalStateException("팀이 없어ㅜ");
-		}
+	public boolean reCreateServiceKey(Integer teamId, String userEmail) {
+		Member member = memberRepository.findByEmail(userEmail).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+		if (!verifyLeader(teamId, member.getMemberId())) throw new IllegalArgumentException("팀원이 맞아?");
+		DeveloperTeamEntity team = developerTeamRepository.findById(teamId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 팀입니다."));
+		team.setServiceKey(generateUniqueServiceKey());
+		developerTeamRepository.save(team);
+		return true;
 	}
 
 
-	private boolean verifyClient(Long teamId, Long clientId) {
-		// 예시로 단순히 clientId와 requestBodyHash를 비교하는 것으로 대체
-		return clientId.equals(teamId);
+	private boolean verifyLeader(Integer teamId, Integer clientId) {
+		// 나의 제안 : 이것을 팀원이 아니라 팀장인지 확인하는 절차를 거쳐야 하는 것이 아닌가?
+		DeveloperTeamEntity team = developerTeamRepository.findBySeq(teamId);
+		return team.getLeader() == clientId;
 	}
 
 	private String generateUniqueServiceKey() {

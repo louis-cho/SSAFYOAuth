@@ -1,4 +1,7 @@
 package com.ssafy.client.user.service;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpEntity;
@@ -22,8 +25,10 @@ public class ApiService {
     public String callProtectedApi(String apiUrl) {
         return restTemplate.getForObject(apiUrl, String.class);
     }
-    public String callPostApi(String apiUrl,Object data) {
-        return restTemplate.postForObject(apiUrl,data ,String.class);
+
+
+    public String callBlockedCountry(String apiUrl) {
+        return restTemplate.getForObject(apiUrl, String.class);
     }
 
     public String callPostFileApi(String apiUrl, ProfileInformationForUpdatesDto dto) {
@@ -60,4 +65,6 @@ public class ApiService {
         // Make the HTTP POST request
         return restTemplate.postForObject(apiUrl, requestEntity, String.class);
     }
+
+
 }

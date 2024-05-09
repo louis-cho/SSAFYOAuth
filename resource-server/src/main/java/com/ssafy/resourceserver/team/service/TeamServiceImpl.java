@@ -2,6 +2,7 @@ package com.ssafy.resourceserver.team.service;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,6 +10,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import com.ssafy.resourceserver.redirect.repository.RedirectEntityRepository;
 import com.ssafy.resourceserver.team.repository.DeveloperTeamRepository;
 import com.ssafy.resourceserver.team.repository.TeamListRepository;
 import com.ssafy.resourceserver.team.repository.TeamMemberRepository;
@@ -20,6 +22,7 @@ import com.ssafy.resourceserver.team.vo.TeamAddVo;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -57,7 +60,7 @@ public class TeamServiceImpl implements TeamService {
 	private final AmazonS3Client s3client;
 	private final MemberRepository memberRepository;
 	private final RedirectService redirectService;
-
+	private final RedirectEntityRepository redirectRepository;
 	private boolean test = true;
 
 	@Value("${cloud.aws.s3.bucket}")
@@ -117,12 +120,8 @@ public class TeamServiceImpl implements TeamService {
 		dto.setLeaderMemberSeq(mySeq);
 
 		// 팀 생성
-		DeveloperTeamEntity entity = new DeveloperTeamEntity();
-		entity.setServiceName(dto.getServiceName());
-		entity.setTeamName(dto.getTeamName());
-		entity.setServiceName(dto.getServiceName());
-		entity.setIsDelete(false);
-		entity.setLeader(mySeq);
+		DeveloperTeamEntity entity = DeveloperTeamEntity.CreateTeam(dto, mySeq,UUID.randomUUID().toString());
+
 		System.out.println(entity);
 		Integer teamSeq = developerTeamRepository.save(entity).getSeq();
 
@@ -154,7 +153,7 @@ public class TeamServiceImpl implements TeamService {
 
 	@Override
 	@Transactional
-	public Map deleteTeam(Integer teamSeq, Authentication authentication) {
+	public Map deleteTeam(Integer teamSeq, String email) {
 		Map<String, String> data = new HashMap<>();
 		// 요청된 팀이 존재하는지 확인
 		List<DeveloperTeamEntity> list = developerTeamRepository.findBySeqAndIsDeleteFalse(teamSeq);
@@ -163,8 +162,7 @@ public class TeamServiceImpl implements TeamService {
 			return data;
 		}
 		// 요청한 사람의 시퀀스 넘버 확인
-		UserDetails userDetails = (UserDetails)authentication.getPrincipal();
-		String myEmail = userDetails.getUsername();
+		String myEmail = email;
 		Integer mySeq =     memberRepository.findByEmail(myEmail).get().getMemberId();
 		// 요청한 사람이 팀의 리더 인지 파악
 		DeveloperTeamEntity entity = list.get(0);
@@ -176,13 +174,12 @@ public class TeamServiceImpl implements TeamService {
 		entity.setDeleteDate(LocalDateTime.now());
 		developerTeamRepository.save(entity);
 		data.put("msg", "삭제되었습니다.");
-		;
 		return data;
 	}
 
 	@Override
 	@Transactional
-	public Map updateTeamName(Integer teamSeq, TeamNameUpdateVo vo, Authentication authentication) {
+	public Map updateTeamName(Integer teamSeq, TeamNameUpdateVo vo, String email) {
 		Map<String, String> data = new HashMap<>();
 
 		// 요청된 팀이 존재 하는지 확인
@@ -194,8 +191,7 @@ public class TeamServiceImpl implements TeamService {
 		}
 
 		// 자신의 시퀀스 넘버 확인
-		UserDetails userDetails = (UserDetails)authentication.getPrincipal();
-		String myEmail = userDetails.getUsername();
+		String myEmail = email;
 		Integer mySeq =     memberRepository.findByEmail(myEmail).get().getMemberId();
 
 		// 자신이 요청한 팀의 팀원인지 확인
@@ -236,6 +232,8 @@ public class TeamServiceImpl implements TeamService {
 			vo.setIsAccept(entity.getIsAccept());
 			vo.setCreateDate(entity.getCreateDate());
 			vo.setModifyDate(entity.getModifyDate());
+			vo.setClientId(entity.getClientId());
+			vo.setServiceKey(entity.getServiceKey());
 			return vo;
 		}).collect(Collectors.toList());
 		data.put("msg", null);
@@ -245,7 +243,7 @@ public class TeamServiceImpl implements TeamService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public Map detailTeam(Integer teamSeq, Authentication authentication) {
+	public Map detailTeam(Integer teamSeq, String email) {
 		Map<String, Object> data = new HashMap<>();
 		// 존재 하는 팀인지 확인
 		List<DeveloperTeamEntity> list = developerTeamRepository.findBySeqAndIsDeleteFalse(teamSeq);
@@ -256,16 +254,13 @@ public class TeamServiceImpl implements TeamService {
 		}
 
 		// 요청을 한 사람이 팀 원인지 확인
-		if (!test) {
-			UserDetails userDetails = (UserDetails)authentication.getPrincipal();
-			String myEmail = userDetails.getUsername();
-			Integer mySeq =     memberRepository.findByEmail(myEmail).get().getMemberId();
-			Optional<TeamMemberEntity> member = teamMemberRepository.findById(new TeamMemberPK(teamSeq, mySeq));
-			if (member.isEmpty()) {
-				data.put("msg", "팀을 볼 수 있는 권한이 없습니다.");
-				data.put("team_name", null);
-				return data;
-			}
+		String myEmail = email;
+		Integer mySeq = memberRepository.findByEmail(myEmail).get().getMemberId();
+		Optional<TeamMemberEntity> member = teamMemberRepository.findById(new TeamMemberPK(teamSeq, mySeq));
+		if (member.isEmpty()) {
+			data.put("msg", "팀을 볼 수 있는 권한이 없습니다.");
+			data.put("team_name", null);
+			return data;
 		}
 
 		// 정상 응답의 경우
@@ -274,6 +269,8 @@ public class TeamServiceImpl implements TeamService {
 		vo.setTeamName(team.getTeamName());
 		vo.setServiceName(team.getServiceName());
 		vo.setServiceKey(team.getServiceKey());
+		vo.setImage(team.getServiceImage());
+		vo.setClientId(team.getClientId());
 		List<TeamMemberVo> memberList = teamMemberWithInfoRepository.findAllByTeamSeq(teamSeq).stream().map(entity -> {
 			TeamMemberVo memberVo = new TeamMemberVo();
 			memberVo.setEmail(entity.getEmail());
@@ -284,7 +281,13 @@ public class TeamServiceImpl implements TeamService {
 		}).collect(Collectors.toList());
 		vo.setMembers(memberList);
 		// 도메인과 리디이렉트 url 셋팅
-
+		List<RedirectEntity> redirectEntities = redirectRepository.findAllByTeamId(teamSeq);
+		if(!redirectEntities.isEmpty()){
+			List<String> redirectUrls = redirectEntities.stream().map(e -> {
+				return e.getRedirect();
+			}).collect(Collectors.toList());
+			vo.setRedirectUrl(redirectUrls);
+		}
 		//응답
 		data.put("msg", null);
 		data.put("team", vo);
@@ -293,7 +296,7 @@ public class TeamServiceImpl implements TeamService {
 
 	@Override
 	@Transactional
-	public Map updateServiceName(Integer teamSeq, ServiceNameUpdateVo vo, Authentication authentication) {
+	public Map updateServiceName(Integer teamSeq, ServiceNameUpdateVo vo, String email) {
 		Map<String, String> data = new HashMap<>();
 		// 팀이 존재 하는지 확인
 		List<DeveloperTeamEntity> list = developerTeamRepository.findBySeqAndIsDeleteFalse(teamSeq);
@@ -303,8 +306,7 @@ public class TeamServiceImpl implements TeamService {
 			return data;
 		}
 		// 사용자가 팀의 멤버인지 확인
-		UserDetails userDetails = (UserDetails)authentication.getPrincipal();
-		String myEmail = userDetails.getUsername();
+		String myEmail = email;
 		Integer mySeq =     memberRepository.findByEmail(myEmail).get().getMemberId();
 		Optional<TeamMemberEntity> member = teamMemberRepository.findById(new TeamMemberPK(teamSeq, mySeq));
 		if (member.isEmpty()) {
@@ -342,39 +344,35 @@ public class TeamServiceImpl implements TeamService {
 
 	@Override
 	@Transactional
-	public Map addMember(Integer teamSeq, String email, Authentication authentication) {
+	public Map addMember(Integer teamSeq, String email, String myEmail) {
 		Map<String, Object> data = new HashMap<>();
 		// 팀에 멤버를 추가할 권한이 있는지 확인
 
-		if (!test) {
-
-			// UserDetails userDetails = (UserDetails)authentication.getPrincipal();
-			// String myEmail = userDetails.getUsername();
-			// Integer mySeq =     memberRepository.findByEmail(myEmail).get().getMemberId();
-			// Optional<TeamMemberEntity> isMember = teamMemberRepository.findById(new TeamMemberPK(teamSeq, mySeq));
-			// if (isMember.isEmpty()) {
-			// 	data.put("msg", "팀에 멤버를 추가할 권한이 없습니다");
-			// 	data.put("member", null);
-			// 	return data;
-			// }
-
-			// 팀에 이미 추가된 멤버인지 확인
-			List<TeamMemberWithInfoEntity> isTeamMember = teamMemberWithInfoRepository.findAllByTeamSeqAndEmail(teamSeq,
-				email);
-			if (!isTeamMember.isEmpty()) {
-				data.put("msg", "이미 팀에 멤버로 추가된 개발자 입니다.");
-				data.put("member", null);
-				return data;
-			}
-
-			// 팀에 멤버를 추가 할 수 있는 자리가 있는지 확인
-			Integer cnt = teamMemberRepository.countByTeamSeq(teamSeq);
-			if (cnt >= 6) {
-				data.put("msg", "한 팀에 멤버는 최대 6명 입니다. 멤버를 추가 하려면 기존 멤버를 지워 주세요");
-				data.put("member", null);
-				return data;
-			}
+		Integer mySeq = memberRepository.findByEmail(myEmail).get().getMemberId();
+		Optional<TeamMemberEntity> isMember = teamMemberRepository.findById(new TeamMemberPK(teamSeq, mySeq));
+		if (isMember.isEmpty()) {
+			data.put("msg", "팀에 멤버를 추가할 권한이 없습니다");
+			data.put("member", null);
+			return data;
 		}
+
+		// 팀에 이미 추가된 멤버인지 확인
+		List<TeamMemberWithInfoEntity> isTeamMember = teamMemberWithInfoRepository.findAllByTeamSeqAndEmail(teamSeq,
+			email);
+		if (!isTeamMember.isEmpty()) {
+			data.put("msg", "이미 팀에 멤버로 추가된 개발자 입니다.");
+			data.put("member", null);
+			return data;
+		}
+
+		// 팀에 멤버를 추가 할 수 있는 자리가 있는지 확인
+		Integer cnt = teamMemberRepository.countByTeamSeq(teamSeq);
+		if (cnt >= 6) {
+			data.put("msg", "한 팀에 멤버는 최대 6명 입니다. 멤버를 추가 하려면 기존 멤버를 지워 주세요");
+			data.put("member", null);
+			return data;
+		}
+
 		// 해당 개발자의 시퀀스 넘버 확인
 		List<DeveloperMemberEntity> dm = developerMemberRepository.findAllByEmail(email);
 		if (dm.isEmpty()) {
@@ -394,18 +392,16 @@ public class TeamServiceImpl implements TeamService {
 
 	@Override
 	@Transactional
-	public Map deleteMember(Integer teamSeq, String email, Authentication authentication) {
+	public Map deleteMember(Integer teamSeq, String email, String myEmail) {
 		Map<String, Object> data = new HashMap<>();
 		// 팀에 멤버를 삭제할 권한이 있는지 확인
 
-		// UserDetails userDetails = (UserDetails)authentication.getPrincipal();
-		// String myEmail = userDetails.getUsername();
-		// Integer mySeq =     memberRepository.findByEmail(myEmail).get().getMemberId();
-		// Optional<TeamMemberEntity> isMember = teamMemberRepository.findById(new TeamMemberPK(teamSeq, mySeq));
-		// if (isMember.isEmpty()) {
-		// 	data.put("msg", "팀 멤버를 수정할 권한이 없습니다");
-		// 	return data;
-		// }
+		Integer mySeq =     memberRepository.findByEmail(myEmail).get().getMemberId();
+		Optional<TeamMemberEntity> isMember = teamMemberRepository.findById(new TeamMemberPK(teamSeq, mySeq));
+		if (isMember.isEmpty()) {
+			data.put("msg", "팀 멤버를 수정할 권한이 없습니다");
+			return data;
+		}
 
 		// 해당 이메일의 멤버가
 		// 팀에 포함된 멤버인지 확인
@@ -425,7 +421,7 @@ public class TeamServiceImpl implements TeamService {
 		Optional<DeveloperMemberEntity> dmOptional = developerMemberRepository.findById(leaderSeq);
 		if (!dmOptional.isEmpty()) {
 			DeveloperMemberEntity dm = dmOptional.get();
-			if (dm.getEmail() == email) {
+			if (dm.getEmail().equals(email)) {
 				data.put("msg", "팀 리더는 삭제할 수 없습니다.");
 				return data;
 			}
@@ -434,7 +430,7 @@ public class TeamServiceImpl implements TeamService {
 		Integer memberSeq = list.get(0).getMemberSeq();
 		// 팀에서 삭제
 		teamMemberRepository.deleteById(new TeamMemberPK(teamSeq, memberSeq));
-		data.put("msg", "정상 삭제 되었습니다.");
+		data.put("msg", null);
 		return data;
 	}
 
@@ -460,7 +456,7 @@ public class TeamServiceImpl implements TeamService {
 
 	@Override
 	@Transactional
-	public Map deleteTeamImage(Integer teamSeq, Authentication authentication) {
+	public Map deleteTeamImage(Integer teamSeq, String email) {
 		Map<String, String> data = new HashMap<>();
 		data.put("msg", null);
 		Optional<DeveloperTeamEntity> team = developerTeamRepository.findById(teamSeq);
@@ -469,8 +465,7 @@ public class TeamServiceImpl implements TeamService {
 			return data;
 		}
 		// 요청한 사람의 시퀀스 아이디
-		UserDetails userDetails = (UserDetails)authentication.getPrincipal();
-		String myEmail = userDetails.getUsername();
+		String myEmail = email;
 		Integer mySeq =     memberRepository.findByEmail(myEmail).get().getMemberId();
 		Optional<TeamMemberEntity> member = teamMemberRepository.findById(new TeamMemberPK(teamSeq, mySeq));
 		if (member.isEmpty()) {
@@ -485,7 +480,7 @@ public class TeamServiceImpl implements TeamService {
 
 	@Override
 	@Transactional
-	public Map modifyTeamImage(Integer teamSeq, TeamImageVo vo, Authentication authentication) {
+	public Map modifyTeamImage(Integer teamSeq, TeamImageVo vo, String email) {
 		Map<String, String> data = new HashMap<>();
 		data.put("msg", null);
 		Optional<DeveloperTeamEntity> team = developerTeamRepository.findById(teamSeq);
@@ -494,8 +489,7 @@ public class TeamServiceImpl implements TeamService {
 			return data;
 		}
 		// 요청한 사람의 시퀀스 아이디
-		UserDetails userDetails = (UserDetails)authentication.getPrincipal();
-		String myEmail = userDetails.getUsername();
+		String myEmail = email;
 		Integer mySeq =     memberRepository.findByEmail(myEmail).get().getMemberId();
 		Optional<TeamMemberEntity> member = teamMemberRepository.findById(new TeamMemberPK(teamSeq, mySeq));
 		if (member.isEmpty()) {
@@ -510,11 +504,10 @@ public class TeamServiceImpl implements TeamService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public Map listInvitedTeam(Authentication authentication) {
+	public Map listInvitedTeam(String email) {
 		Map<String, Object> data = new HashMap<>();
 		// 사용자 정보 가져오기
-		UserDetails userDetails = (UserDetails)authentication.getPrincipal();
-		String myEmail = userDetails.getUsername();
+		String myEmail = email;
 		Integer mySeq =     memberRepository.findByEmail(myEmail).get().getMemberId();
 		// 사용자가 추가 되었는데 수락하지 않은 리스트 조회
 		List<InviteListVo> list = teamListRepository.findByMemberSeqAndIsAcceptFalse(mySeq).stream().map(entity -> {
@@ -537,12 +530,11 @@ public class TeamServiceImpl implements TeamService {
 
 	@Override
 	@Transactional
-	public Map acceptInvite(Integer teamSeq, Authentication authentication) {
+	public Map acceptInvite(Integer teamSeq, String email) {
 		Map<String, Object> data = new HashMap<>();
 
 		// 사용자 정보 가져오기
-		UserDetails userDetails = (UserDetails)authentication.getPrincipal();
-		String myEmail = userDetails.getUsername();
+		String myEmail = email;
 		Integer mySeq =     memberRepository.findByEmail(myEmail).get().getMemberId();
 
 		// 초대 확인
@@ -579,12 +571,11 @@ public class TeamServiceImpl implements TeamService {
 
 	@Override
 	@Transactional
-	public Map rejectInvite(Integer teamSeq, Authentication authentication) {
+	public Map rejectInvite(Integer teamSeq, String email) {
 		Map<String, Object> data = new HashMap<>();
 
 		// 사용자 정보 가져오기
-		UserDetails userDetails = (UserDetails)authentication.getPrincipal();
-		String myEmail = userDetails.getUsername();
+		String myEmail = email;
 		Integer mySeq = memberRepository.findByEmail(myEmail).get().getMemberId();
 
 		// 초대 확인
@@ -616,4 +607,16 @@ public class TeamServiceImpl implements TeamService {
 		}
 		return data;
 	}
+
+
+	@Override
+	public List<String> getBlockedCountriesByTeamId(Integer teamSeq) {
+		// List<String> blockedCountry = countryRepository.findByTeamId(teamId);
+		List<String> arr = new ArrayList<>();
+		arr.add("KR");
+		arr.add("UK");
+
+		return arr;
+	}
+
 }
