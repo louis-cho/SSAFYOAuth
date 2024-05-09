@@ -251,17 +251,20 @@
         let members = team.members;
         let liMember = '';
         for(let i = 0; i < members.length; i++){
-            liMember += `<li class="list-group-item d-flex">
-                            <div tabindex="0" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-content="${members[i].email}">
+            liMember += `<li class="list-group-item d-flex justify-content-between" id="member-${members[i].email}">
+                            <div class="d-flex">
+                                <div tabindex="0" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-content="${members[i].email}">
                                 <button type="button" class="member-btn" disabled>${members[i].name}(${members[i].email})</button>
-                            </div>
-                            <span class="`;
+                                </div>
+                                <span class="`;
             if(members[i].isLeader == true){
                 liMember += `badge badge text-bg-primary`;
             }else{
                 liMember += `badge text-bg-dark`;
             }
             liMember +=`">${members[i].isLeader ? "Leader" : "Member"}</span>
+                            </div>
+                            <button type="button" class="btn btn-danger btn-sm" onclick="delete_member('${members[i].email}')">X</button>
                          </li>`;
         }
         document.getElementById('member-list').innerHTML = liMember;
@@ -406,6 +409,37 @@
             alert('리다이렉트 url이 추가 되었습니다.');
         });
     });
+    document.getElementById('member-add-btn').addEventListener('click', e => {
+        const email = document.getElementById('temp-member-email').value;
+        if(!email){
+            alert('이메일을 입력해 주세요...');
+            return;
+        }
+        fetch(`http://localhost:8090/api/team/${teamSeq}/member/${email}`, {
+            method: 'POST',
+            headers: {'Authorization': `Bearer ${access_token}`}
+        }).then(res => res.json()).then(data => {
+            if(data.msg){
+                alert(data.msg);
+                return;
+            }
+            let member = data.member;
+            let liMember = document.getElementById('member-list').innerHTML;
+            liMember += `<li class="list-group-item d-flex justify-content-between" id="member-${member.email}">
+                            <div class="d-flex">
+                                <div tabindex="0" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-content="${member.email}">
+                                <button type="button" class="member-btn" disabled>${member.name}(${member.email})</button>
+                                </div>
+                                <span class="`;
+            liMember += `badge text-bg-dark`;
+            liMember +=`">Member</span>
+                            </div>
+                            <button type="button" class="btn btn-danger btn-sm" onclick="delete_member('${member.email}')">X</button>
+                         </li>`;
+            document.getElementById('member-list').innerHTML = liMember;
+            document.getElementById('temp-member-email').value = '';
+        });
+    });
     function delete_redirect_url(url) {
         console.log(url);
         fetch('http://localhost:8090/api/team/redirect/delete', {
@@ -426,6 +460,20 @@
                 li.remove();
                 alert('redirect url이 삭제 되었습니다.');
             }
+        });
+    }
+    function delete_member(email) {
+        fetch(`http://localhost:8090/api/team/${teamSeq}/member/${email}`, {
+            method: 'DELETE',
+            headers: {'Authorization': `Bearer ${access_token}`},
+        }).then(res => res.json()).then(data => {
+            if(data.msg){
+                alert(data.msg);
+                return;
+            }
+            const li = document.getElementById(`member-${email}`);
+            li.remove();
+            alert(email + '이 팀에서 삭제 되었습니다.');
         });
     }
 </script>
