@@ -4,7 +4,9 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>SSAFY Auth - Country IP</title>
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>SSAFY Auth - 회원정보 수정</title>
 
     <!-- Custom fonts for this template-->
     <link th:href="@{/vendor/fontawesome-free/css/all.min.css}" rel="stylesheet" type="text/css">
@@ -19,6 +21,106 @@
 
     <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <script th:src="@{/vendor/jquery/jquery.min.js}"></script>
+    <script th:src="@{/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
+    <script th:src="@{/vendor/jquery-easing/jquery.easing.min.js}"></script>
+    <!-- 페이지 로딩될 때 데이터 fetch -->
+    <script th:src="@{/js/sb-admin-2.min.js}"></script>
+    <script th:inline="javascript">
+        function getCookie(name) {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = cookies[i];
+                while (cookie.charAt(0) === ' ') {
+                    cookie = cookie.substring(1);
+                }
+                if (cookie.indexOf(name + "=") === 0) {
+                    return cookie.substring(name.length + 1, cookie.length);
+                }
+            }
+            return undefined;
+        }
+
+        window.onload = function () {
+            loadData();
+            loadTeams();
+            var teamSeq = window.location.pathname.match(/\/teams\/(\d+)\/summary/)[1];
+            loadTeamData(teamSeq);
+        };
+
+        function loadData() {
+            var token = getCookie("access_token")
+            $.ajax({
+                url: 'http://localhost:8090/api/team',
+                type: 'GET',
+                contentType: 'application/json',
+                headers: {
+                    "Authorization": 'Bearer ' + token
+                },
+                success: function (response) {
+                    displayTeams(response.list);
+                    displayTeamInfo(response.list[0]);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error loading data:', error);
+                }
+            });
+        }
+
+        function loadTeams() {
+            var token = getCookie("access_token");
+            $.ajax({
+                url: 'http://localhost:8090/api/team',
+                type: 'GET',
+                headers: {
+                    "Authorization": 'Bearer ' + token
+                },
+                success: function (response) {
+                    populateSidebar(response.list);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error loading data:', error);
+                }
+            });
+        }
+
+        function populateSidebar(data) {
+            var container = document.getElementById('teamNavContainer');
+            container.innerHTML = '';
+            data.forEach(function (team, index) {
+                var teamNavItem = document.createElement('li');
+                teamNavItem.classList.add('nav-item');
+                teamNavItem.innerHTML = `
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapse${index}"
+                    aria-expanded="true" aria-controls="collapse${index}">
+                    <i class="fas fa-fw fa-cog"></i>
+                    <span>${team.teamName}</span>
+                </a>
+                <div id="collapse${index}" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <h6 class="collapse-header">관리</h6>
+                        <a class="collapse-item" href="/teams/${team.teamSeq}/summary">요약 정보</a>
+                        <a class="collapse-item" href="/teams/${team.teamSeq}/dashboard">대시보드</a>
+                        <a class="collapse-item" href="/teams/${team.teamSeq}/consents">동의 항목</a>
+                        <a class="collapse-item" href="/teams/${team.teamSeq}/country-ip">국가 아이피 관리</a>
+                        <a class="collapse-item" href="/teams/${team.teamSeq}/management">팀 관리</a>
+                        <a class="collapse-item" href="/teams/${team.teamSeq}/settings">설정</a>
+                    </div>
+                </div>`;
+                container.appendChild(teamNavItem);
+            });
+        }
+
+
+        function getCookie(name) {
+            let value = `; ${document.cookie}`;
+            let parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        }
+
+
+    </script>
+
 
     <style>
         .country-block-manager {

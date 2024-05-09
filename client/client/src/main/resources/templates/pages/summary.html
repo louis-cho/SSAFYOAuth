@@ -5,9 +5,18 @@
     <style>
         .card-body>.row>.col-12 {
             margin-top: 50px;
-            /* 위쪽 마진을 조절합니다. */
             margin-bottom: 10px;
-            /* 아래쪽 마진을 조절합니다. */
+        }
+        /* 서비스 이름과 서비스 키 폰트를 동일하게 조정합니다. */
+        #serviceName, #serviceKey {
+            font-size: 1.25rem;
+            font-weight: bold;
+        }
+        /* 복사 버튼과 재발급 버튼의 크기와 너비를 조정합니다. */
+        .btn-primary, .btn-danger {
+            padding: 0.375rem 1.5rem;
+            font-size: 1rem;
+            min-width: 100px;
         }
     </style>
     <meta charset="utf-8">
@@ -44,7 +53,6 @@
                     return cookie.substring(name.length + 1, cookie.length);
                 }
             }
-            // 해당 이름의 쿠키가 없으면 undefined 반환
             return undefined;
         }
 
@@ -65,9 +73,8 @@
                     "Authorization": 'Bearer ' + token
                 },
                 success: function (response) {
-                    // console.log(response.list)
                     displayTeams(response.list);
-                    displayTeamInfo(response.list[0]); // 팀 정보를 가져와서 첫 번째 팀의 정보를 표시합니다.
+                    displayTeamInfo(response.list[0]);
                 },
                 error: function (xhr, status, error) {
                     console.error('Error loading data:', error);
@@ -77,7 +84,6 @@
 
         function loadTeams() {
             var token = getCookie("access_token");
-
             $.ajax({
                 url: 'http://localhost:8090/api/team',
                 type: 'GET',
@@ -85,7 +91,6 @@
                     "Authorization": 'Bearer ' + token
                 },
                 success: function (response) {
-
                     populateSidebar(response.list);
                 },
                 error: function (xhr, status, error) {
@@ -96,8 +101,7 @@
 
         function populateSidebar(data) {
             var container = document.getElementById('teamNavContainer');
-            container.innerHTML = ''; // Clear previous entries
-            // console.log(data)
+            container.innerHTML = '';
             data.forEach(function (team, index) {
                 var teamNavItem = document.createElement('li');
                 teamNavItem.classList.add('nav-item');
@@ -131,19 +135,12 @@
         var teamDetail;
 
         function loadTeamData(teamSeq) {
-            // access token 가져오기
             var token = getCookie("access_token");
-
-            // access token이 없으면 함수 종료
             if (!token) {
                 console.error("Access token이 없습니다.");
                 return;
             }
-
-            // URL에 teamSeq를 포함하여 완성
             var url = 'http://localhost:8090/api/team/' + teamSeq;
-
-            // 서버에 GET 요청 보내기
             $.ajax({
                 url: url,
                 type: 'GET',
@@ -155,8 +152,6 @@
                     console.log("서버에서 받은 데이터:", response);
                     teamDetail = response.value;
                     displayTeamInfo(response.team);
-                    // 받은 데이터를 처리하는 함수 호출
-
                 },
                 error: function (xhr, status, error) {
                     console.error('데이터를 불러오는 중 오류가 발생했습니다:', error);
@@ -173,22 +168,18 @@
         function copyServiceKey() {
             var serviceKeyElement = document.getElementById('serviceKey');
             var serviceKey = serviceKeyElement.innerText;
-
-            // 임시 textarea 엘리먼트 생성하여 서비스 키 복사
             var tempTextArea = document.createElement('textarea');
             tempTextArea.value = serviceKey;
             document.body.appendChild(tempTextArea);
             tempTextArea.select();
             document.execCommand('copy');
             document.body.removeChild(tempTextArea);
-
             alert('서비스 키가 복사되었습니다.');
         }
 
         function reclaimServiceKey() {
             var teamSeq = window.location.pathname.match(/\/teams\/(\d+)\/summary/)[1];
             var token = getCookie("access_token");
-
             $.ajax({
                 url: 'http://localhost:8090/api/team/key/reclaim/' + teamSeq,
                 type: 'POST',
@@ -198,7 +189,6 @@
                 },
                 success: function (response) {
                     if (response.result) {
-                        // 성공적으로 서비스 키가 재발급된 경우
                         alert('서비스 키가 성공적으로 재발급되었습니다.');
                     } else {
                         alert('서비스 키 재발급 중 오류가 발생했습니다.');
@@ -245,9 +235,11 @@
                                         <div class="input-group">
                                             <div class="h5 mb-0 font-weight-bold text-gray-800" id="serviceKey">서비스
                                                 키</div>
-                                            <div class="input-group-append">
-                                                <button class="btn btn-primary" onclick="copyServiceKey()">복사</button>
-                                                <button class="btn btn-danger" onclick="reclaimServiceKey()">재발급</button>
+                                            <div class="btn-group" style="margin-left: 10px;">
+                                                <button class="btn btn-primary"
+                                                        onclick="copyServiceKey()">복사</button>
+                                                <button class="btn btn-danger"
+                                                        onclick="reclaimServiceKey()">재발급</button>
                                             </div>
                                         </div>
                                     </div>
