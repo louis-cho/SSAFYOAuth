@@ -107,6 +107,7 @@ public class SecurityConfig {
 
                             configuration.setAllowedOrigins(Collections.singletonList("http://localhost:9000"));
                             configuration.setAllowedOrigins(Collections.singletonList("http://localhost:8080"));
+                            configuration.setAllowedOrigins(Collections.singletonList("https://ssafyauth-resource.duckdns.org"));
                             configuration.setAllowedOriginPatterns(Collections.singletonList("*"));
                             configuration.setAllowedMethods(Collections.singletonList("*"));
                             configuration.setAllowCredentials(true);

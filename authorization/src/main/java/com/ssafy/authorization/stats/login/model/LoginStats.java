@@ -29,4 +29,8 @@ public class LoginStats {
 
 	@Field(type = FieldType.Boolean, name = "success")
 	private Boolean success;
+
+	public void isSuccess(boolean success){
+		this.success = success;
+	}
 }
