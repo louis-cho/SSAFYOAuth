@@ -2,6 +2,10 @@ package com.ssafy.authorization.stats.system.service;
 
 import java.lang.management.ManagementFactory;
 
+import com.ssafy.authorization.stats.system.model.Metric;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.sun.management.OperatingSystemMXBean;
@@ -10,15 +14,22 @@ import com.sun.management.OperatingSystemMXBean;
 public class SystemMetricsService {
 	private final OperatingSystemMXBean osBean;
 
+	@Setter
+	@Getter
+	private double cpuLoad = 0.0;
+
+	@Setter
+	@Getter
+	private double memoryLoad = 0.0;
+
 	SystemMetricsService() {
 		this.osBean = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
 	}
 
-	public double getCpuLoad() {
-		return osBean.getCpuLoad() * 100;
+	@Scheduled(fixedRate = 1000)
+	private void calculateMetrics() {
+		this.cpuLoad = osBean.getCpuLoad() * 100;
+		this.memoryLoad = (1 - (double)osBean.getFreeMemorySize() / osBean.getTotalMemorySize()) * 100;
 	}
 
-	public double getMemoryUsage() {
-		return (1 - (double)osBean.getFreeMemorySize() / osBean.getTotalMemorySize()) * 100;
-	}
 }

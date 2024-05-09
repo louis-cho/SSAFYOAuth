@@ -59,7 +59,6 @@ public class TeamController {
 		Map data = teamService.addTeam(vo, email);
 		return data;
 	}
-
 	@GetMapping("/test")
 	@ResponseBody
 	public Map teamAdd() {
@@ -68,7 +67,6 @@ public class TeamController {
 		data.put("123", "#@!");
 		return data;
 	}
-
 	@GetMapping("/{team-seq}")
 	@ResponseBody
 	public Map teamDetail(@PathVariable("team-seq") Integer teamSeq, Authentication authentication) {
@@ -141,23 +139,21 @@ public class TeamController {
 	}
 
 	@GetMapping("/invite")
-	public String invitedTeamList(Model model, Authentication authentication) {
+	public String invitedTeamList(Model model, Authentication authentication){
 		Map data = teamService.listInvitedTeam(authentication);
 		model.addAllAttributes(data);
 		return "team/invite";
 	}
 
 	@PatchMapping("/invite/{team-seq}")
-	public String acceptInvitation(@PathVariable("team-seq") Integer teamSeq, Model model,
-		Authentication authentication) {
+	public String acceptInvitation(@PathVariable("team-seq") Integer teamSeq, Model model, Authentication authentication){
 		Map data = teamService.acceptInvite(teamSeq, authentication);
 		model.addAllAttributes(data);
 		return "team/invite";
 	}
 
 	@DeleteMapping("/invite/{team-seq}")
-	public String rejectInvitation(@PathVariable("team-seq") Integer teamSeq, Model model,
-		Authentication authentication) {
+	public String rejectInvitation(@PathVariable("team-seq") Integer teamSeq, Model model, Authentication authentication){
 		Map data = teamService.rejectInvite(teamSeq, authentication);
 		model.addAllAttributes(data);
 		return "team/invite";

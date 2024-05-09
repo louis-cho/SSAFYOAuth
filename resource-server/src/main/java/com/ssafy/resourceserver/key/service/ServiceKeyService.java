@@ -4,6 +4,6 @@ import org.springframework.stereotype.Service;
 
 public interface ServiceKeyService {
 
-	String createServiceKey(Long teamId, Long clientId);
-	String reCreateServiceKey(Long teamId, Long clientId);
+	boolean createServiceKey(Integer teamId, String userEmail);
+	boolean reCreateServiceKey(Integer teamId, String userEmail);
 }

@@ -1,10 +1,12 @@
 package com.ssafy.resourceserver.team.entity;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import com.ssafy.resourceserver.team.dto.TeamAddDto;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -15,6 +17,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -23,6 +26,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class DeveloperTeamEntity {
 
 	@Id
@@ -58,4 +62,20 @@ public class DeveloperTeamEntity {
 
 	@Column(name = "leader_member_seq", nullable = false)
 	private Integer leader;
+
+	@Column(nullable = false, unique = true)
+	private String clientId;
+
+	public static DeveloperTeamEntity CreateTeam(TeamAddDto dto,int seq,String secretKey) {
+		return DeveloperTeamEntity.builder()
+			.clientId(String.valueOf(UUID.randomUUID()))
+			.serviceName(dto.getServiceName())
+			.teamName(dto.getTeamName())
+			.isDelete(false)
+			.leader(seq)
+			.serviceKey(secretKey)
+			.build();
+	}
+
+
 }
