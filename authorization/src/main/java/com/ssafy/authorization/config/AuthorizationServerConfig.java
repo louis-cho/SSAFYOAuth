@@ -56,7 +56,7 @@ public class AuthorizationServerConfig {
 		//				.oidc(withDefaults());
 		http
 
-				.addFilterBefore(new CustomAuthenticationFilter(redisTemplate), OAuth2AuthorizationRequestRedirectFilter.class)
+//				.addFilterBefore(new CustomAuthenticationFilter(redisTemplate), OAuth2AuthorizationRequestRedirectFilter.class)
 				.exceptionHandling((exceptions) -> exceptions
 						.defaultAuthenticationEntryPointFor(
 								new LoginUrlAuthenticationEntryPoint("/login"),

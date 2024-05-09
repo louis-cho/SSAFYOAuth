@@ -87,12 +87,18 @@ public class LoginQueueManager implements Runnable {
     public boolean enqueue(LoginRequest request) {
 
             int teamId = request.getTeamId();
-            PriorityQueueNode node = teamNodes.computeIfAbsent(teamId, k -> new PriorityQueueNode(teamId));
 
-            int currentPriority = getCurrentPriority(teamId);
-            procs[currentPriority].add(node);
+            if(!teamNodes.containsKey(teamId)) {
+                int currentPriority = getCurrentPriority(teamId);
+                PriorityQueueNode node = new PriorityQueueNode(teamId);
+                node.getRequests().add(request);
+                procs[currentPriority].add(node);
+            }
+            else {
+                PriorityQueueNode node = teamNodes.get(teamId);
+                node.getRequests().add(request);
+            }
 
-            node.getRequests().add(request);
 
 
             AtomicInteger tps = teamTpsMap.getOrDefault(teamId, new AtomicInteger(0));
@@ -149,6 +155,14 @@ public class LoginQueueManager implements Runnable {
             // Queue size를 확인하여 요청이 있는 경우에만 로그인 처리
             if (this.getQueueSize().get() > 0) {
                 this.processLoginRequest();
+            }
+            else {
+                try {
+
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
             }
         }
     }
