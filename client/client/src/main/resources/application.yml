@@ -29,4 +29,3 @@ logging:
         web : DEBUG
         security : DEBUG
         RestTemplate : DEBUG
-
