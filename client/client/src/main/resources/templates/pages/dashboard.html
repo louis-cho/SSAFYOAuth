@@ -9,7 +9,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>SSAFY Auth - Dashboard</title>
+    <title>SSAFY Auth - 대시보드</title>
 
     <!-- Custom fonts for this template-->
     <link th:href="@{/vendor/fontawesome-free/css/all.min.css}" rel="stylesheet" type="text/css">
@@ -24,7 +24,97 @@
 
     <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <script th:src="@{/vendor/jquery/jquery.min.js}"></script>
+    <script th:src="@{/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
+    <script th:src="@{/vendor/jquery-easing/jquery.easing.min.js}"></script>
+    <!-- 페이지 로딩될 때 데이터 fetch -->
+    <script th:src="@{/js/sb-admin-2.min.js}"></script>
+    <script th:inline="javascript">
+        function getCookie(name) {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = cookies[i];
+                while (cookie.charAt(0) === ' ') {
+                    cookie = cookie.substring(1);
+                }
+                if (cookie.indexOf(name + "=") === 0) {
+                    return cookie.substring(name.length + 1, cookie.length);
+                }
+            }
+            return undefined;
+        }
 
+        window.onload = function () {
+            loadData();
+            loadTeams();
+            var teamSeq = window.location.pathname.match(/\/teams\/(\d+)\/summary/)[1];
+            loadTeamData(teamSeq);
+        };
+
+        function loadData() {
+            var token = getCookie("access_token")
+            $.ajax({
+                url: 'http://localhost:8090/api/team',
+                type: 'GET',
+                contentType: 'application/json',
+                headers: {
+                    "Authorization": 'Bearer ' + token
+                },
+                success: function (response) {
+                    displayTeams(response.list);
+                    displayTeamInfo(response.list[0]);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error loading data:', error);
+                }
+            });
+        }
+
+        function loadTeams() {
+            var token = getCookie("access_token");
+            $.ajax({
+                url: 'http://localhost:8090/api/team',
+                type: 'GET',
+                headers: {
+                    "Authorization": 'Bearer ' + token
+                },
+                success: function (response) {
+                    populateSidebar(response.list);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error loading data:', error);
+                }
+            });
+        }
+
+        function populateSidebar(data) {
+            var container = document.getElementById('teamNavContainer');
+            container.innerHTML = '';
+            data.forEach(function (team, index) {
+                var teamNavItem = document.createElement('li');
+                teamNavItem.classList.add('nav-item');
+                teamNavItem.innerHTML = `
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapse${index}"
+                    aria-expanded="true" aria-controls="collapse${index}">
+                    <i class="fas fa-fw fa-cog"></i>
+                    <span>${team.teamName}</span>
+                </a>
+                <div id="collapse${index}" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <h6 class="collapse-header">관리</h6>
+                        <a class="collapse-item" href="/teams/${team.teamSeq}/summary">요약 정보</a>
+                        <a class="collapse-item" href="/teams/${team.teamSeq}/dashboard">대시보드</a>
+                        <a class="collapse-item" href="/teams/${team.teamSeq}/consents">동의 항목</a>
+                        <a class="collapse-item" href="/teams/${team.teamSeq}/country-ip">국가 아이피 관리</a>
+                        <a class="collapse-item" href="/teams/${team.teamSeq}/management">팀 관리</a>
+                        <a class="collapse-item" href="/teams/${team.teamSeq}/settings">설정</a>
+                    </div>
+                </div>`;
+                container.appendChild(teamNavItem);
+            });
+        }
+
+    </script>
 </head>
 
 <body id="page-top" th:class="${bodyClass}">
@@ -32,143 +122,146 @@
 
 <!-- Page Wrapper -->
 <div id="wrapper">
-    <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+    <!-- Sidebar -->
+    <div class="header" th:replace="~{layouts/sidebar :: sidebar}"></div>
 
-        <!-- Sidebar - Brand -->
-        <a class="sidebar-brand d-flex align-items-center justify-content-center" th:href="@{/static}">
-            <div class="sidebar-brand-icon rotate-n-15">
-                <i class="fas fa-laugh-wink"></i>
-            </div>
-            <div class="sidebar-brand-text mx-3">SSAFY Auth<sup>306</sup></div>
-        </a>
+<!--    <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">-->
 
-        <!-- Divider -->
-        <hr class="sidebar-divider my-0">
+<!--        &lt;!&ndash; Sidebar - Brand &ndash;&gt;-->
+<!--        <a class="sidebar-brand d-flex align-items-center justify-content-center" th:href="@{/static}">-->
+<!--            <div class="sidebar-brand-icon rotate-n-15">-->
+<!--                <i class="fas fa-laugh-wink"></i>-->
+<!--            </div>-->
+<!--            <div class="sidebar-brand-text mx-3">SSAFY Auth<sup>306</sup></div>-->
+<!--        </a>-->
 
-        <!-- Nav Item - Dashboard -->
-        <li class="nav-item active">
-            <a class="nav-link" th:href="@{/static}">
-                <i class="fas fa-fw fa-tachometer-alt"></i>
-                <span>나의 팀</span></a>
-        </li>
+<!--        &lt;!&ndash; Divider &ndash;&gt;-->
+<!--        <hr class="sidebar-divider my-0">-->
 
-        <!-- Divider -->
-        <hr class="sidebar-divider">
+<!--        &lt;!&ndash; Nav Item - Dashboard &ndash;&gt;-->
+<!--        <li class="nav-item active">-->
+<!--            <a class="nav-link" th:href="@{/static}">-->
+<!--                <i class="fas fa-fw fa-tachometer-alt"></i>-->
+<!--                <span>나의 팀</span></a>-->
+<!--        </li>-->
 
-        <!-- Heading -->
-        <div class="sidebar-heading" style="font-size: large">
-            나의 팀
-        </div>
+<!--        &lt;!&ndash; Divider &ndash;&gt;-->
+<!--        <hr class="sidebar-divider">-->
 
-        <!-- Nav Item - Pages Collapse Menu -->
-        <li class="nav-item">
-            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
-               aria-expanded="true" aria-controls="collapseTwo">
-                <i class="fas fa-fw fa-cog"></i>
-                <span>개쩌는 팀1</span>
-            </a>
-            <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
-                <div class="bg-white py-2 collapse-inner rounded">
-                    <h6 class="collapse-header">관리</h6>
-                    <a class="collapse-item" th:href="@{/buttons}">요약 정보</a>
-                    <a class="collapse-item" th:href="@{/buttons}">대시보드</a>
-                    <a class="collapse-item" th:href="@{/cards}">동의 항목</a>
-                    <a class="collapse-item" th:href="@{/cards}">팀 관리</a>
-                    <a class="collapse-item" th:href="@{/cards}">설정</a>
-                </div>
-            </div>
-        </li>
+<!--        &lt;!&ndash; Heading &ndash;&gt;-->
+<!--        <div class="sidebar-heading" style="font-size: large">-->
+<!--            나의 팀-->
+<!--        </div>-->
 
-        <li class="nav-item">
-            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseThree"
-               aria-expanded="true" aria-controls="collapseThree">
-                <i class="fas fa-fw fa-cog"></i>
-                <span>개쩌는 팀2</span>
-            </a>
-            <div id="collapseThree" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
-                <div class="bg-white py-2 collapse-inner rounded">
-                    <h6 class="collapse-header">관리</h6>
-                    <a class="collapse-item" th:href="@{/buttons}">요약 정보</a>
-                    <a class="collapse-item" th:href="@{/buttons}">대시보드</a>
-                    <a class="collapse-item" th:href="@{/cards}">동의 항목</a>
-                    <a class="collapse-item" th:href="@{/cards}">팀 관리</a>
-                    <a class="collapse-item" th:href="@{/cards}">설정</a>
-                </div>
-            </div>
-        </li>
+<!--        &lt;!&ndash; Nav Item - Pages Collapse Menu &ndash;&gt;-->
+<!--        <li class="nav-item">-->
+<!--            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"-->
+<!--               aria-expanded="true" aria-controls="collapseTwo">-->
+<!--                <i class="fas fa-fw fa-cog"></i>-->
+<!--                <span>개쩌는 팀1</span>-->
+<!--            </a>-->
+<!--            <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">-->
+<!--                <div class="bg-white py-2 collapse-inner rounded">-->
+<!--                    <h6 class="collapse-header">관리</h6>-->
+<!--                    <a class="collapse-item" th:href="@{/buttons}">요약 정보</a>-->
+<!--                    <a class="collapse-item" th:href="@{/buttons}">대시보드</a>-->
+<!--                    <a class="collapse-item" th:href="@{/cards}">동의 항목</a>-->
+<!--                    <a class="collapse-item" th:href="@{/cards}">팀 관리</a>-->
+<!--                    <a class="collapse-item" th:href="@{/cards}">설정</a>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </li>-->
 
-        <!-- Nav Item - Utilities Collapse Menu -->
-        <li class="nav-item">
-            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
-               aria-expanded="true" aria-controls="collapseUtilities">
-                <i class="fas fa-fw fa-wrench"></i>
-                <span>Utilities</span>
-            </a>
-            <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities"
-                 data-parent="#accordionSidebar">
-                <div class="bg-white py-2 collapse-inner rounded">
-                    <h6 class="collapse-header">Custom Utilities:</h6>
-                    <a class="collapse-item" th:href="@{/utilities-color}">Colors</a>
-                    <a class="collapse-item" th:href="@{/utilities-border}">Borders</a>
-                    <a class="collapse-item" th:href="@{/utilities-animation}">Animations</a>
-                    <a class="collapse-item" th:href="@{/utilities-other}">Other</a>
-                </div>
-            </div>
-        </li>
+<!--        <li class="nav-item">-->
+<!--            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseThree"-->
+<!--               aria-expanded="true" aria-controls="collapseThree">-->
+<!--                <i class="fas fa-fw fa-cog"></i>-->
+<!--                <span>개쩌는 팀2</span>-->
+<!--            </a>-->
+<!--            <div id="collapseThree" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">-->
+<!--                <div class="bg-white py-2 collapse-inner rounded">-->
+<!--                    <h6 class="collapse-header">관리</h6>-->
+<!--                    <a class="collapse-item" th:href="@{/buttons}">요약 정보</a>-->
+<!--                    <a class="collapse-item" th:href="@{/buttons}">대시보드</a>-->
+<!--                    <a class="collapse-item" th:href="@{/cards}">동의 항목</a>-->
+<!--                    <a class="collapse-item" th:href="@{/cards}">팀 관리</a>-->
+<!--                    <a class="collapse-item" th:href="@{/cards}">설정</a>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </li>-->
 
-        <!-- Divider -->
-        <hr class="sidebar-divider">
+<!--        &lt;!&ndash; Nav Item - Utilities Collapse Menu &ndash;&gt;-->
+<!--        <li class="nav-item">-->
+<!--            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"-->
+<!--               aria-expanded="true" aria-controls="collapseUtilities">-->
+<!--                <i class="fas fa-fw fa-wrench"></i>-->
+<!--                <span>Utilities</span>-->
+<!--            </a>-->
+<!--            <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities"-->
+<!--                 data-parent="#accordionSidebar">-->
+<!--                <div class="bg-white py-2 collapse-inner rounded">-->
+<!--                    <h6 class="collapse-header">Custom Utilities:</h6>-->
+<!--                    <a class="collapse-item" th:href="@{/utilities-color}">Colors</a>-->
+<!--                    <a class="collapse-item" th:href="@{/utilities-border}">Borders</a>-->
+<!--                    <a class="collapse-item" th:href="@{/utilities-animation}">Animations</a>-->
+<!--                    <a class="collapse-item" th:href="@{/utilities-other}">Other</a>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </li>-->
 
-        <!-- Heading -->
-        <div class="sidebar-heading" style="font-size: large">
-            내 정보 관리
-        </div>
+<!--        &lt;!&ndash; Divider &ndash;&gt;-->
+<!--        <hr class="sidebar-divider">-->
 
-        <!-- Nav Item - Pages Collapse Menu -->
-        <li class="nav-item">
-            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages"
-               aria-expanded="true" aria-controls="collapsePages">
-                <i class="fas fa-fw fa-folder"></i>
-                <span>Pages</span>
-            </a>
-            <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
-                <div class="bg-white py-2 collapse-inner rounded">
-                    <h6 class="collapse-header">Login Screens:</h6>
-                    <a class="collapse-item" th:href="@{/login}">Login</a>
-                    <a class="collapse-item" th:href="@{/register}">Register</a>
-                    <a class="collapse-item" th:href="@{/forgot-password}">Forgot Password</a>
-                    <div class="collapse-divider"></div>
-                    <h6 class="collapse-header">Other Pages:</h6>
-                    <a class="collapse-item" th:href="@{/404}">404 Page</a>
-                    <a class="collapse-item" th:href="@{/blank}">Blank Page</a>
-                </div>
-            </div>
-        </li>
+<!--        &lt;!&ndash; Heading &ndash;&gt;-->
+<!--        <div class="sidebar-heading" style="font-size: large">-->
+<!--            내 정보 관리-->
+<!--        </div>-->
 
-        <!-- Nav Item - Charts -->
-        <li class="nav-item">
-            <a class="nav-link" th:href="@{/charts}">
-                <i class="fas fa-fw fa-chart-area"></i>
-                <span>Charts</span></a>
-        </li>
+<!--        &lt;!&ndash; Nav Item - Pages Collapse Menu &ndash;&gt;-->
+<!--        <li class="nav-item">-->
+<!--            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages"-->
+<!--               aria-expanded="true" aria-controls="collapsePages">-->
+<!--                <i class="fas fa-fw fa-folder"></i>-->
+<!--                <span>Pages</span>-->
+<!--            </a>-->
+<!--            <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">-->
+<!--                <div class="bg-white py-2 collapse-inner rounded">-->
+<!--                    <h6 class="collapse-header">Login Screens:</h6>-->
+<!--                    <a class="collapse-item" th:href="@{/login}">Login</a>-->
+<!--                    <a class="collapse-item" th:href="@{/register}">Register</a>-->
+<!--                    <a class="collapse-item" th:href="@{/forgot-password}">Forgot Password</a>-->
+<!--                    <div class="collapse-divider"></div>-->
+<!--                    <h6 class="collapse-header">Other Pages:</h6>-->
+<!--                    <a class="collapse-item" th:href="@{/404}">404 Page</a>-->
+<!--                    <a class="collapse-item" th:href="@{/blank}">Blank Page</a>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </li>-->
 
-        <!-- Nav Item - Tables -->
-        <li class="nav-item">
-            <a class="nav-link" th:href="@{/tables}">
-                <i class="fas fa-fw fa-table"></i>
-                <span>Tables</span></a>
-        </li>
+<!--        &lt;!&ndash; Nav Item - Charts &ndash;&gt;-->
+<!--        <li class="nav-item">-->
+<!--            <a class="nav-link" th:href="@{/charts}">-->
+<!--                <i class="fas fa-fw fa-chart-area"></i>-->
+<!--                <span>Charts</span></a>-->
+<!--        </li>-->
 
-        <!-- Divider -->
-        <hr class="sidebar-divider d-none d-md-block">
+<!--        &lt;!&ndash; Nav Item - Tables &ndash;&gt;-->
+<!--        <li class="nav-item">-->
+<!--            <a class="nav-link" th:href="@{/tables}">-->
+<!--                <i class="fas fa-fw fa-table"></i>-->
+<!--                <span>Tables</span></a>-->
+<!--        </li>-->
 
-        <!-- Sidebar Toggler (Sidebar) -->
-        <div class="text-center d-none d-md-inline">
-            <button class="rounded-circle border-0" id="sidebarToggle"></button>
-        </div>
+<!--        &lt;!&ndash; Divider &ndash;&gt;-->
+<!--        <hr class="sidebar-divider d-none d-md-block">-->
+
+<!--        &lt;!&ndash; Sidebar Toggler (Sidebar) &ndash;&gt;-->
+<!--        <div class="text-center d-none d-md-inline">-->
+<!--            <button class="rounded-circle border-0" id="sidebarToggle"></button>-->
+<!--        </div>-->
 
 
-    </ul>
+<!--    </ul>-->
 
     <div class="row">
 
