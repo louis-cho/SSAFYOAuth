@@ -43,7 +43,7 @@ public class RedirectServiceImpl implements RedirectService {
 				RedirectEntity redirectEntity = new RedirectEntity(teamId, 0, redirectUrl);
 				redirectEntityRepository.save(redirectEntity);
 			}else{
-				return -1;
+				return -2;
 			}
 		} catch (Exception e) {
 			return -1;
