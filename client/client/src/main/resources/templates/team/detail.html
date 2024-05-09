@@ -23,6 +23,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
+    <!-- auto complete -->
+    <script src="https://cdn.jsdelivr.net/npm/@algolia/autocomplete-js"></script>
     <style>
         .team-contents {
             display: flex;
@@ -35,6 +37,9 @@
             margin-bottom: 1%;
         }
         #team-name-container {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
             margin-bottom: 2%;
         }
         .img-content {
@@ -52,6 +57,15 @@
         label {
             padding-top: 1%;
         }
+        #team-name-update-container {
+            display: flex;
+            flex-direction: row;
+        }
+        .url-div {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+        }
     </style>
 </head>
 <body id="page-top" th:class="${bodyClass}">
@@ -68,6 +82,18 @@
             <!-- 팀 이름 section start -->
             <div id="team-name-container" class="card shadow bg-primary rounded">
                 <h1 id="team-name" class="card-header text-light">Team Name</h1>
+                <!-- 팀 이름 수정 dropdown start-->
+                <button type="button" role="button" data-bs-toggle="dropdown" aria-expanded="false" class="bg-light dropdown-toggle btn btn-outline-primary" id="team-name-dropdown-btn"></button>
+                <ul class="dropdown-menu container-fluid">
+                    <li class="container-fluid">
+                        <div class="dropdown-item input-group" id="team-name-update-container">
+                            <label class="input-group-text">New Team Name</label>
+                            <input type="text" class="form-control" id="team-name-new" placeholder="새로운 팀 이름을 입력해 주세요..."/>
+                            <button type="button" class="input-group-append btn btn-outline-primary" id="team-name-update-btn">수정</button>
+                        </div>
+                    </li>
+                </ul>
+                <!-- 팀 이름 수정 dropdown end -->
             </div>
             <!-- 팀 이름 section end -->
             <!-- 팀 정보 section start -->
@@ -87,7 +113,7 @@
                     <div id="service-name-container" class="input-group team-content">
                         <label for="service-name" class="input-group-text">Service Name</label>
                         <input type="text" class="form-control" disabled id="service-name">
-                        <button type="button" class="btn btn-outline-primary input-group-append">수정</button>
+                        <button type="button" class="btn btn-outline-primary input-group-append" data-bs-toggle="modal" data-bs-target="#service-name-update-modal">수정</button>
                     </div>
                     <!-- service name end -->
                     <!-- client id start -->
@@ -99,8 +125,10 @@
                     <!-- client id end -->
                     <!-- redirect urls start -->
                     <div id="redirect-url-container" class="team-content">
-                        <div class="d-flex justify-content-between">
-                            <label for="redirect-url-list">Redirect Urls</label><button type="button" class="btn btn-outline-primary" style="margin-top: 1%; margin-bottom: 1%;">수정</button>
+                        <div class="input-group" style="padding-bottom: 1%;">
+                            <label class="input-group-text" for="temp-redirect-url">Redirect Urls</label>
+                            <input class="form-control" type="text" id="temp-redirect-url" placeholder="새 리다이렉트 url을 입력해 주세요..."/>
+                            <button type="button" class="btn btn-outline-primary input-group-append" id="redirect-url-add-btn">추가</button>
                         </div>
                         <ul id="redirect-url-list" class="list-group list-group-flush">
                         </ul>
@@ -108,8 +136,10 @@
                     <!-- redirect urls end -->
                     <!-- members start -->
                     <div id="members-container" class="team-content">
-                        <div class="d-flex justify-content-between">
-                            <label for="member-list">Members</label><button type="button" class="btn btn-outline-primary" style="margin-top: 1%; margin-bottom: 1%;">수정</button>
+                        <div class="input-group" style="padding-bottom: 1%;">
+                            <label class="input-group-text" for="temp-redirect-url">Members</label>
+                            <input class="form-control typeahead" type="text" id="temp-member-email" placeholder="멤버로 추가할 개발자의 email을 입력하세요..." data-provide="typeahead"/>
+                            <button type="button" class="btn btn-outline-primary input-group-append" id="member-add-btn">추가</button>
                         </div>
                         <ul id="member-list" class="list-group list-group-flush">
                         </ul>
@@ -136,16 +166,44 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="close-image-update-modal-btn"></button>
             </div>
             <!-- 모달 header end -->
+            <!-- 모달 body start -->
             <div class="modal-body">
                 <input type="file" class="form-control-file form-control" id="temp-service-image">
             </div>
+            <!-- 모달 body end -->
+            <!-- 모달 footer start -->
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" id="service-image-update-btn">수정</button>
             </div>
+            <!-- 모달 footer end -->
         </div>
     </div>
 </div>
 <!-- 이미지 업데이트 모달 end -->
+<!-- 서비스 명 업데이트 모달 start -->
+<div class="modal fade" id="service-name-update-modal" tabindex="-1" aria-labelledby="serviceNameModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- 모달 header start -->
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="serviceNameModalLabel">Update Service Name</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="close-service-name-update-modal-btn"></button>
+            </div>
+            <!-- 모달 header end -->
+            <!-- 모달 body start -->
+            <div class="modal-body">
+                <input type="text" class="form-control-file form-control" id="temp-service-name" placeholder="서비스 명을 입력해 주세요.">
+            </div>
+            <!-- 모달 body end -->
+            <!-- 모달 footer start -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="service-name-update-btn">수정</button>
+            </div>
+            <!-- 모달 footer end -->
+        </div>
+    </div>
+</div>
+<!-- 서비스 명 업데이트 모달 end -->
 </body>
 <script>
     function getCookie(name) {
@@ -160,7 +218,7 @@
             }
         }
         // 해당 이름의 쿠키가 없으면 undefined 반환
-        return undefined;
+    return undefined;
     }
     let access_token = getCookie('access_token');
     const teamSeq  = [[${teamSeq}]];
@@ -184,8 +242,8 @@
         if(redirectUrl != null) {
             let liUrl = '';
             for (let i = 0; i < redirectUrl.length; i++) {
-                liUrl += `<li class="list-group-item">
-                        ${redirectUrl[i]}
+                liUrl += `<li class="list-group-item url-div" id="url-${redirectUrl[i]}">
+                        <div>${redirectUrl[i]}</div><button type="button" class="btn btn-danger btn-sm" onclick="delete_redirect_url('${redirectUrl[i]}')">X</button>
                    </li>`
             }
             document.getElementById('redirect-url-list').innerHTML = liUrl;
@@ -267,6 +325,167 @@
                 document.getElementById('service-image').src = '/image/noimage.jpg';
             });
         }
+    });
+    document.getElementById('team-name-update-btn').addEventListener('click', event => {
+        let team_name = document.getElementById('team-name-new').value;
+        if(team_name && team_name != ''){
+            fetch(`http://localhost:8090/api/team/${teamSeq}`,{
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${access_token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({team_name})
+            }).then(res => res.json()).then(data => {
+                if(data.msg){
+                    alert(data.msg);
+                    return;
+                }
+                document.getElementById('team-name').innerText = data.team_name;
+                document.getElementById('team-name-new').value = '';
+
+            });
+        }
+    });
+    const regex = /^[ㄱ-ㅎㅏ-ㅣ가-힣a-zA-Z0-9\s]*$/;
+    document.getElementById('service-name-update-btn').addEventListener('click', e => {
+        let temp_service_name = document.getElementById('temp-service-name').value;
+        if(!temp_service_name){
+            alert('서비스 명은 비어 있을 수 없습니다.');
+            return;
+        }
+        if(!regex.test(temp_service_name)){
+            alert('서비스 명으로 사용할 수 없는 문자열 입니다.');
+            return;
+        }
+        fetch(`http://localhost:8090/api/team/${teamSeq}`,{
+            method: 'PATCH',
+            headers: {
+                'Authorization': `Bearer ${access_token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({'service_name': temp_service_name})
+        }).then(res => res.json()).then(data => {
+            if(data.msg){
+                alert(data.msg);
+                return;
+            }
+            document.getElementById('service-name').value = data.serviceName;
+            document.getElementById('temp-service-name').value = '';
+            document.getElementById('close-service-name-update-modal-btn').click();
+        });
+    });
+    document.getElementById('redirect-url-add-btn').addEventListener('click', e => {
+        const temp_redirect_url = document.getElementById('temp-redirect-url').value;
+        if(!temp_redirect_url){
+            alert('추가할 리다이렉트 url을 입력해 주세요.');
+        }
+        fetch('http://localhost:8090/api/team/redirect/regist',{
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${access_token}`
+            },
+            body: JSON.stringify({'teamId': teamSeq, 'redirectUrl': temp_redirect_url})
+        }).then(res => res.json()).then(data => {
+            if(data == -2){
+                alert('리다이렉트 url은 최대 6개까지 등록할 수 있습니다.');
+                return;
+            }
+            if(data != 1){
+                alert('잘못된 요청입니다.');
+                return;
+            }
+            document.getElementById('temp-redirect-url').value = '';
+            const url_list = document.getElementById('redirect-url-list');
+            let lis = url_list.innerHTML;
+            lis += `<li class="list-group-item url-div" id="url-${temp_redirect_url}">
+                        <div>${temp_redirect_url}</div><button type="button" class="btn btn-danger btn-sm" onclick="delete_redirect_url('${temp_redirect_url}')">X</button>
+                   </li>`
+            url_list.innerHTML = lis;
+            alert('리다이렉트 url이 추가 되었습니다.');
+        });
+    });
+    function delete_redirect_url(url) {
+        console.log(url);
+        fetch('http://localhost:8090/api/team/redirect/delete', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${access_token}`
+            },
+            body: JSON.stringify({
+                'teamId': teamSeq,
+                'redirectUrl': url
+            })
+        }).then(res => res.json()).then(data => {
+            if(data != 1) {
+                alert('잘못된 요청입니다.');
+            }else{
+                const li = document.getElementById(`url-${url}`);
+                li.remove();
+                alert('redirect url이 삭제 되었습니다.');
+            }
+        });
+    }
+</script>
+<script type="module">
+    function getCookie(name) {
+        let cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            let cookie = cookies[i];
+            while (cookie.charAt(0) === ' ') {
+                cookie = cookie.substring(1);
+            }
+            if (cookie.indexOf(name + "=") === 0) {
+                return cookie.substring(name.length + 1, cookie.length);
+            }
+        }
+        // 해당 이름의 쿠키가 없으면 undefined 반환
+        return undefined;
+    }
+    let access_token = getCookie('access_token');
+    const teamSeq  = [[${teamSeq}]];
+    import Autocomplete from "https://cdn.jsdelivr.net/gh/lekoala/bootstrap5-autocomplete@master/autocomplete.js";
+    const items = {};
+    const options = {
+        items,
+        onRenderItem: (item, label) => {
+            return label + " (" + item.value + ")";
+        }
+    }
+    Autocomplete.init("input.typeahead", options);
+    document.getElementById('temp-member-email').addEventListener('input', e => {
+        const email = document.getElementById('temp-member-email').value;
+        if(!email){
+            return;
+        }
+        fetch(`http://localhost:8090/api/team/member/${email}`, {method: 'GET', headers: {'Authorization': `Bearer ${access_token}`}}).then(res => res.json()).then(data => {
+            const items = {};
+            let options = {};
+            if(data.msg){
+                items[`${data.msg}`] = `${email}`;
+                options = {
+                    items,
+                    onRenderItem: (item, label) => {
+                        return item.label + "에 관한 " + item.value + " !";
+                    }
+                }
+                new Autocomplete(document.getElementById('temp-member-email'), options);
+            }else {
+                const developers = data.list;
+                for (let i = 0; i < developers.length; i++) {
+                    items[`${developers[i].name}`] = `${developers[i].email}`;
+                }
+                options = {
+                    items,
+                    onRenderItem: (item, label) => {
+                        return item.value + " (" + label + ")";
+                    }
+                }
+                new Autocomplete(document.getElementById('temp-member-email'), options);
+            }
+        });
     });
 </script>
 </html>
