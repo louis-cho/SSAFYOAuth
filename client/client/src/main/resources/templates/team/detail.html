@@ -344,6 +344,7 @@
                     alert(data.msg);
                     return;
                 }
+                alert('팀 이름이 ' + data.team_name + '으로 변경 되었습니다.');
                 document.getElementById('team-name').innerText = data.team_name;
                 document.getElementById('team-name-new').value = '';
 
@@ -376,6 +377,7 @@
             document.getElementById('service-name').value = data.serviceName;
             document.getElementById('temp-service-name').value = '';
             document.getElementById('close-service-name-update-modal-btn').click();
+            alert('서비스 명이 ' + data.serviceName + '으로 변경 되었습니다.');
         });
     });
     document.getElementById('redirect-url-add-btn').addEventListener('click', e => {
