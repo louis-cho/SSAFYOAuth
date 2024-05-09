@@ -258,9 +258,9 @@
                                 </div>
                                 <span class="`;
             if(members[i].isLeader == true){
-                liMember += `badge badge text-bg-primary`;
+                liMember += `badge rounded-pill text-bg-primary align-self-center`;
             }else{
-                liMember += `badge text-bg-dark`;
+                liMember += `badge rounded-pill text-bg-dark align-self-center`;
             }
             liMember +=`">${members[i].isLeader ? "Leader" : "Member"}</span>
                             </div>
@@ -431,7 +431,7 @@
                                 <button type="button" class="member-btn" disabled>${member.name}(${member.email})</button>
                                 </div>
                                 <span class="`;
-            liMember += `badge text-bg-dark`;
+            liMember += `badge rounded-pill text-bg-dark align-self-center`;
             liMember +=`">Member</span>
                             </div>
                             <button type="button" class="btn btn-danger btn-sm" onclick="delete_member('${member.email}')">X</button>
