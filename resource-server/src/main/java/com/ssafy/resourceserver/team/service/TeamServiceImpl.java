@@ -614,7 +614,7 @@ public class TeamServiceImpl implements TeamService {
 		// List<String> blockedCountry = countryRepository.findByTeamId(teamId);
 		List<String> arr = new ArrayList<>();
 		arr.add("KR");
-		arr.add("UK");
+		arr.add("US");
 
 		return arr;
 	}

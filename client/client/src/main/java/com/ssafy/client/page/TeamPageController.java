@@ -24,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 public class TeamPageController {
 	private static final String RESOURCE_SERVER_URL = "http://localhost:8090/api";
 	private final ApiService apiService;
-
+	private final ObjectMapper objectMapper;
 	private final String SUFFIX = "pages/";
 
 	@GetMapping("/{teamSeq}/summary")
@@ -42,8 +42,6 @@ public class TeamPageController {
 	public String countryIp(@PathVariable Integer teamSeq, Model model) {
 		String url = RESOURCE_SERVER_URL + "/team/" + teamSeq + "/country-ip";
 		String blockedCountries = apiService.callProtectedApi(url);
-
-		ObjectMapper objectMapper = new ObjectMapper();
 
 		try {
 			List<String> blockedCountriesList = objectMapper.readValue(blockedCountries, List.class);
