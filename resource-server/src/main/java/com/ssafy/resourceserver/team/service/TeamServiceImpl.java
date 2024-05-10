@@ -421,7 +421,7 @@ public class TeamServiceImpl implements TeamService {
 		Optional<DeveloperMemberEntity> dmOptional = developerMemberRepository.findById(leaderSeq);
 		if (!dmOptional.isEmpty()) {
 			DeveloperMemberEntity dm = dmOptional.get();
-			if (dm.getEmail() == email) {
+			if (dm.getEmail().equals(email)) {
 				data.put("msg", "팀 리더는 삭제할 수 없습니다.");
 				return data;
 			}
@@ -430,7 +430,7 @@ public class TeamServiceImpl implements TeamService {
 		Integer memberSeq = list.get(0).getMemberSeq();
 		// 팀에서 삭제
 		teamMemberRepository.deleteById(new TeamMemberPK(teamSeq, memberSeq));
-		data.put("msg", "정상 삭제 되었습니다.");
+		data.put("msg", null);
 		return data;
 	}
 
