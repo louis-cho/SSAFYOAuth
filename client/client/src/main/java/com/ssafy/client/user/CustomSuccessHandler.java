@@ -11,10 +11,6 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import org.springframework.stereotype.Component;
 
 import com.ssafy.client.user.domain.CustomOAuth2User;
-// import com.ssafy.client.client.user.jwt.JWTUtil;
-import com.ssafy.client.user.jwt.JWTUtil;
-import com.ssafy.client.user.service.JWTService;
-import com.ssafy.client.user.service.TokenService;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;

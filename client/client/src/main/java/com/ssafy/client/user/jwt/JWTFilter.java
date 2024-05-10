@@ -1,6 +1,5 @@
 package com.ssafy.client.user.jwt;
 
-
 import java.io.IOException;
 import java.io.PrintWriter;
 
@@ -9,10 +8,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.ssafy.client.user.CustomSuccessHandler;
 import com.ssafy.client.user.domain.CustomOAuth2User;
 import com.ssafy.client.user.domain.UserDTO;
 import com.ssafy.client.user.service.JWTService;
-import com.ssafy.client.user.CustomSuccessHandler;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;

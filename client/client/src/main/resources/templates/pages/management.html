@@ -226,7 +226,7 @@
     async function fetchUsers(email = null, page = 0, size = 10) {
         if (email) {
             fetching = true;
-            await fetch(`http://localhost:9000/api/team/member/${email}`)
+            await fetch(`https://ssafyauth-resource.duckdns.org/api/team/member/${email}`)
                 .then(response => response.json())
                 .then(data => {
                     console.log('Team member data:', data);
@@ -275,7 +275,7 @@
     function addUser(teamseq = null, email = null) {
         console.log("addUser");
         if (teamseq && email) {
-            fetch(`http://localhost:9000/api/team/${teamseq}/member/${email}`, {
+            fetch(`https://ssafyauth-resource.duckdns.org/api/team/${teamseq}/member/${email}`, {
                 method: 'POST',  // 요청 메소드를 POST로 설정
                 headers: {
                     'Content-Type': 'application/json',  // 내용 유형을 JSON으로 설정
@@ -319,7 +319,7 @@
      */
     function removeUser(teamseq = null, email = null) {
         if (teamseq && email) {
-            fetch(`http://localhost:9000/api/team/${teamseq}/member/${email}`, {
+            fetch(`https://ssafyauth-resource.duckdns.org/api/team/${teamseq}/member/${email}`, {
                 method: 'DELETE',  // 요청 메소드를 POST로 설정
                 headers: {
                     'Content-Type': 'application/json',  // 내용 유형을 JSON으로 설정

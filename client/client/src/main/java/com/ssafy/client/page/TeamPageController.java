@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/teams")
 @RequiredArgsConstructor
 public class TeamPageController {
-	private static final String RESOURCE_SERVER_URL = "http://localhost:8090/api";
+	private static final String RESOURCE_SERVER_URL = "https://ssafyauth-resource.duckdns.org/api";
 	private final ApiService apiService;
 
 	private final String SUFFIX = "pages/";

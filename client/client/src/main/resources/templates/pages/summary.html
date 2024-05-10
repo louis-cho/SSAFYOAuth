@@ -66,7 +66,7 @@
         function loadData() {
             var token = getCookie("access_token")
             $.ajax({
-                url: 'http://localhost:8090/api/team',
+                url: 'https://ssafyauth-resource.duckdns.org/api/team',
                 type: 'GET',
                 contentType: 'application/json',
                 headers: {
@@ -85,7 +85,7 @@
         function loadTeams() {
             var token = getCookie("access_token");
             $.ajax({
-                url: 'http://localhost:8090/api/team',
+                url: 'https://ssafyauth-resource.duckdns.org/api/team',
                 type: 'GET',
                 headers: {
                     "Authorization": 'Bearer ' + token
@@ -140,7 +140,7 @@
                 console.error("Access token이 없습니다.");
                 return;
             }
-            var url = 'http://localhost:8090/api/team/' + teamSeq;
+            var url = 'https://ssafyauth-resource.duckdns.org/api/team/' + teamSeq;
             $.ajax({
                 url: url,
                 type: 'GET',
@@ -181,7 +181,7 @@
             var teamSeq = window.location.pathname.match(/\/teams\/(\d+)\/summary/)[1];
             var token = getCookie("access_token");
             $.ajax({
-                url: 'http://localhost:8090/api/team/key/reclaim/' + teamSeq,
+                url: 'https://ssafyauth-resource.duckdns.org/api/team/key/reclaim/' + teamSeq,
                 type: 'POST',
                 contentType: 'application/json',
                 headers: {

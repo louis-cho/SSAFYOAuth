@@ -223,7 +223,7 @@
     let access_token = getCookie('access_token');
     const teamSeq  = [[${teamSeq}]];
     console.log(teamSeq);
-    fetch(`http://localhost:8090/api/team/${teamSeq}`, {
+    fetch(`https://ssafyauth-resource.duckdns.org/api/team/${teamSeq}`, {
         method: 'GET',
         headers: {
             'Authorization': `Bearer ${access_token}`,
@@ -278,7 +278,7 @@
         if(event.target.files[0]) {
             let data = new FormData();
             data.append('image', event.target.files[0]);
-            fetch('http://localhost:8090/api/team/image', {
+            fetch('https://ssafyauth-resource.duckdns.org/api/team/image', {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${access_token}`,
@@ -297,7 +297,7 @@
         let data = {
             url: updatedImageUrl,
         };
-        fetch(`http://localhost:8090/api/team/[[${teamSeq}]]/image`, {
+        fetch(`https://ssafyauth-resource.duckdns.org/api/team/[[${teamSeq}]]/image`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${access_token}`,
@@ -315,7 +315,7 @@
     });
     document.getElementById("service-image-delete-btn").addEventListener('click', event => {
         if(confirm("서비스 이미지를 삭제 하시겠습니까?")){
-            fetch(`http://localhost:8090/api/team/${teamSeq}/image`, {
+            fetch(`https://ssafyauth-resource.duckdns.org/api/team/${teamSeq}/image`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${access_token}`,
@@ -332,7 +332,7 @@
     document.getElementById('team-name-update-btn').addEventListener('click', event => {
         let team_name = document.getElementById('team-name-new').value;
         if(team_name && team_name != ''){
-            fetch(`http://localhost:8090/api/team/${teamSeq}`,{
+            fetch(`https://ssafyauth-resource.duckdns.org/api/team/${teamSeq}`,{
                 method: 'PUT',
                 headers: {
                     'Authorization': `Bearer ${access_token}`,
@@ -362,7 +362,7 @@
             alert('서비스 명으로 사용할 수 없는 문자열 입니다.');
             return;
         }
-        fetch(`http://localhost:8090/api/team/${teamSeq}`,{
+        fetch(`https://ssafyauth-resource.duckdns.org/api/team/${teamSeq}`,{
             method: 'PATCH',
             headers: {
                 'Authorization': `Bearer ${access_token}`,
@@ -385,7 +385,7 @@
         if(!temp_redirect_url){
             alert('추가할 리다이렉트 url을 입력해 주세요.');
         }
-        fetch('http://localhost:8090/api/team/redirect/regist',{
+        fetch('https://ssafyauth-resource.duckdns.org/api/team/redirect/regist',{
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -417,7 +417,7 @@
             alert('이메일을 입력해 주세요...');
             return;
         }
-        fetch(`http://localhost:8090/api/team/${teamSeq}/member/${email}`, {
+        fetch(`https://ssafyauth-resource.duckdns.org/api/team/${teamSeq}/member/${email}`, {
             method: 'POST',
             headers: {'Authorization': `Bearer ${access_token}`}
         }).then(res => res.json()).then(data => {
@@ -444,7 +444,7 @@
     });
     function delete_redirect_url(url) {
         console.log(url);
-        fetch('http://localhost:8090/api/team/redirect/delete', {
+        fetch('https://ssafyauth-resource.duckdns.org/api/team/redirect/delete', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -465,7 +465,7 @@
         });
     }
     function delete_member(email) {
-        fetch(`http://localhost:8090/api/team/${teamSeq}/member/${email}`, {
+        fetch(`https://ssafyauth-resource.duckdns.org/api/team/${teamSeq}/member/${email}`, {
             method: 'DELETE',
             headers: {'Authorization': `Bearer ${access_token}`},
         }).then(res => res.json()).then(data => {
@@ -510,7 +510,7 @@
         if(!email){
             return;
         }
-        fetch(`http://localhost:8090/api/team/member/${email}`, {method: 'GET', headers: {'Authorization': `Bearer ${access_token}`}}).then(res => res.json()).then(data => {
+        fetch(`https://ssafyauth-resource.duckdns.org/api/team/member/${email}`, {method: 'GET', headers: {'Authorization': `Bearer ${access_token}`}}).then(res => res.json()).then(data => {
             const items = {};
             let options = {};
             if(data.msg){

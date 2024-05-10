@@ -1,6 +1,4 @@
 package com.ssafy.client.user.service;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -13,7 +11,6 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.nimbusds.jose.util.Resource;
 import com.ssafy.client.user.dto.ProfileInformationForUpdatesDto;
 
 @Service
