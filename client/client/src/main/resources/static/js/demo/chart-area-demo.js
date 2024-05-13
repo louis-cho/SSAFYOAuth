@@ -2,6 +2,42 @@
 Chart.defaults.global.defaultFontFamily = 'Nunito', '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
 Chart.defaults.global.defaultFontColor = '#858796';
 
+import { Client } from 'https://cdn.skypack.dev/@stomp/stompjs';
+
+// WebSocket 연결 생성
+const client = new Client({
+  brokerURL: 'ws://localhost:9000/ws', // 서버 URL 경로에 맞게 조정하세요
+  reconnectDelay: 5000,
+  debug: function (str) {
+    console.log(str);
+  }
+});
+
+client.onConnect = function(frame) {
+  console.log('Connected to WebSocket!');
+
+  // 서버로부터 메시지를 수신하면 웹 페이지에 표시합니다.
+  client.subscribe('/topic/metrics', function (message) {
+    const metrics = JSON.parse(message.body);
+    // document.getElementById('metricsDisplay').innerHTML = 'CPU Load: ' + metrics.cpuLoad + ', Memory Load: ' + metrics.memoryLoad;
+    console.log('Received metrics:', metrics);
+  });
+};
+
+// WebSocket 연결 오류 발생 시 처리
+client.onWebSocketError = function (event) {
+  console.error('WebSocket Error:', event);
+};
+
+client.onStompError = function (frame) {
+  console.error('Broker reported error: ' + frame.headers['message']);
+  console.error('Additional details: ' + frame.body);
+};
+
+// WebSocket에 연결을 시도합니다.
+client.activate();
+
+
 function number_format(number, decimals, dec_point, thousands_sep) {
   number = (number + '').replace(',', '').replace(' ', '');
   var n = !isFinite(+number) ? 0 : +number,
