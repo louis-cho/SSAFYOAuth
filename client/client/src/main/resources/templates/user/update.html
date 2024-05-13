@@ -123,24 +123,6 @@
 
 
     <style>
-        .country-block-manager {
-            padding: 20px;
-            background-color: #f8f9fa;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-        }
-
-        .blocked-country {
-            padding: 8px 16px;
-            background-color: #dc3545;
-            color: white;
-            border-radius: 15px;
-            margin: 5px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
 
         .blocked-country button {
             border: none;
@@ -172,82 +154,92 @@
 <div id="wrapper">
     <!-- Sidebar -->
     <div class="header" th:replace="~{layouts/sidebar :: sidebar}"></div>
-    <div class="col-xl-10 col-lg-12 col-md-9">
-        <div class="card o-hidden border-0 shadow-lg my-5">
-            <div class="card-body p-0">
-                <div class="col">
-                    <!-- Display success message -->
-                    <div th:if="${success}" class="alert alert-success" role="alert">
-                        <span th:text="${success}"></span>
-                    </div>
 
-                    <!-- Display error message -->
-                    <div th:if="${error}" class="alert alert-danger" role="alert">
-                        <span th:text="${error}"></span>
-                    </div>
-                    <div class="col-lg-6 d-none d-lg-block bg-register-image"></div>
-                    <div class="col-lg-6">
-                        <div class="p-5">
-                            <div class="text-center">
-                                <h1 class="h4 text-gray-900 mb-4">회원정보 수정</h1>
+    <!-- Begin Page Content -->
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xl-2 col-lg-1 col-md-1"></div> <!-- Left empty space -->
+
+            <div class="col-xl-8 col-lg-10 col-md-10">
+                <div class="card o-hidden border-0 shadow-lg my-5">
+                    <div class="card-body p-0">
+                        <div class="col">
+                            <!-- Display success message -->
+                            <div th:if="${success}" class="alert alert-success" role="alert">
+                                <span th:text="${success}"></span>
                             </div>
-                            <form class="user" id="updateForm" method="post" th:action="@{/user/update}" th:object="${userData}" enctype="multipart/form-data">
-                                <input type="hidden"
-                                th:field="*{studentId}"
-                                >
-                                <input type="hidden"
-                                th:field="*{email}"
-                                >
-                                <div class="form-group">
-                                    <input type="text"
-                                           class="form-control form-control-user"
-                                           id="exampleFirstName"
-                                           th:field="*{name}"
-                                           placeholder="이름"/>
+
+                            <!-- Display error message -->
+                            <div th:if="${error}" class="alert alert-danger" role="alert">
+                                <span th:text="${error}"></span>
+                            </div>
+                            <div class="col-lg-12 d-none d-lg-block bg-register-image"></div>
+                            <div class="col-lg-12">
+                                <div class="p-5">
+                                    <div class="text-center">
+                                        <h1 class="h4 text-gray-900 mb-4">회원정보 수정</h1>
+                                    </div>
+                                    <form class="user" id="updateForm" method="post" th:action="@{/user/update}"
+                                          th:object="${userData}" enctype="multipart/form-data">
+                                        <input type="hidden"
+                                               th:field="*{studentId}"
+                                        >
+                                        <input type="hidden"
+                                               th:field="*{email}"
+                                        >
+                                        <div class="form-group">
+                                            <input type="text"
+                                                   class="form-control form-control-user"
+                                                   id="exampleFirstName"
+                                                   th:field="*{name}"
+                                                   placeholder="이름"/>
+                                        </div>
+                                        <div class="form-group">
+                                            <input type="text"
+                                                   class="form-control form-control-user"
+                                                   id="exampleInputPhone"
+                                                   th:field="*{phoneNumber}"
+                                                   placeholder="핸드폰 번호"/>
+                                        </div>
+                                        <div class="form-group">
+                                            <select class="form-control"
+                                                    id="exampleGender"
+                                                    th:field="*{gender}">
+                                                <option value="false">남자</option>
+                                                <option value="true">여자</option>
+                                            </select>
+                                        </div>
+                                        <!-- Assuming profileImage is a URL or path to the image -->
+                                        <div class="form-group">
+                                            <label for="exampleProfileImage">Profile Image</label>
+                                            <!-- Input for   updating the profile image -->
+                                            <input type="file"
+                                                   class="form-control-file"
+                                                   id="exampleProfileImage"
+                                                   name="image"
+                                                   accept="image/*"
+                                                   onchange="updateImagePreview(this);"/>
+                                            <!-- Displaying existing profile image if available -->
+                                            <img
+                                                    id="profileImagePreview"
+                                                    th:if="${userData.profileUrl}"
+                                                    th:src="@{${userData.profileUrl}}"
+                                                    alt="Profile Image" style="height: 100px; width: auto;"/>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary btn-user btn-block">
+                                            정보 수정
+                                        </button>
+                                    </form>
                                 </div>
-                                <div class="form-group">
-                                    <input type="text"
-                                           class="form-control form-control-user"
-                                           id="exampleInputPhone"
-                                           th:field="*{phoneNumber}"
-                                           placeholder="핸드폰 번호"/>
-                                </div>
-                                <div class="form-group">
-                                    <select class="form-control"
-                                            id="exampleGender"
-                                            th:field="*{gender}">
-                                        <option value="false">남자</option>
-                                        <option value="true">여자</option>
-                                    </select>
-                                </div>
-                                <!-- Assuming profileImage is a URL or path to the image -->
-                                <div class="form-group">
-                                    <label for="exampleProfileImage">Profile Image</label>
-                                    <!-- Input for   updating the profile image -->
-                                    <input type="file"
-                                           class="form-control-file"
-                                           id="exampleProfileImage"
-                                           name="image"
-                                           accept="image/*"
-                                           onchange="updateImagePreview(this);"/>
-                                    <!-- Displaying existing profile image if available -->
-                                    <img
-                                            id="profileImagePreview"
-                                            th:if="${userData.profileUrl}"
-                                            th:src="@{${userData.profileUrl}}"
-                                            alt="Profile Image" style="height: 100px; width: auto;"/>
-                                </div>
-                                <button type="submit" class="btn btn-primary btn-user btn-block">
-                                    정보 수정
-                                </button>
-                            </form>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+            <!-- 왼쪽 빈 공간 -->
+            <div class="col-xl-2 col-lg-1 col-md-1"></div>
         </div>
     </div>
-</div>
 
 </div>
 <!-- Footer -->
