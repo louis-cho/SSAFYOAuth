@@ -117,8 +117,8 @@ public class LoginController {
                 emitter.send(SseEmitter.event().name("WAIT_RESULT").data("Wait successful"));
                 emitter.complete();
                 loginStats.isSuccess(true);
-                userEmitters.remove(key);
                 loginStatsService.save(loginStats);
+                userEmitters.remove(key);
             } catch (IOException e) {
                 loginStats.isSuccess(false);
                 emitter.completeWithError(e);

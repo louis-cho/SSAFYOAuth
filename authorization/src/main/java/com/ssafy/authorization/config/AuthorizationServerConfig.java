@@ -44,9 +44,6 @@ public class AuthorizationServerConfig {
 
 	private final RedisTemplate<String, String> redisTemplate;
 
-	@Value("${oauth2.client.redirect-uri}")
-	private String redirectBaseUrl;
-
 	@Autowired
 	public AuthorizationServerConfig(RedisTemplate<String, String> redisTemplate) {
 		this.redisTemplate = redisTemplate;
