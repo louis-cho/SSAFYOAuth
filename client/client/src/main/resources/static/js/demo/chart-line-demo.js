@@ -57,7 +57,7 @@ const teamId = new URL(window.location.href).pathname.split('/')[2];
 
 // 함수를 선언하여 3초마다 서버에서 데이터를 받아 차트를 업데이트
 function fetchData() {
-    fetch('http://43.203.205.138:3000/login_stats/_search')
+    fetch('https://k10a306.p.ssafy.io/login_stats/_search')
         .then(response => response.json())
         .then(data => {
             // teamId가 "1"인 데이터만 필터링
