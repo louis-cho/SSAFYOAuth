@@ -148,7 +148,6 @@
         }
 
 
-
         @media (max-width: 768px) {
             .chart-card {
                 height: 250px; /* 모바일에서는 더 작은 높이 설정 */
@@ -168,16 +167,19 @@
 
     <!-- Begin Page Content -->
     <div class="container-fluid">
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
+                   </div>
+        <div class="row">
 
-        <!-- Content Row for summary cards -->
-        <div class="row dashboard-row">
+            <!-- Earnings (Monthly) Card Example -->
             <div class="col-xl-3 col-md-6 mb-4">
-                <div class="card card-border shadow h-100 py-2">
+                <div class="card border-left-primary shadow h-100 py-2">
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
                                 <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                    서비스 이용자 수
+                                    서비스 사용자 수
                                 </div>
                                 <div class="h5 mb-0 font-weight-bold text-gray-800">$40,000</div>
                             </div>
@@ -188,60 +190,74 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Earnings (Monthly) Card Example -->
             <div class="col-xl-3 col-md-6 mb-4">
-                <div class="card card-border shadow h-100 py-2">
+                <div class="card border-left-success shadow h-100 py-2">
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                    강퇴된 사용자 수
+                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                    일일 로그인 수
                                 </div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">$40,000</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">$215,000</div>
                             </div>
                             <div class="col-auto">
-                                <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                                <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+            <!-- Pending Requests Card Example -->
             <div class="col-xl-3 col-md-6 mb-4">
-                <div class="card card-border shadow h-100 py-2">
+                <div class="card border-left-warning shadow h-100 py-2">
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                    뭐 넣지 ?
+                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                    이상 징후 회원 수
                                 </div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">$40,000</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">18</div>
                             </div>
                             <div class="col-auto">
-                                <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                                <i class="fas fa-comments fa-2x text-gray-300"></i>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+            <!-- Earnings (Monthly) Card Example -->
             <div class="col-xl-3 col-md-6 mb-4">
-                <div class="card card-border shadow h-100 py-2">
+                <div class="card border-left-info shadow h-100 py-2">
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                    모르겠어 ~~~
+                                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Tasks
                                 </div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">$40,000</div>
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col-auto">
+                                        <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">50%</div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="progress progress-sm mr-2">
+                                            <div class="progress-bar bg-info" role="progressbar"
+                                                 style="width: 50%" aria-valuenow="50" aria-valuemin="0"
+                                                 aria-valuemax="100"></div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <div class="col-auto">
-                                <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                                <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <!-- Similar for other three cards -->
+
+
         </div>
-
         <!-- Content Row for charts -->
         <div class="row dashboard-row">
             <div class="col-lg-6">
@@ -264,12 +280,7 @@
 
         <!-- Content Row for large component and pie chart -->
         <div class="row dashboard-row">
-            <div class="col-xl-6 col-lg-7">
-                <div class="chart-card card-border">
-                    <!-- Additional content here -->
-                </div>
-            </div>
-            <div class="col-xl-6 col-lg-5">
+            <div class="col-xl-5 col-lg-6">
                 <div class="chart-card card-border">
                     <div class="card-header">Memory Usage</div>
                     <div class="canvas-container">
@@ -277,6 +288,13 @@
                     </div>
                 </div>
             </div>
+            <div class="col-xl-7 col-lg-6">
+                <div class="chart-card card-border">
+                    <div class="card-header">임대 문의</div>
+                    010 - xxxx - xxxx
+                </div>
+            </div>
+
         </div>
 
     </div>
@@ -286,13 +304,8 @@
 
 <!-- Footer -->
 <div class="footer" th:replace="~{layouts/footer :: footer}"></div>
-<!-- End of Footer -->
 
-</div>
-<!-- End of Content Wrapper -->
 
-</div>
-<!-- End of Page Wrapper -->
 
 
 <!-- Bootstrap core JavaScript-->
@@ -310,8 +323,9 @@
 
 <!-- Page level custom scripts -->
 <script type="module" th:src="@{/js/demo/chart-area-demo.js}"></script>
-<script th:src="@{/js/demo/chart-pie-demo.js}"></script>
-<script th:src="@{/js/demo/chart-line-demo.js}"></script>
+<script type="module" th:src="@{/js/demo/chart-pie-demo.js}"></script>
+
+<script type="module" th:src="@{/js/demo/chart-line-demo.js}"></script>
 
 
 </body>

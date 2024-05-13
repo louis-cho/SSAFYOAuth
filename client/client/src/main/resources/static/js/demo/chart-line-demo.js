@@ -21,35 +21,35 @@ var logChart = new Chart(ctx, {
     },
     options: {
         responsive: true,
-        maintainAspectRatio: false ,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: true // Y축이 0에서 시작
+            }
+        }
+    },
+    type: 'line', // 차트의 유형을 라인 차트로 설정
+    data: {
+        labels: Array.from({length: 24}, (_, i) => `${i + 1}:00`),
+        datasets: [{
+            label: '시간 별 사용자 요청량', // 데이터셋의 레이블
+            data: Array(24).fill(0),
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)'
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
         scales: {
             y: {
                 beginAtZero: true // Y축이 0에서 시작
             }
         }
     }
-type: 'line', // 차트의 유형을 라인 차트로 설정
-data: {
-labels: Array.from({length: 24}, (_,i) => `${i + 1}:00`),
-datasets: [{
-label: '시간 별 사용자 요청량', // 데이터셋의 레이블
-data: Array(24).fill(0),
-backgroundColor: [
-'rgba(255, 99, 132, 0.2)'
-],
-borderColor: [
-'rgba(255, 99, 132, 1)'
-],
-borderWidth: 1
-}]
-},
-options: {
-scales: {
-y: {
-beginAtZero: true // Y축이 0에서 시작
-}
-}
-}
 });
 
 // URL에서 teamId 추출
