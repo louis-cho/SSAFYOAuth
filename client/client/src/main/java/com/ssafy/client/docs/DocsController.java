@@ -13,6 +13,10 @@ public class DocsController {
 	public String apiTeam(){
 		return "api/team";
 	}
+	@GetMapping("/outline")
+	public String apiOutline(){
+		return "api/outline";
+	}
 
 
 
