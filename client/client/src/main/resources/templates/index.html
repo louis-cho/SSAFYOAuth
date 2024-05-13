@@ -317,6 +317,7 @@
                 $('#teamAddModal').modal('hide');
                 document.getElementById('teamForm').reset();
                 updateTeamCount();
+                location.reload();
             },
             error: function (xhr, status, error) {
                 alert('Error adding team: ' + error);
