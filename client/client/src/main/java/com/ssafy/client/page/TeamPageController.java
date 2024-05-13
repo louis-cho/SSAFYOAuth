@@ -49,6 +49,7 @@ public class TeamPageController {
 			log.info("블랙 리스트 된 나라들 : {} ", blockedCountriesList);
 
 			model.addAttribute("blockedCountries", blockedCountriesList);
+			model.addAttribute("teamSeq", teamSeq);
 			return SUFFIX + "country-ip";
 		} catch (IOException e) {
 			log.error("JSON 파싱 오류: {}", e.getMessage());

@@ -27,22 +27,14 @@ public class ApiService {
     }
 
 
-    // public String callPostCountry(String apiUrl) {
-    //     MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-    //
-    //     // Convert DTO properties to body map
-    //     body.add("name", dto.getName());
-    //     body.add("email", dto.getEmail());
-    //     body.add("gender", dto.getGender());
-    //     body.add("phoneNumber", dto.getPhoneNumber());
-    //     body.add("studentId", dto.getStudentId());
-    //
-    //     // Create an HttpEntity using the constructed body and headers
-    //     HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
-    //
-    //     // Make the HTTP POST request
-    //     return restTemplate.postForObject(apiUrl, requestEntity, String.class);
-    // }
+    public String callPostCountry(String apiUrl, List<String> countries) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        // Create an HttpEntity using the JSON body and headers
+        HttpEntity<List<String>> requestEntity = new HttpEntity<>(countries, headers);
+        // Make the HTTP POST request
+        return restTemplate.postForObject(apiUrl, requestEntity, String.class);
+    }
 
     public String callPostFileApi(String apiUrl, ProfileInformationForUpdatesDto dto) {
         HttpHeaders headers = new HttpHeaders();

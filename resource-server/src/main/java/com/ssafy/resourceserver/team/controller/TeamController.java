@@ -179,4 +179,13 @@ public class TeamController {
 
 		return ResponseEntity.status(HttpStatus.OK).body(arr);
 	}
+
+	@PostMapping("/{teamSeq}/country-ip")
+	@ResponseBody
+	public ResponseEntity<?> createBlockedCountries(@RequestBody List<String> countries, @PathVariable Integer teamSeq ,@AuthenticationPrincipal Jwt jwt) {
+		log.info("post country {}", countries);
+		List<String> arr = teamService.getBlockedCountriesByTeamId(teamSeq);
+
+		return ResponseEntity.status(HttpStatus.OK).body(true);
+	}
 }
