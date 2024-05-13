@@ -68,7 +68,6 @@ public class DeveloperTeamEntity {
 
 	public static DeveloperTeamEntity CreateTeam(TeamAddDto dto,int seq,String secretKey) {
 		return DeveloperTeamEntity.builder()
-			.clientId(String.valueOf(UUID.randomUUID()))
 			.serviceName(dto.getServiceName())
 			.teamName(dto.getTeamName())
 			.isDelete(false)
