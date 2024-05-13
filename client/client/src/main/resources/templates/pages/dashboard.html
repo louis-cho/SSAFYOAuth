@@ -24,6 +24,7 @@
 
     <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs/dist/stomp.min.js"></script>
     <script th:src="@{/vendor/jquery/jquery.min.js}"></script>
     <script th:src="@{/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
     <script th:src="@{/vendor/jquery-easing/jquery.easing.min.js}"></script>
@@ -449,7 +450,7 @@
 <script th:src="@{/vendor/chart.js/Chart.min.js}"></script>
 
 <!-- Page level custom scripts -->
-<script th:src="@{/js/demo/chart-area-demo.js}"></script>
+<script type="module" th:src="@{/js/demo/chart-area-demo.js}"></script>
 <script th:src="@{/js/demo/chart-pie-demo.js}"></script>
 <script th:src="@{/js/demo/chart-line-demo.js}"></script>
 
