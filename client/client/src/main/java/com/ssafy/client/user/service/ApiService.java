@@ -24,8 +24,13 @@ public class ApiService {
     }
 
 
-    public String callBlockedCountry(String apiUrl) {
-        return restTemplate.getForObject(apiUrl, String.class);
+    public String callPostCountry(String apiUrl, List<String> countries) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        // Create an HttpEntity using the JSON body and headers
+        HttpEntity<List<String>> requestEntity = new HttpEntity<>(countries, headers);
+        // Make the HTTP POST request
+        return restTemplate.postForObject(apiUrl, requestEntity, String.class);
     }
 
     public String callPostFileApi(String apiUrl, ProfileInformationForUpdatesDto dto) {

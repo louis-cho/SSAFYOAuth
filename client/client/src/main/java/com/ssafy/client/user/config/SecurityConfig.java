@@ -67,7 +67,7 @@ public class SecurityConfig {
             http.addFilterBefore(new TokenExpirationFilter(), UsernamePasswordAuthenticationFilter.class);
             http.logout((logout) -> logout
                     .logoutUrl("/logout")
-                    .logoutSuccessUrl("https://k10a306.p.ssafy.io/logut")
+                    .logoutSuccessUrl("https://k10a306.p.ssafy.io")
                     .invalidateHttpSession(true)
                     .clearAuthentication(true)
                     .deleteCookies("access", "refresh")
