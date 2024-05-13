@@ -67,7 +67,7 @@ public class SecurityConfig {
             http.addFilterBefore(new TokenExpirationFilter(), UsernamePasswordAuthenticationFilter.class);
             http.logout((logout) -> logout
                     .logoutUrl("/logout")
-                    .logoutSuccessUrl("https://localhost:8080")
+                    .logoutSuccessUrl("https://k10a306.p.ssafy.io")
                     .invalidateHttpSession(true)
                     .clearAuthentication(true)
                     .deleteCookies("access", "refresh")
@@ -92,6 +92,7 @@ public class SecurityConfig {
             http
                     .authorizeHttpRequests((auth) -> auth
                             .requestMatchers("/api/**","/css/**", "/favicon.ico", "/error", "/image/**", "/vendor/**","users/**").permitAll()
+                        .requestMatchers("/**").permitAll()
                             .anyRequest().authenticated());
 
             //세션 설정 : STATELESS

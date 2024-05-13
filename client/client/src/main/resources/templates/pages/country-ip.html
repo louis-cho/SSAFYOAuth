@@ -8,7 +8,8 @@
 
     <!-- Custom fonts for this template-->
     <link th:href="@{/vendor/fontawesome-free/css/all.min.css}" rel="stylesheet" type="text/css">
-    <link th:href="@{https://fonts.googleapis.com/css?family=Nunito}" rel="stylesheet">
+    <link th:href="@{https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i}"
+          rel="stylesheet">
 
     <!-- Custom styles for this template-->
     <link rel="stylesheet" th:href="@{/css/footer.css}">
@@ -18,7 +19,15 @@
 
     <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap core JavaScript-->
+    <script th:src="@{/vendor/jquery/jquery.min.js}"></script>
+    <script th:src="@{/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
 
+    <!-- Core plugin JavaScript-->
+    <script th:src="@{/vendor/jquery-easing/jquery.easing.min.js}"></script>
+
+    <!-- Custom scripts for all pages-->
+    <script th:src="@{/js/sb-admin-2.min.js}"></script>
     <style>
         .country-block-manager {
             padding: 20px;
@@ -97,31 +106,67 @@
     </div>
 </div>
 <div class="footer" th:replace="~{layouts/footer :: footer}"></div>
-<script>
-    function saveChanges() {
-        alert('변경사항이 저장되었습니다.');
-        // 이곳에서 서버로 데이터를 전송하는 AJAX 요청을 구현할 수 있습니다.
+<script th:inline="javascript">
+    /* 국가 코드와 국가 이름 매핑 */
+    var countryNames = {
+        'KR': 'South Korea',
+        'US': 'United States',
+        'CN': 'China'
+    };
+    function saveChanges(blockedCountries) {
+        var blockedCountries = [];
+        document.querySelectorAll('.blocked-country button').forEach(function(button) {
+            blockedCountries.push(button.getAttribute('data-value'));
+        });
+        var teamSeq = [[${teamSeq}]];
+        $.ajax({
+            url: `/team/${teamSeq}/country-ip`,
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(blockedCountries),
+            success: function(response) {
+                alert('변경사항이 저장되었습니다.');
+                console.log('Success:', response);
+            },
+            error: function(xhr, status, error) {
+                console.error('Error:', error);
+            }
+        });
     }
 
-    document.querySelector('#country-block-form button').addEventListener('click', function (e) {
-        e.preventDefault();
+    document.addEventListener('DOMContentLoaded', function() {
+        const blockedCountriesContainer = document.getElementById('blocked-countries-list');
         const countrySelect = document.getElementById('country-select');
-        const countryText = countrySelect.options[countrySelect.selectedIndex].text;
-        const countryValue = countrySelect.value;
-        const listElement = document.createElement('div');
-        listElement.className = 'blocked-country';
-        listElement.innerHTML = `${countryText} <button type="button" class="remove-country btn btn-sm btn-light" data-value="${countryValue}">&times;</button>`;
 
-        listElement.querySelector('.remove-country').addEventListener('click', function () {
-            const value = this.getAttribute('data-value');
-            // 이 부분을 수정하여 버튼이 포함된 텍스트 대신 순수 텍스트만 select 박스에 추가됩니다.
-            const text = this.parentElement.childNodes[0].textContent.trim();
-            countrySelect.options.add(new Option(text, value));
-            this.parentNode.remove();
+        // 초기에 차단된 국가를 화면에 표시
+        document.querySelectorAll('.blocked-country').forEach(function(countryDiv) {
+            var countryCode = countryDiv.querySelector('button').getAttribute('data-value');
+            countryDiv.querySelector('span').textContent = countryNames[countryCode]; // 전체 국가 이름으로 업데이트
         });
 
-        document.getElementById('blocked-countries-list').appendChild(listElement);
-        countrySelect.remove(countrySelect.selectedIndex);
+        // 국가 추가 이벤트 리스너
+        document.querySelector('#country-block-form button').addEventListener('click', function(e) {
+            e.preventDefault();
+            const countryText = countrySelect.options[countrySelect.selectedIndex].text;
+            const countryValue = countrySelect.value;
+
+            const listElement = document.createElement('div');
+            listElement.className = 'blocked-country';
+            listElement.innerHTML = `${countryText} <button type="button" class="remove-country btn btn-sm btn-light" data-value="${countryValue}">&times;</button>`;
+
+            blockedCountriesContainer.appendChild(listElement);
+            countrySelect.remove(countrySelect.selectedIndex);
+        });
+
+        // 이벤트 위임을 사용하여 삭제 버튼에 대한 이벤트 리스너 설정
+        blockedCountriesContainer.addEventListener('click', function(e) {
+            if (e.target.className.includes('remove-country')) {
+                const value = e.target.getAttribute('data-value');
+                const text = countryNames[value]; // 전체 국가 이름으로 업데이트
+                countrySelect.options.add(new Option(text, value));
+                e.target.parentNode.remove();
+            }
+        });
     });
 </script>
 </body>

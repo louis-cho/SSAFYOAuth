@@ -2,6 +2,41 @@
 Chart.defaults.global.defaultFontFamily = 'Nunito', '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
 Chart.defaults.global.defaultFontColor = '#858796';
 
+import { Client } from 'https://cdn.skypack.dev/@stomp/stompjs';
+
+// WebSocket 연결 생성
+const client = new Client({
+  brokerURL: 'wss://ssafyauth-authorization.duckdns.org/ws',
+  reconnectDelay: 5000,
+  debug: function (str) {
+    console.log(str);
+  }
+});
+
+client.onConnect = function(frame) {
+  console.log('Connected to WebSocket!');
+
+  // 서버로부터 메시지를 수신하면 웹 페이지에 표시
+  client.subscribe('/topic/metrics', function (message) {
+    const metrics = JSON.parse(message.body);
+    // document.getElementById('metricsDisplay').innerHTML = 'CPU Load: ' + metrics.cpuLoad + ', Memory Load: ' + metrics.memoryLoad;
+    console.log('Received metrics:', metrics);
+  });
+};
+
+// WebSocket 연결 오류 발생 시 처리
+client.onWebSocketError = function (event) {
+  console.error('WebSocket Error:', event);
+};
+
+client.onStompError = function (frame) {
+  console.error('Broker reported error: ' + frame.headers['message']);
+  console.error('Additional details: ' + frame.body);
+};
+
+// WebSocket에 연결
+client.activate();
+
 function number_format(number, decimals, dec_point, thousands_sep) {
   // *     example: number_format(1234.56, 2, ',', ' ');
   // *     return: '1 234,56'

@@ -24,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 public class TeamPageController {
 	private static final String RESOURCE_SERVER_URL = "http://localhost:8090/api";
 	private final ApiService apiService;
-
+	private final ObjectMapper objectMapper;
 	private final String SUFFIX = "pages/";
 
 	@GetMapping("/{teamSeq}/summary")
@@ -43,14 +43,13 @@ public class TeamPageController {
 		String url = RESOURCE_SERVER_URL + "/team/" + teamSeq + "/country-ip";
 		String blockedCountries = apiService.callProtectedApi(url);
 
-		ObjectMapper objectMapper = new ObjectMapper();
-
 		try {
 			List<String> blockedCountriesList = objectMapper.readValue(blockedCountries, List.class);
 
 			log.info("블랙 리스트 된 나라들 : {} ", blockedCountriesList);
 
 			model.addAttribute("blockedCountries", blockedCountriesList);
+			model.addAttribute("teamSeq", teamSeq);
 			return SUFFIX + "country-ip";
 		} catch (IOException e) {
 			log.error("JSON 파싱 오류: {}", e.getMessage());
