@@ -178,7 +178,7 @@
                 <div class="col">
                     <h1>SSAFY OAUTH</h1>
                     <div class="api-section">
-                        <h3>이해하기</h3>
+                        <h2>이해하기</h2>
                         <div class="api-description">
                             <p>이 섹션에서는 인증 관련 API를 설명합니다.</p>
                         </div>
@@ -224,28 +224,47 @@
                                     </tr>
                                     </tbody>
                                 </table>
-                                <h4>Request:</h4>
-                                <pre>POST /api/auth/login</pre>
-                                <p>사용자 로그인을 위한 엔드포인트입니다.</p>
+                            <div class="question-box">
+                                <h4>애플리케이션</h4>
+                                <p>싸피어스 로그인을 사용하려면 싸피어스(이하 개발자 웹사이트) 애플리케이션(이하 앱)이 필요합니다.</p>
                             </div>
-                            <div class="parameters">
-                                <h4>Parameters:</h4>
-                                <ul>
-                                    <li><strong>username</strong> - 사용자 아이디</li>
-                                    <li><strong>password</strong> - 사용자 비밀번호</li>
-                                </ul>
                             </div>
-                            <div class="response">
-                                <h4>Response:</h4>
-                                <pre>{
-                                    "token": "abcde12345",
-                                    "user": {
-                                        "id": "1",
-                                        "username": "user"
-                                    }
-                                }</pre>
+                            <div class="ssafy-login">
+                                <h3>싸피어스 로그인</h3>
+                                <p>
+                                    싸피어스 로그인은 OAuth 2.0 기반의 소셜 로그인 서비스입니다. 싸피어스 로그인을 사용하면 사용자가 싸피어스계정으로 손쉽게 서비스에 로그인할 수 있습니다. 서비스는 서비스 ID 및 비밀번호를 입력받고 검증하는 과정을 직접 구현하지 않고도 사용자에 대한 인증과 인가를 간편하고 안전하게 처리할 수 있습니다.
+                                </p>
+
+
                             </div>
-                        </div>
+                            <table class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <th>구분</th>
+                                    <th>설명</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td>인증(Authentication)</td>
+                                    <td>
+                                        ID와 비밀번호로 사용자 신원을 확인 <br>
+                                        각 서비스에 사용자가 싸피어스계정으로 로그인할 수 있는 기능 지원 <br>
+                                        참고: OpenID Connect 지원, 로그인 세션 대신 사용 가능한 ID 토큰 제공 가능
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>인가(Authorization)</td>
+                                    <td>
+                                        사용자 개인정보와 같은 자원(Resource)에 대한 접근 권한 획득 <br>
+                                        사용자 동의를 바탕으로 사용자 정보나 기능에 대한 접근 권한을 토큰 형태로 서비스에 부여
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                    </div>
+
+
                     </div>
                 </div>
             </div>
