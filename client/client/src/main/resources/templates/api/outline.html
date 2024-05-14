@@ -176,100 +176,61 @@
         <div class="card o-hidden border-0 shadow-lg my-5">
             <div class="card-body p-0">
                 <div class="col">
-                    <h1>SSAFY OAUTH</h1>
                     <div class="api-section">
-                        <h2>이해하기</h2>
-                        <div class="api-description">
-                            <p>이 섹션에서는 인증 관련 API를 설명합니다.</p>
-                        </div>
-                        <br>
+                        <h1>개요</h1>
                         <hr>
+                        <div class="api-description">
+                            <p>싸피 로그인은 oauth2.0기반 사용자 인증 서비스를 제공해 다른 서비스에서도 로그인 서비스를 이용할 수 있도록 제공합니다. 각 서비스에서 별도의 회원가입 없이 SSAFY OAuth 계정으로 로그인을 할 수 있다는 장점이 있습니다. 싸피 교육생만의 Ouath 관련 서비스를 한 번 이용해보세요!</p>
+                        </div>
                         <div class="endpoint">
-                            <h3>기능소개</h3>
-                            <div class="request">
-                                싸피어스 로그인은 싸피어스계정으로 다양한 서비스에 로그인할 수 있도록 하는 소셜 로그인 서비스입니다.
-                                기능은 다음과 같습니다.
-                                <table class="table table-bordered">
-                                    <thead>
-                                    <tr>
-                                        <th>기능</th>
-                                        <th>싸피 어스 로그인</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <!-- 서버로부터 받은 features 리스트를 반복 -->
-                                    <tr>
-                                        <td>싸피 어스 계정으로 사용자 로그인</td>
-                                        <td>✔</td>
-                                    </tr>
-                                    <tr>
-                                        <td>사용자 고유 식별 정보 제공 및 필수로 프로필 사진과 이메일 제공</td>
-                                        <td>✔</td>
-                                    </tr>
-                                    <tr>
-                                        <td>이름, 성별, 트랙, 학번 등 서비스 가입에 필요한 정보 제공</td>
-                                        <td>✔</td>
-                                    </tr>
-                                    <tr>
-                                        <td>싸피 어스 회원가입 기능 제공</td>
-                                        <td>✔</td>
-                                    </tr>
-                                    <tr>
-                                        <td>클라이언트 별 로그인 기록 제공</td>
-                                        <td>✔</td>
-                                    </tr>
-                                    <tr>
-                                        <td>로그인 국가 차단 기능 제공</td>
-                                        <td>✔</td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                            <div class="question-box">
-                                <h4>애플리케이션</h4>
-                                <p>싸피어스 로그인을 사용하려면 싸피어스(이하 개발자 웹사이트) 애플리케이션(이하 앱)이 필요합니다.</p>
+                            <a href="/"> SSAFY OAUTH 이용하기 </a>
+                            <br>
+                            <div class="image">
+                                <img src="/image/start.PNG" width="100%">
                             </div>
+                            <br>
+                            <div class="login-process">
+                                <p>1. 웹 서비스에서 SSAFY OAUTH 로 로그인하기를 클릭하면 SSAFY OAUTH 로그인 페이지로 이동하게 됩니다.</p>
+                                <p>2. SSAFY OAUTH 페이지에서 아이디 비밀번호로 로그인합니다.</p>
+                                <p>3. SSAFY OAUTH 동의 화면에서 제공할 정보를 클릭합니다.</p>
+                                <p>4. 사용자가 등록한 Redirect URI로 이동하게 됩니다.</p>
                             </div>
-                            <div class="ssafy-login">
-                                <h3>싸피어스 로그인</h3>
-                                <p>
-                                    싸피어스 로그인은 OAuth 2.0 기반의 소셜 로그인 서비스입니다. 싸피어스 로그인을 사용하면 사용자가 싸피어스계정으로 손쉽게 서비스에 로그인할 수 있습니다. 서비스는 서비스 ID 및 비밀번호를 입력받고 검증하는 과정을 직접 구현하지 않고도 사용자에 대한 인증과 인가를 간편하고 안전하게 처리할 수 있습니다.
-                                </p>
+                            <div class="characteristic">
+                                <h2> SSAFY OAUTH의 특징 </h2>
+                                <div class="characteristic-1">
+                                    <h3> 불필요한 회원 정보 입력 과정을 없애주는 프로필 조회 API 제공</h3>
+                                    <p>
+                                        SSAFY OAUTH를 이용해 가입하고 로그인한 사용자의 프로필(이름, 이메일 주소, 프로필 사진, 휴대전화번호, 성별, 학번, 전공/비전공 코스 정보) 를 조회할 수 있습니다.
+                                        또한 SSAFY OAUTH에서 제공하는 서비스를 이용할 수 있습니다.
+                                    </p>
+                                </div>
 
+                                <div class="characteristic-2">
+                                    <h3> 다양한 모니터링 시스템 제공</h3>
+                                    <p>
+                                        SSAFY OAUTH를 이용해 로그인한 사용자는 각 클라이언트 서비스별로 로그를 남겨 제공하는 서비스가 있습니다.
+                                        따라서 시간대 별 통계자료를 확인할 수 있습니다.
+                                    </p>
+                                </div>
+                                <div class="characteristic-3">
+                                    <h3> RFC 6749 기반 로그인 인가 인증 처리 과정 </h3>
+                                    <p>
+                                        RFC 6749 기반으로 OPENID 를 이용한 로그인 과정과 기존 resource 서버에 요청해 사용자 정보를 가져오는 기능을 구현했습니다. 이를 통해 다양한 OAUTH 서비스와 함께 이용하는데 문제없이 사용할 수 있습니다.
+                                    </p>
+                                </div>
 
                             </div>
-                            <table class="table table-bordered">
-                                <thead>
-                                <tr>
-                                    <th>구분</th>
-                                    <th>설명</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr>
-                                    <td>인증(Authentication)</td>
-                                    <td>
-                                        ID와 비밀번호로 사용자 신원을 확인 <br>
-                                        각 서비스에 사용자가 싸피어스계정으로 로그인할 수 있는 기능 지원 <br>
-                                        참고: OpenID Connect 지원, 로그인 세션 대신 사용 가능한 ID 토큰 제공 가능
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>인가(Authorization)</td>
-                                    <td>
-                                        사용자 개인정보와 같은 자원(Resource)에 대한 접근 권한 획득 <br>
-                                        사용자 동의를 바탕으로 사용자 정보나 기능에 대한 접근 권한을 토큰 형태로 서비스에 부여
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-                    </div>
 
-
+                            <div class="link-auth">
+                                <h2>기타</h2>
+                                <a href="/api/auth">SSAFY OAUTH2.0 설명서 보러 가기</a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-</div>
+    </div>
 
 </div>
 <!-- Footer -->
