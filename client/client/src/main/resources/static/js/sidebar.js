@@ -1,14 +1,24 @@
-// 이 스크립트는 사이드바가 로드된 후 실행될 것입니다.
-$(document).ready(function () {
-    if ($('#accordionSidebar').length > 0) {
-        loadTeams();
+
+loadTeams();
+
+function getCookie(name) {
+    var cookies = document.cookie.split(';');
+    for (var i = 0; i < cookies.length; i++) {
+        var cookie = cookies[i];
+        while (cookie.charAt(0) === ' ') {
+            cookie = cookie.substring(1);
+        }
+        if (cookie.indexOf(name + "=") === 0) {
+            return cookie.substring(name.length + 1, cookie.length);
+        }
     }
-});
-window.onload = function () {
-    console.log("side b1ar");
-};
+    // 해당 이름의 쿠키가 없으면 undefined 반환
+    return undefined;
+}
+
 function loadTeams() {
     var token = getCookie("access_token");
+
     $.ajax({
         url: 'http://localhost:8090/api/team',
         type: 'GET',
@@ -16,7 +26,7 @@ function loadTeams() {
             "Authorization": 'Bearer ' + token
         },
         success: function (response) {
-            populateSidebar(response);
+            populateSidebar(response.list);
         },
         error: function (xhr, status, error) {
             console.error('Error loading data:', error);
@@ -26,17 +36,27 @@ function loadTeams() {
 
 function populateSidebar(data) {
     var container = document.getElementById('teamNavContainer');
-    container.innerHTML = '';
+    container.innerHTML = ''; // Clear previous entries
+    // console.log(data)
     data.forEach(function (team, index) {
         var teamNavItem = document.createElement('li');
         teamNavItem.classList.add('nav-item');
-        // 요소 생성 생략
+        teamNavItem.innerHTML = `
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapse${index}"
+                   aria-expanded="true" aria-controls="collapse${index}">
+                    <i class="fas fa-fw fa-cog"></i>
+                    <span>${team.teamName}</span>
+                </a>
+                <div id="collapse${index}" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <h6 class="collapse-header">관리</h6>
+                          <a class="collapse-item" href="/teams/${team.teamSeq}/summary">요약 정보</a>
+                            <a class="collapse-item" href="/teams/${team.teamSeq}/dashboard">대시보드</a>
+                            <a class="collapse-item" href="/teams/${team.teamSeq}/country-ip">국가 아이피 관리</a>
+                            <a class="collapse-item" href="/teams/${team.teamSeq}/management">팀 관리</a>
+                        </div>
+                </div>`;
         container.appendChild(teamNavItem);
     });
 }
 
-function getCookie(name) {
-    let value = `; ${document.cookie}`;
-    let parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop().split(';').shift();
-}

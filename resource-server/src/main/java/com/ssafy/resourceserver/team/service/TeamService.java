@@ -43,4 +43,6 @@ public interface TeamService {
 	Map rejectInvite(Integer teamSeq, String email);
 
 	List<String> getBlockedCountriesByTeamId(Integer teamSeq);
+
+	boolean updateBlockedCountries(List<String> countries);
 }
