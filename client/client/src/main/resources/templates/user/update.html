@@ -26,97 +26,98 @@
     <script th:src="@{/vendor/jquery-easing/jquery.easing.min.js}"></script>
     <!-- 페이지 로딩될 때 데이터 fetch -->
     <script th:src="@{/js/sb-admin-2.min.js}"></script>
+    <script type="module" th:src="@{/js/sidebar.js}"></script>
     <script th:inline="javascript">
-        function getCookie(name) {
-            var cookies = document.cookie.split(';');
-            for (var i = 0; i < cookies.length; i++) {
-                var cookie = cookies[i];
-                while (cookie.charAt(0) === ' ') {
-                    cookie = cookie.substring(1);
-                }
-                if (cookie.indexOf(name + "=") === 0) {
-                    return cookie.substring(name.length + 1, cookie.length);
-                }
-            }
-            return undefined;
-        }
-
-        window.onload = function () {
-            loadData();
-            loadTeams();
-            var teamSeq = window.location.pathname.match(/\/teams\/(\d+)\/summary/)[1];
-            loadTeamData(teamSeq);
-        };
-
-        function loadData() {
-            var token = getCookie("access_token")
-            $.ajax({
-                url: 'http://localhost:8090/api/team',
-                type: 'GET',
-                contentType: 'application/json',
-                headers: {
-                    "Authorization": 'Bearer ' + token
-                },
-                success: function (response) {
-                    displayTeams(response.list);
-                    displayTeamInfo(response.list[0]);
-                },
-                error: function (xhr, status, error) {
-                    console.error('Error loading data:', error);
-                }
-            });
-        }
-
-        function loadTeams() {
-            var token = getCookie("access_token");
-            $.ajax({
-                url: 'http://localhost:8090/api/team',
-                type: 'GET',
-                headers: {
-                    "Authorization": 'Bearer ' + token
-                },
-                success: function (response) {
-                    populateSidebar(response.list);
-                },
-                error: function (xhr, status, error) {
-                    console.error('Error loading data:', error);
-                }
-            });
-        }
-
-        function populateSidebar(data) {
-            var container = document.getElementById('teamNavContainer');
-            container.innerHTML = '';
-            data.forEach(function (team, index) {
-                var teamNavItem = document.createElement('li');
-                teamNavItem.classList.add('nav-item');
-                teamNavItem.innerHTML = `
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapse${index}"
-                    aria-expanded="true" aria-controls="collapse${index}">
-                    <i class="fas fa-fw fa-cog"></i>
-                    <span>${team.teamName}</span>
-                </a>
-                <div id="collapse${index}" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-                        <h6 class="collapse-header">관리</h6>
-                        <a class="collapse-item" href="/teams/${team.teamSeq}/summary">요약 정보</a>
-                        <a class="collapse-item" href="/teams/${team.teamSeq}/dashboard">대시보드</a>
-                        <a class="collapse-item" href="/teams/${team.teamSeq}/consents">동의 항목</a>
-                        <a class="collapse-item" href="/teams/${team.teamSeq}/country-ip">국가 아이피 관리</a>
-                        <a class="collapse-item" href="/teams/${team.teamSeq}/management">팀 관리</a>
-                        <a class="collapse-item" href="/teams/${team.teamSeq}/settings">설정</a>
-                    </div>
-                </div>`;
-                container.appendChild(teamNavItem);
-            });
-        }
-
-
-        function getCookie(name) {
-            let value = `; ${document.cookie}`;
-            let parts = value.split(`; ${name}=`);
-            if (parts.length === 2) return parts.pop().split(';').shift();
-        }
+        // function getCookie(name) {
+        //     var cookies = document.cookie.split(';');
+        //     for (var i = 0; i < cookies.length; i++) {
+        //         var cookie = cookies[i];
+        //         while (cookie.charAt(0) === ' ') {
+        //             cookie = cookie.substring(1);
+        //         }
+        //         if (cookie.indexOf(name + "=") === 0) {
+        //             return cookie.substring(name.length + 1, cookie.length);
+        //         }
+        //     }
+        //     return undefined;
+        // }
+        //
+        // window.onload = function () {
+        //     loadData();
+        //     loadTeams();
+        //     var teamSeq = window.location.pathname.match(/\/teams\/(\d+)\/summary/)[1];
+        //     loadTeamData(teamSeq);
+        // };
+        //
+        // function loadData() {
+        //     var token = getCookie("access_token")
+        //     $.ajax({
+        //         url: 'http://localhost:8090/api/team',
+        //         type: 'GET',
+        //         contentType: 'application/json',
+        //         headers: {
+        //             "Authorization": 'Bearer ' + token
+        //         },
+        //         success: function (response) {
+        //             displayTeams(response.list);
+        //             displayTeamInfo(response.list[0]);
+        //         },
+        //         error: function (xhr, status, error) {
+        //             console.error('Error loading data:', error);
+        //         }
+        //     });
+        // }
+        //
+        // function loadTeams() {
+        //     var token = getCookie("access_token");
+        //     $.ajax({
+        //         url: 'http://localhost:8090/api/team',
+        //         type: 'GET',
+        //         headers: {
+        //             "Authorization": 'Bearer ' + token
+        //         },
+        //         success: function (response) {
+        //             populateSidebar(response.list);
+        //         },
+        //         error: function (xhr, status, error) {
+        //             console.error('Error loading data:', error);
+        //         }
+        //     });
+        // }
+        //
+        // function populateSidebar(data) {
+        //     var container = document.getElementById('teamNavContainer');
+        //     container.innerHTML = '';
+        //     data.forEach(function (team, index) {
+        //         var teamNavItem = document.createElement('li');
+        //         teamNavItem.classList.add('nav-item');
+        //         teamNavItem.innerHTML = `
+        //         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapse${index}"
+        //             aria-expanded="true" aria-controls="collapse${index}">
+        //             <i class="fas fa-fw fa-cog"></i>
+        //             <span>${team.teamName}</span>
+        //         </a>
+        //         <div id="collapse${index}" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+        //             <div class="bg-white py-2 collapse-inner rounded">
+        //                 <h6 class="collapse-header">관리</h6>
+        //                 <a class="collapse-item" href="/teams/${team.teamSeq}/summary">요약 정보</a>
+        //                 <a class="collapse-item" href="/teams/${team.teamSeq}/dashboard">대시보드</a>
+        //                 <a class="collapse-item" href="/teams/${team.teamSeq}/consents">동의 항목</a>
+        //                 <a class="collapse-item" href="/teams/${team.teamSeq}/country-ip">국가 아이피 관리</a>
+        //                 <a class="collapse-item" href="/teams/${team.teamSeq}/management">팀 관리</a>
+        //                 <a class="collapse-item" href="/teams/${team.teamSeq}/settings">설정</a>
+        //             </div>
+        //         </div>`;
+        //         container.appendChild(teamNavItem);
+        //     });
+        // }
+        //
+        //
+        // function getCookie(name) {
+        //     let value = `; ${document.cookie}`;
+        //     let parts = value.split(`; ${name}=`);
+        //     if (parts.length === 2) return parts.pop().split(';').shift();
+        // }
 
 
     </script>
@@ -158,9 +159,9 @@
     <!-- Begin Page Content -->
     <div class="container-fluid">
         <div class="row">
-            <div class="col-xl-2 col-lg-1 col-md-1"></div> <!-- Left empty space -->
+            <div class="col-xl-4 col-lg-1 col-md-1"></div> <!-- Left empty space -->
 
-            <div class="col-xl-8 col-lg-10 col-md-10">
+            <div class="col-xl-4 col-lg-10 col-md-10">
                 <div class="card o-hidden border-0 shadow-lg my-5">
                     <div class="card-body p-0">
                         <div class="col">
@@ -237,7 +238,7 @@
                 </div>
             </div>
             <!-- 왼쪽 빈 공간 -->
-            <div class="col-xl-2 col-lg-1 col-md-1"></div>
+            <div class="col-xl-4 col-lg-1 col-md-1"></div>
         </div>
     </div>
 
