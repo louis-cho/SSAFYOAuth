@@ -29,26 +29,10 @@
     <script th:src="@{/vendor/jquery-easing/jquery.easing.min.js}"></script>
     <!-- 페이지 로딩될 때 데이터 fetch -->
     <script th:src="@{/js/sb-admin-2.min.js}"></script>
+    <script type="module" th:src="@{/js/sidebar.js}"></script>
     <script th:inline="javascript">
-        function getCookie(name) {
-            var cookies = document.cookie.split(';');
-            for (var i = 0; i < cookies.length; i++) {
-                var cookie = cookies[i];
-                while (cookie.charAt(0) === ' ') {
-                    cookie = cookie.substring(1);
-                }
-                if (cookie.indexOf(name + "=") === 0) {
-                    return cookie.substring(name.length + 1, cookie.length);
-                }
-            }
-            return undefined;
-        }
-
         window.onload = function () {
             loadData();
-            loadTeams();
-            var teamSeq = window.location.pathname.match(/\/teams\/(\d+)\/summary/)[1];
-            loadTeamData(teamSeq);
         };
 
         function loadData() {
@@ -67,50 +51,6 @@
                 error: function (xhr, status, error) {
                     console.error('Error loading data:', error);
                 }
-            });
-        }
-
-        function loadTeams() {
-            var token = getCookie("access_token");
-            $.ajax({
-                url: 'http://localhost:8090/api/team',
-                type: 'GET',
-                headers: {
-                    "Authorization": 'Bearer ' + token
-                },
-                success: function (response) {
-                    populateSidebar(response.list);
-                },
-                error: function (xhr, status, error) {
-                    console.error('Error loading data:', error);
-                }
-            });
-        }
-
-        function populateSidebar(data) {
-            var container = document.getElementById('teamNavContainer');
-            container.innerHTML = '';
-            data.forEach(function (team, index) {
-                var teamNavItem = document.createElement('li');
-                teamNavItem.classList.add('nav-item');
-                teamNavItem.innerHTML = `
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapse${index}"
-                    aria-expanded="true" aria-controls="collapse${index}">
-                    <i class="fas fa-fw fa-cog"></i>
-                    <span>${team.teamName}</span>
-                </a>
-                <div id="collapse${index}" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-                        <h6 class="collapse-header">관리</h6>
-                        <a class="collapse-item" href="/teams/${team.teamSeq}/summary">요약 정보</a>
-                        <a class="collapse-item" href="/teams/${team.teamSeq}/dashboard">대시보드</a>
-                        <a class="collapse-item" href="/teams/${team.teamSeq}/consents">동의 항목</a>
-                        <a class="collapse-item" href="/teams/${team.teamSeq}/country-ip">국가 아이피 관리</a>
-                        <a class="collapse-item" href="/teams/${team.teamSeq}/management">팀 관리</a>
-                        <a class="collapse-item" href="/teams/${team.teamSeq}/settings">설정</a>
-                    </div>
-                </div>`;
-                container.appendChild(teamNavItem);
             });
         }
 

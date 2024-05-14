@@ -106,14 +106,11 @@ public class TeamServiceImpl implements TeamService {
 		dto.setServiceName(vo.getServiceName());
 		String[] teamMembers = new String[vo.getTeamMember() == null ? 1 : vo.getTeamMember().length + 1];
 		for (int i = 0; i < (vo.getTeamMember() == null ? 0 : vo.getTeamMember().length); i++) {
-
 			teamMembers[i] = vo.getTeamMember()[i];
 		}
 		// 자기 자신의 email을 추가
-
 		Integer mySeq =memberRepository.findByEmail(myEmail).get().getMemberId();
 		teamMembers[vo.getTeamMember() == null ? 0 : vo.getTeamMember().length] = myEmail;
-
 		dto.setDomainUrl(vo.getDomainUrl());
 		dto.setRedirectUrl(vo.getRedirectionUrl());
 		// 자기 자신의 seq를 team leader seq로 지정
@@ -121,19 +118,14 @@ public class TeamServiceImpl implements TeamService {
 
 		// 팀 생성
 		DeveloperTeamEntity entity = DeveloperTeamEntity.CreateTeam(dto, mySeq,UUID.randomUUID().toString());
-
 		System.out.println(entity);
 		Integer teamSeq = developerTeamRepository.save(entity).getSeq();
 
-		// 팀원 생성
-		if (dto.getMembers() != null)
-			for (String email : dto.getMembers()) {
-
-				// email로 member_seq읽기
-				Integer seq = developerMemberRepository.findAllByEmail(email).get(0).getMemberSeq();
-				//멤버로 추가
-				teamMemberRepository.save(new TeamMemberEntity(teamSeq, seq, seq == mySeq ? true : false));
-			}
+		// 팀원 저장
+		for(String teamMember : teamMembers){
+			Integer seq = developerMemberRepository.findAllByEmail(teamMember).get(0).getMemberSeq();
+			teamMemberRepository.save(new TeamMemberEntity(entity.getSeq(), seq, seq == mySeq ? true : false));
+		}
 
 		// 도메인 url 등록
 
