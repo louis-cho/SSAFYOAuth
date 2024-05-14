@@ -26,121 +26,104 @@
     <script th:src="@{/vendor/jquery-easing/jquery.easing.min.js}"></script>
     <!-- 페이지 로딩될 때 데이터 fetch -->
     <script th:src="@{/js/sb-admin-2.min.js}"></script>
+    <script type="module" th:src="@{/js/sidebar.js}"></script>
     <script th:inline="javascript">
-        function getCookie(name) {
-            var cookies = document.cookie.split(';');
-            for (var i = 0; i < cookies.length; i++) {
-                var cookie = cookies[i];
-                while (cookie.charAt(0) === ' ') {
-                    cookie = cookie.substring(1);
-                }
-                if (cookie.indexOf(name + "=") === 0) {
-                    return cookie.substring(name.length + 1, cookie.length);
-                }
-            }
-            return undefined;
-        }
-
-        window.onload = function () {
-            loadData();
-            loadTeams();
-            var teamSeq = window.location.pathname.match(/\/teams\/(\d+)\/summary/)[1];
-            loadTeamData(teamSeq);
-        };
-
-        function loadData() {
-            var token = getCookie("access_token")
-            $.ajax({
-                url: 'https://ssafyauth-resource.duckdns.org/api/team',
-                type: 'GET',
-                contentType: 'application/json',
-                headers: {
-                    "Authorization": 'Bearer ' + token
-                },
-                success: function (response) {
-                    displayTeams(response.list);
-                    displayTeamInfo(response.list[0]);
-                },
-                error: function (xhr, status, error) {
-                    console.error('Error loading data:', error);
-                }
-            });
-        }
-
-        function loadTeams() {
-            var token = getCookie("access_token");
-            $.ajax({
-                url: 'https://ssafyauth-resource.duckdns.org/api/team',
-                type: 'GET',
-                headers: {
-                    "Authorization": 'Bearer ' + token
-                },
-                success: function (response) {
-                    populateSidebar(response.list);
-                },
-                error: function (xhr, status, error) {
-                    console.error('Error loading data:', error);
-                }
-            });
-        }
-
-        function populateSidebar(data) {
-            var container = document.getElementById('teamNavContainer');
-            container.innerHTML = '';
-            data.forEach(function (team, index) {
-                var teamNavItem = document.createElement('li');
-                teamNavItem.classList.add('nav-item');
-                teamNavItem.innerHTML = `
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapse${index}"
-                    aria-expanded="true" aria-controls="collapse${index}">
-                    <i class="fas fa-fw fa-cog"></i>
-                    <span>${team.teamName}</span>
-                </a>
-                <div id="collapse${index}" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-                        <h6 class="collapse-header">관리</h6>
-                        <a class="collapse-item" href="/teams/${team.teamSeq}/summary">요약 정보</a>
-                        <a class="collapse-item" href="/teams/${team.teamSeq}/dashboard">대시보드</a>
-                        <a class="collapse-item" href="/teams/${team.teamSeq}/consents">동의 항목</a>
-                        <a class="collapse-item" href="/teams/${team.teamSeq}/country-ip">국가 아이피 관리</a>
-                        <a class="collapse-item" href="/teams/${team.teamSeq}/management">팀 관리</a>
-                        <a class="collapse-item" href="/teams/${team.teamSeq}/settings">설정</a>
-                    </div>
-                </div>`;
-                container.appendChild(teamNavItem);
-            });
-        }
-
-
-        function getCookie(name) {
-            let value = `; ${document.cookie}`;
-            let parts = value.split(`; ${name}=`);
-            if (parts.length === 2) return parts.pop().split(';').shift();
-        }
+        // function getCookie(name) {
+        //     var cookies = document.cookie.split(';');
+        //     for (var i = 0; i < cookies.length; i++) {
+        //         var cookie = cookies[i];
+        //         while (cookie.charAt(0) === ' ') {
+        //             cookie = cookie.substring(1);
+        //         }
+        //         if (cookie.indexOf(name + "=") === 0) {
+        //             return cookie.substring(name.length + 1, cookie.length);
+        //         }
+        //     }
+        //     return undefined;
+        // }
+        //
+        // window.onload = function () {
+        //     loadData();
+        //     loadTeams();
+        //     var teamSeq = window.location.pathname.match(/\/teams\/(\d+)\/summary/)[1];
+        //     loadTeamData(teamSeq);
+        // };
+        //
+        // function loadData() {
+        //     var token = getCookie("access_token")
+        //     $.ajax({
+        //         url: 'http://localhost:8090/api/team',
+        //         type: 'GET',
+        //         contentType: 'application/json',
+        //         headers: {
+        //             "Authorization": 'Bearer ' + token
+        //         },
+        //         success: function (response) {
+        //             displayTeams(response.list);
+        //             displayTeamInfo(response.list[0]);
+        //         },
+        //         error: function (xhr, status, error) {
+        //             console.error('Error loading data:', error);
+        //         }
+        //     });
+        // }
+        //
+        // function loadTeams() {
+        //     var token = getCookie("access_token");
+        //     $.ajax({
+        //         url: 'http://localhost:8090/api/team',
+        //         type: 'GET',
+        //         headers: {
+        //             "Authorization": 'Bearer ' + token
+        //         },
+        //         success: function (response) {
+        //             populateSidebar(response.list);
+        //         },
+        //         error: function (xhr, status, error) {
+        //             console.error('Error loading data:', error);
+        //         }
+        //     });
+        // }
+        //
+        // function populateSidebar(data) {
+        //     var container = document.getElementById('teamNavContainer');
+        //     container.innerHTML = '';
+        //     data.forEach(function (team, index) {
+        //         var teamNavItem = document.createElement('li');
+        //         teamNavItem.classList.add('nav-item');
+        //         teamNavItem.innerHTML = `
+        //         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapse${index}"
+        //             aria-expanded="true" aria-controls="collapse${index}">
+        //             <i class="fas fa-fw fa-cog"></i>
+        //             <span>${team.teamName}</span>
+        //         </a>
+        //         <div id="collapse${index}" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+        //             <div class="bg-white py-2 collapse-inner rounded">
+        //                 <h6 class="collapse-header">관리</h6>
+        //                 <a class="collapse-item" href="/teams/${team.teamSeq}/summary">요약 정보</a>
+        //                 <a class="collapse-item" href="/teams/${team.teamSeq}/dashboard">대시보드</a>
+        //                 <a class="collapse-item" href="/teams/${team.teamSeq}/consents">동의 항목</a>
+        //                 <a class="collapse-item" href="/teams/${team.teamSeq}/country-ip">국가 아이피 관리</a>
+        //                 <a class="collapse-item" href="/teams/${team.teamSeq}/management">팀 관리</a>
+        //                 <a class="collapse-item" href="/teams/${team.teamSeq}/settings">설정</a>
+        //             </div>
+        //         </div>`;
+        //         container.appendChild(teamNavItem);
+        //     });
+        // }
+        //
+        //
+        // function getCookie(name) {
+        //     let value = `; ${document.cookie}`;
+        //     let parts = value.split(`; ${name}=`);
+        //     if (parts.length === 2) return parts.pop().split(';').shift();
+        // }
 
 
     </script>
 
 
     <style>
-        .country-block-manager {
-            padding: 20px;
-            background-color: #f8f9fa;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-        }
-
-        .blocked-country {
-            padding: 8px 16px;
-            background-color: #dc3545;
-            color: white;
-            border-radius: 15px;
-            margin: 5px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
 
         .blocked-country button {
             border: none;
@@ -172,82 +155,92 @@
 <div id="wrapper">
     <!-- Sidebar -->
     <div class="header" th:replace="~{layouts/sidebar :: sidebar}"></div>
-    <div class="col-xl-10 col-lg-12 col-md-9">
-        <div class="card o-hidden border-0 shadow-lg my-5">
-            <div class="card-body p-0">
-                <div class="col">
-                    <!-- Display success message -->
-                    <div th:if="${success}" class="alert alert-success" role="alert">
-                        <span th:text="${success}"></span>
-                    </div>
 
-                    <!-- Display error message -->
-                    <div th:if="${error}" class="alert alert-danger" role="alert">
-                        <span th:text="${error}"></span>
-                    </div>
-                    <div class="col-lg-6 d-none d-lg-block bg-register-image"></div>
-                    <div class="col-lg-6">
-                        <div class="p-5">
-                            <div class="text-center">
-                                <h1 class="h4 text-gray-900 mb-4">회원정보 수정</h1>
+    <!-- Begin Page Content -->
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xl-4 col-lg-1 col-md-1"></div> <!-- Left empty space -->
+
+            <div class="col-xl-4 col-lg-10 col-md-10">
+                <div class="card o-hidden border-0 shadow-lg my-5">
+                    <div class="card-body p-0">
+                        <div class="col">
+                            <!-- Display success message -->
+                            <div th:if="${success}" class="alert alert-success" role="alert">
+                                <span th:text="${success}"></span>
                             </div>
-                            <form class="user" id="updateForm" method="post" th:action="@{/user/update}" th:object="${userData}" enctype="multipart/form-data">
-                                <input type="hidden"
-                                th:field="*{studentId}"
-                                >
-                                <input type="hidden"
-                                th:field="*{email}"
-                                >
-                                <div class="form-group">
-                                    <input type="text"
-                                           class="form-control form-control-user"
-                                           id="exampleFirstName"
-                                           th:field="*{name}"
-                                           placeholder="이름"/>
+
+                            <!-- Display error message -->
+                            <div th:if="${error}" class="alert alert-danger" role="alert">
+                                <span th:text="${error}"></span>
+                            </div>
+                            <div class="col-lg-12 d-none d-lg-block bg-register-image"></div>
+                            <div class="col-lg-12">
+                                <div class="p-5">
+                                    <div class="text-center">
+                                        <h1 class="h4 text-gray-900 mb-4">회원정보 수정</h1>
+                                    </div>
+                                    <form class="user" id="updateForm" method="post" th:action="@{/user/update}"
+                                          th:object="${userData}" enctype="multipart/form-data">
+                                        <input type="hidden"
+                                               th:field="*{studentId}"
+                                        >
+                                        <input type="hidden"
+                                               th:field="*{email}"
+                                        >
+                                        <div class="form-group">
+                                            <input type="text"
+                                                   class="form-control form-control-user"
+                                                   id="exampleFirstName"
+                                                   th:field="*{name}"
+                                                   placeholder="이름"/>
+                                        </div>
+                                        <div class="form-group">
+                                            <input type="text"
+                                                   class="form-control form-control-user"
+                                                   id="exampleInputPhone"
+                                                   th:field="*{phoneNumber}"
+                                                   placeholder="핸드폰 번호"/>
+                                        </div>
+                                        <div class="form-group">
+                                            <select class="form-control"
+                                                    id="exampleGender"
+                                                    th:field="*{gender}">
+                                                <option value="false">남자</option>
+                                                <option value="true">여자</option>
+                                            </select>
+                                        </div>
+                                        <!-- Assuming profileImage is a URL or path to the image -->
+                                        <div class="form-group">
+                                            <label for="exampleProfileImage">Profile Image</label>
+                                            <!-- Input for   updating the profile image -->
+                                            <input type="file"
+                                                   class="form-control-file"
+                                                   id="exampleProfileImage"
+                                                   name="image"
+                                                   accept="image/*"
+                                                   onchange="updateImagePreview(this);"/>
+                                            <!-- Displaying existing profile image if available -->
+                                            <img
+                                                    id="profileImagePreview"
+                                                    th:if="${userData.profileUrl}"
+                                                    th:src="@{${userData.profileUrl}}"
+                                                    alt="Profile Image" style="height: 100px; width: auto;"/>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary btn-user btn-block">
+                                            정보 수정
+                                        </button>
+                                    </form>
                                 </div>
-                                <div class="form-group">
-                                    <input type="text"
-                                           class="form-control form-control-user"
-                                           id="exampleInputPhone"
-                                           th:field="*{phoneNumber}"
-                                           placeholder="핸드폰 번호"/>
-                                </div>
-                                <div class="form-group">
-                                    <select class="form-control"
-                                            id="exampleGender"
-                                            th:field="*{gender}">
-                                        <option value="false">남자</option>
-                                        <option value="true">여자</option>
-                                    </select>
-                                </div>
-                                <!-- Assuming profileImage is a URL or path to the image -->
-                                <div class="form-group">
-                                    <label for="exampleProfileImage">Profile Image</label>
-                                    <!-- Input for   updating the profile image -->
-                                    <input type="file"
-                                           class="form-control-file"
-                                           id="exampleProfileImage"
-                                           name="image"
-                                           accept="image/*"
-                                           onchange="updateImagePreview(this);"/>
-                                    <!-- Displaying existing profile image if available -->
-                                    <img
-                                            id="profileImagePreview"
-                                            th:if="${userData.profileUrl}"
-                                            th:src="@{${userData.profileUrl}}"
-                                            alt="Profile Image" style="height: 100px; width: auto;"/>
-                                </div>
-                                <button type="submit" class="btn btn-primary btn-user btn-block">
-                                    정보 수정
-                                </button>
-                            </form>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+            <!-- 왼쪽 빈 공간 -->
+            <div class="col-xl-4 col-lg-1 col-md-1"></div>
         </div>
     </div>
-</div>
 
 </div>
 <!-- Footer -->

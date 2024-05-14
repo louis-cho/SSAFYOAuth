@@ -32,150 +32,19 @@
 
 <!-- Page Wrapper -->
 <div id="wrapper">
-    <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+    <!-- Sidebar -->
+    <div class="header" th:replace="~{layouts/sidebar :: sidebar}"></div>
 
-        <!-- Sidebar - Brand -->
-        <a class="sidebar-brand d-flex align-items-center justify-content-center" th:href="@{/static}">
-            <div class="sidebar-brand-icon rotate-n-15">
-                <i class="fas fa-laugh-wink"></i>
-            </div>
-            <div class="sidebar-brand-text mx-3">SSAFY Auth<sup>306</sup></div>
-        </a>
-
-        <!-- Divider -->
-        <hr class="sidebar-divider my-0">
-
-        <!-- Nav Item - Dashboard -->
-        <li class="nav-item active">
-            <a class="nav-link" th:href="@{/static}">
-                <i class="fas fa-fw fa-tachometer-alt"></i>
-                <span>나의 팀</span></a>
-        </li>
-
-        <!-- Divider -->
-        <hr class="sidebar-divider">
-
-        <!-- Heading -->
-        <div class="sidebar-heading" style="font-size: large">
-            나의 팀
+    <div class="container-fluid">
+        <!-- 404 Error Text -->
+        <div class="text-center">
+            <div class="error mx-auto" data-text="404">404</div>
+            <p class="lead text-gray-800 mb-5">페이지를 찾을 수 없습니다.</p>
+            <p class="text-gray-500 mb-0">잘못된 경로를 검색한 거 같아요 ㅠ^ㅠ</p>
+            <a href="/">&larr; 메인으로 돌아가기</a>
         </div>
-
-        <!-- Nav Item - Pages Collapse Menu -->
-        <li class="nav-item">
-            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
-               aria-expanded="true" aria-controls="collapseTwo">
-                <i class="fas fa-fw fa-cog"></i>
-                <span>개쩌는 팀1</span>
-            </a>
-            <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
-                <div class="bg-white py-2 collapse-inner rounded">
-                    <h6 class="collapse-header">관리</h6>
-                    <a class="collapse-item" th:href="@{/buttons}">요약 정보</a>
-                    <a class="collapse-item" th:href="@{/buttons}">대시보드</a>
-                    <a class="collapse-item" th:href="@{/cards}">동의 항목</a>
-                    <a class="collapse-item" th:href="@{/cards}">팀 관리</a>
-                    <a class="collapse-item" th:href="@{/cards}">설정</a>
-                </div>
-            </div>
-        </li>
-
-        <li class="nav-item">
-            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseThree"
-               aria-expanded="true" aria-controls="collapseThree">
-                <i class="fas fa-fw fa-cog"></i>
-                <span>개쩌는 팀2</span>
-            </a>
-            <div id="collapseThree" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
-                <div class="bg-white py-2 collapse-inner rounded">
-                    <h6 class="collapse-header">관리</h6>
-                    <a class="collapse-item" th:href="@{/buttons}">요약 정보</a>
-                    <a class="collapse-item" th:href="@{/buttons}">대시보드</a>
-                    <a class="collapse-item" th:href="@{/cards}">동의 항목</a>
-                    <a class="collapse-item" th:href="@{/cards}">팀 관리</a>
-                    <a class="collapse-item" th:href="@{/cards}">설정</a>
-                </div>
-            </div>
-        </li>
-
-        <!-- Nav Item - Utilities Collapse Menu -->
-        <li class="nav-item">
-            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
-               aria-expanded="true" aria-controls="collapseUtilities">
-                <i class="fas fa-fw fa-wrench"></i>
-                <span>Utilities</span>
-            </a>
-            <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities"
-                 data-parent="#accordionSidebar">
-                <div class="bg-white py-2 collapse-inner rounded">
-                    <h6 class="collapse-header">Custom Utilities:</h6>
-                    <a class="collapse-item" th:href="@{/utilities-color}">Colors</a>
-                    <a class="collapse-item" th:href="@{/utilities-border}">Borders</a>
-                    <a class="collapse-item" th:href="@{/utilities-animation}">Animations</a>
-                    <a class="collapse-item" th:href="@{/utilities-other}">Other</a>
-                </div>
-            </div>
-        </li>
-
-        <!-- Divider -->
-        <hr class="sidebar-divider">
-
-        <!-- Heading -->
-        <div class="sidebar-heading" style="font-size: large">
-            내 정보 관리
-        </div>
-
-        <!-- Nav Item - Pages Collapse Menu -->
-        <li class="nav-item">
-            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages"
-               aria-expanded="true" aria-controls="collapsePages">
-                <i class="fas fa-fw fa-folder"></i>
-                <span>Pages</span>
-            </a>
-            <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
-                <div class="bg-white py-2 collapse-inner rounded">
-                    <h6 class="collapse-header">Login Screens:</h6>
-                    <a class="collapse-item" th:href="@{/login}">Login</a>
-                    <a class="collapse-item" th:href="@{/register}">Register</a>
-                    <a class="collapse-item" th:href="@{/forgot-password}">Forgot Password</a>
-                    <div class="collapse-divider"></div>
-                    <h6 class="collapse-header">Other Pages:</h6>
-                    <a class="collapse-item" th:href="@{/404}">404 Page</a>
-                    <a class="collapse-item" th:href="@{/blank}">Blank Page</a>
-                </div>
-            </div>
-        </li>
-
-        <!-- Nav Item - Charts -->
-        <li class="nav-item">
-            <a class="nav-link" th:href="@{/charts}">
-                <i class="fas fa-fw fa-chart-area"></i>
-                <span>Charts</span></a>
-        </li>
-
-        <!-- Nav Item - Tables -->
-        <li class="nav-item">
-            <a class="nav-link" th:href="@{/tables}">
-                <i class="fas fa-fw fa-table"></i>
-                <span>Tables</span></a>
-        </li>
-
-        <!-- Divider -->
-        <hr class="sidebar-divider d-none d-md-block">
-
-        <!-- Sidebar Toggler (Sidebar) -->
-        <div class="text-center d-none d-md-inline">
-            <button class="rounded-circle border-0" id="sidebarToggle"></button>
-        </div>
-
-    </ul>
-
-    <!-- 404 Error Text -->
-    <div class="text-center">
-        <div class="error mx-auto" data-text="404">404</div>
-        <p class="lead text-gray-800 mb-5">Page Not Found</p>
-        <p class="text-gray-500 mb-0">It looks like you found a glitch in the matrix...</p>
-        <a href="index.html">&larr; Back to Dashboard</a>
     </div>
+
 
 </div>
 <!-- End of Main Content -->

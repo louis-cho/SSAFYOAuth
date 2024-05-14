@@ -29,26 +29,10 @@
     <script th:src="@{/vendor/jquery-easing/jquery.easing.min.js}"></script>
     <!-- 페이지 로딩될 때 데이터 fetch -->
     <script th:src="@{/js/sb-admin-2.min.js}"></script>
+    <script type="module" th:src="@{/js/sidebar.js}"></script>
     <script th:inline="javascript">
-        function getCookie(name) {
-            var cookies = document.cookie.split(';');
-            for (var i = 0; i < cookies.length; i++) {
-                var cookie = cookies[i];
-                while (cookie.charAt(0) === ' ') {
-                    cookie = cookie.substring(1);
-                }
-                if (cookie.indexOf(name + "=") === 0) {
-                    return cookie.substring(name.length + 1, cookie.length);
-                }
-            }
-            return undefined;
-        }
-
         window.onload = function () {
             loadData();
-            loadTeams();
-            var teamSeq = window.location.pathname.match(/\/teams\/(\d+)\/summary/)[1];
-            loadTeamData(teamSeq);
         };
 
         function loadData() {
@@ -67,50 +51,6 @@
                 error: function (xhr, status, error) {
                     console.error('Error loading data:', error);
                 }
-            });
-        }
-
-        function loadTeams() {
-            var token = getCookie("access_token");
-            $.ajax({
-                url: 'https://ssafyauth-resource.duckdns.org/api/team',
-                type: 'GET',
-                headers: {
-                    "Authorization": 'Bearer ' + token
-                },
-                success: function (response) {
-                    populateSidebar(response.list);
-                },
-                error: function (xhr, status, error) {
-                    console.error('Error loading data:', error);
-                }
-            });
-        }
-
-        function populateSidebar(data) {
-            var container = document.getElementById('teamNavContainer');
-            container.innerHTML = '';
-            data.forEach(function (team, index) {
-                var teamNavItem = document.createElement('li');
-                teamNavItem.classList.add('nav-item');
-                teamNavItem.innerHTML = `
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapse${index}"
-                    aria-expanded="true" aria-controls="collapse${index}">
-                    <i class="fas fa-fw fa-cog"></i>
-                    <span>${team.teamName}</span>
-                </a>
-                <div id="collapse${index}" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-                        <h6 class="collapse-header">관리</h6>
-                        <a class="collapse-item" href="/teams/${team.teamSeq}/summary">요약 정보</a>
-                        <a class="collapse-item" href="/teams/${team.teamSeq}/dashboard">대시보드</a>
-                        <a class="collapse-item" href="/teams/${team.teamSeq}/consents">동의 항목</a>
-                        <a class="collapse-item" href="/teams/${team.teamSeq}/country-ip">국가 아이피 관리</a>
-                        <a class="collapse-item" href="/teams/${team.teamSeq}/management">팀 관리</a>
-                        <a class="collapse-item" href="/teams/${team.teamSeq}/settings">설정</a>
-                    </div>
-                </div>`;
-                container.appendChild(teamNavItem);
             });
         }
 
@@ -181,10 +121,10 @@
                                 <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                     서비스 사용자 수
                                 </div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">$40,000</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">40,000 명</div>
                             </div>
-                            <div class="col-auto">
-                                <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                            <div class="col-auto"><i class="fas fa-users fa-2x text-gray-300"></i>
+
                             </div>
                         </div>
                     </div>
@@ -200,10 +140,10 @@
                                 <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
                                     일일 로그인 수
                                 </div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">$215,000</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">50,000 회</div>
                             </div>
-                            <div class="col-auto">
-                                <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                            <div class="col-auto"><i class="fas fa-users fa-2x text-gray-300"></i>
+
                             </div>
                         </div>
                     </div>
@@ -221,7 +161,8 @@
                                 <div class="h5 mb-0 font-weight-bold text-gray-800">18</div>
                             </div>
                             <div class="col-auto">
-                                <i class="fas fa-comments fa-2x text-gray-300"></i>
+                                <i class="fas fa-user-slash fa-2x text-gray-300"></i>
+
                             </div>
                         </div>
                     </div>
@@ -305,18 +246,6 @@
 <!-- Footer -->
 <div class="footer" th:replace="~{layouts/footer :: footer}"></div>
 
-
-
-
-<!-- Bootstrap core JavaScript-->
-<script th:src="@{/vendor/jquery/jquery.min.js}"></script>
-<script th:src="@{/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
-
-<!-- Core plugin JavaScript-->
-<script th:src="@{/vendor/jquery-easing/jquery.easing.min.js}"></script>
-
-<!-- Custom scripts for all pages-->
-<script th:src="@{/js/sb-admin-2.min.js}"></script>
 
 <!-- Page level plugins -->
 <script th:src="@{/vendor/chart.js/Chart.min.js}"></script>

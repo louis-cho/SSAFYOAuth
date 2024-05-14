@@ -9,6 +9,19 @@
     <script src="https://cdn.jsdelivr.net/npm/lodash/lodash.min.js"></script>
     <link rel="stylesheet" th:href="@{/css/sb-admin-2.min.css}">
     <link th:href="@{/vendor/fontawesome-free/css/all.min.css}" rel="stylesheet" type="text/css">
+    <link th:href="@{https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i}"
+          rel="stylesheet">
+    <!-- Custom styles for this template-->
+    <link rel="stylesheet" th:href="@{/css/footer.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/header.css}">
+    <link th:href="@{/css/sb-admin-2.min.css}" rel="stylesheet">
+    <link th:href="@{/css/main.css}" rel="stylesheet">
+    <script th:src="@{/vendor/jquery/jquery.min.js}"></script>
+    <script th:src="@{/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
+    <script th:src="@{/vendor/jquery-easing/jquery.easing.min.js}"></script>
+    <!-- 페이지 로딩될 때 데이터 fetch -->
+    <script th:src="@{/js/sb-admin-2.min.js}"></script>
+    <script type="module" th:src="@{/js/sidebar.js}"></script>
     <style>
         .modal {
             display: none;
@@ -51,33 +64,14 @@
             overflow-y: auto;
         }
     </style>
-    <!-- Other links for CSS and fonts -->
 </head>
 
 <body id="page-top" th:class="${bodyClass}">
 <div th:replace="~{layouts/header :: header}"></div>
 <!-- Page Wrapper -->
 <div id="wrapper">
-    <!-- Sidebar -->
-    <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
-        <!-- Sidebar - Brand -->
-        <a class="sidebar-brand d-flex align-items-center justify-content-center" th:href="@{/static}">
-            <div class="sidebar-brand-icon rotate-n-15">
-                <i class="fas fa-laugh-wink"></i>
-            </div>
-            <div class="sidebar-brand-text mx-3">SSAFY Auth<sup>306</sup></div>
-        </a>
-        <!-- Divider -->
-        <hr class="sidebar-divider my-0">
-        <!-- Nav Item - Dashboard -->
-        <li class="nav-item active">
-            <a class="nav-link" th:href="@{/static}">
-                <i class="fas fa-fw fa-tachometer-alt"></i>
-                <span>나의 팀</span></a>
-        </li>
-        <!-- Other menu items -->
-    </ul>
 
+    <div class="header" th:replace="~{layouts/sidebar :: sidebar}"></div>
     <!-- 팀원 초대 모달 -->
     <div id="inviteModal" class="modal" style="display:none;">
         <div class="modal-content">
@@ -409,5 +403,6 @@
     //         });
     // }
 </script>
+
 </body>
 </html>
