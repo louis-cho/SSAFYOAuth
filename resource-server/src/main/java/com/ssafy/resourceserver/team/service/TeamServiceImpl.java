@@ -619,4 +619,10 @@ public class TeamServiceImpl implements TeamService {
 		return arr;
 	}
 
+	@Override
+	public boolean updateBlockedCountries(List<String> countries) {
+
+		return false;
+	}
+
 }

@@ -184,8 +184,7 @@ public class TeamController {
 	@ResponseBody
 	public ResponseEntity<?> createBlockedCountries(@RequestBody List<String> countries, @PathVariable Integer teamSeq ,@AuthenticationPrincipal Jwt jwt) {
 		log.info("post country {}", countries);
-		List<String> arr = teamService.getBlockedCountriesByTeamId(teamSeq);
-
+		boolean result = teamService.updateBlockedCountries(countries);
 		return ResponseEntity.status(HttpStatus.OK).body(true);
 	}
 }
