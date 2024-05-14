@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>SSAFY Auth - Dashboard</title>
+
+    <!-- Custom fonts for this template-->
+    <link th:href="@{/vendor/fontawesome-free/css/all.min.css}" rel="stylesheet" type="text/css">
+    <link th:href="@{https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i}" rel="stylesheet">
+
+    <!-- Custom styles for this template-->
+    <link rel="stylesheet" th:href="@{/css/footer.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/header.css}">
+    <link th:href="@{/css/sb-admin-2.min.css}" rel="stylesheet">
+    <link th:href="@{/css/main.css}" rel="stylesheet">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+    <style>
+        a {
+            text-decoration: none;
+            color: black;
+        }
+        #content {
+            margin-top: 5%;
+        }
+        .centered-image-container {
+            display: flex;
+            justify-content: center; /* 가로 방향 가운데 정렬 */
+            align-items: center; /* 세로 방향 가운데 정렬 */
+        }
+        p {
+            padding: 10%;
+        }
+        img {
+            max-width: 50%;
+            max-height: 400px;
+        }
+        #wrapper {
+            height: 900px;
+            overflow: auto;
+        }
+    </style>
+
+</head>
+
+<body id="page-top" th:class="${bodyClass}">
+<div class="header" th:replace="~{layouts/header :: header}"></div>
+<!-- Page Wrapper -->
+<div id="wrapper">
+
+    <!-- 여기가 사이드 바 -->
+    <div class="header" th:replace="~{layouts/sidebar :: sidebar}"></div>
+
+    <!-- 여기가 주 된 내용 -->
+    <div id="content-wrapper" class="container d-flex flex-column">
+        <!-- Main Content -->
+        <div id="content">
+            <div id="menu">
+                <h1>목차</h1>
+                <hr id="menu-hr"/>
+                <a href="#function-introduce">1. 기능 소개</a><br />
+                <a href="#team-add-api">2. 팀 생성</a><br />
+                <a href="#team-detail">3. 팀 조회</a><br />
+                <a href="#team-edit">4.  팀 명/서비스 명 수정</a><br />
+                <a href="#url-edit">5. 리다이렉트 URL 추가/삭제</a><br />
+                <a href="#member-edit">6. 팀원 추가/삭제</a><br />
+                <a href="#image-edit">7. 팀 이미지 수정/삭제</a><br/>
+            </div>
+            <hr />
+            <div id="function-introduce">
+                <h4>1. 기능 소개</h4>
+                <p>
+                    이 페이지 에서는 팀 관리 API를 소개 합니다.<br />
+                    팀 관리 API는 팀을 생성, 삭제, 수정 할 수 있을 뿐만 아니라 팀원을 편집할 수 있습니다.<br />
+                    팀 관리 API는 REST API로 구현이 되었으며 팀 관리 페이지에서 손쉽게 사용할 수 있습니다.<br />
+                    팀 관리 관련 API를 사용하기 위해서는 Header에 Bearer Token을 포함 해야 합니다.<br />
+                </p>
+            </div>
+            <hr />
+            <div id="team-add-api">
+                <h4>2. 팀 생성</h4>
+                <div class="centered-image-container">
+                <img src="/image/docs/team_add_btn.JPG" />
+                </div>
+                <p>팀 추가 버튼을 누르면 다음의 모달 창이 뜹니다.</p>
+                <div class="centered-image-container">
+                <img src="/image/docs/team_add.JPG" />
+                </div>
+                <p>모달 창의 모든 항목을 입력하고 저장 버튼을 누르면 팀이 추가 됩니다.</p>
+                <div class="centered-image-container">
+                <img src="/image/docs/team_add_complete.JPG" />
+                </div>
+                <p>팀이 등록이 완료 되면 모달이 닫히고 추가된 팀을 볼 수 있습니다.</p>
+            </div>
+            <hr />
+            <div id="team-detail">
+                <h4>3. 팀 조회</h4>
+                <div class="centered-image-container">
+                <img src="/image/docs/team-detail-btn.JPG" />
+                </div>
+                <p>팀 목록에서 각 팀마다 +detail 버튼이 있습니다. <br />이 버튼을 누르면 각 팀을 자세히 조회할 수 있습니다.</p>
+                <div class="centered-image-container">
+                <img src="/image/docs/team-detail.JPG" />
+                </div>
+                <p>팀 정보중 Client id를 제외한 모든 항목은 수정이 됩니다.</p>
+            </div>
+            <hr />
+            <div id="team-edit">
+                <h4>4.  팀 명/서비스 명 수정</h4>
+                <div class="centered-image-container">
+                <img src="/image/docs/team_name.JPG" />
+                </div>
+                <div class="centered-image-container">
+                <img src="/image/docs/team_name_new.JPG" />
+                </div>
+                <div class="centered-image-container">
+                    <img src="/image/docs/team_name_update.JPG" />
+                </div>
+                <p>팀 이름을 확인 할 수 있는데 옆의 토글 버튼을 누르면 팀 이름 수정 폼이 열린다. <br />수정할 이름을 입력하고 '수정'버튼을 누르면 팀 이름이 수정된다.</p>
+                <div class="centered-image-container">
+                <img src="/image/docs/service_name.JPG" />
+                </div>
+                <div class="centered-image-container">
+                <img src="/image/docs/service_name_modal.JPG" />
+                </div>
+                <p>서비스 명을 확인할 수 있는데 수정 버튼을 누르면 서비스 명을 수정할 수 있는 모달이 뜬다.</p>
+                <div class="centered-image-container">
+                <img src="/image/docs/service_name_new.JPG" />
+                </div>
+                <div class="centered-image-container">
+                <img src="/image/docs/service_name_update.JPG" />
+                </div>
+                <p>새로운 서비스 명을 입력하고 수정 버튼을 누르면 서비스 명이 수정이 된다.</p>
+            </div>
+            <hr />
+            <div id="url-edit">
+                <h4>5. 리다이렉트 URL 추가/삭제</h4>
+                <div class="centered-image-container">
+                <img src="/image/docs/url_form.JPG" />
+                </div>
+                <p>리다이렉트 url 입력 폼이 보이고 그 밑에 등록된 url 목록이 보인다.</p>
+                <div class="centered-image-container">
+                <img src="/image/docs/url_new.JPG" />
+                </div>
+                <p>새 리다이렉트 url을 입력하고 추가 버튼을 누르면 새 리다이렉트 url이 등록된다.</p>
+                <div class="centered-image-container">
+                <img src="/image/docs/url_add.JPG" />
+                </div>
+                <p>리다이렉트 url이 추가되면 아래에 추가된 url이 보인다.</p>
+                <div class="centered-image-container">
+                <img src="/image/docs/url_delete.JPG" />
+                </div>
+                <p>리다이렉트 url은 x 표시를 누르면 삭제된다.</p>
+            </div>
+            <hr />
+            <div id="member-edit">
+                <h4>6. 팀원 추가/삭제</h4>
+                <div class="centered-image-container">
+                <img src="/image/docs/member_form.JPG" />
+                </div>
+                <p>팀원을 확인할 수 있다.</p>
+                <div class="centered-image-container">
+                <img src="/image/docs/member_search.JPG" />
+                </div>
+                <div class="centered-image-container">
+                <img src="/image/docs/member_add.JPG" />
+                </div>
+                <p>팀원으로 추가할 개발자를 검색할수 있고 검색한 이메일을 넣고 추가 버튼을 누르면 팀 멤버로 추가가 된다.</p>
+                <div class="centered-image-container">
+                <img src="/image/docs/member_delete.JPG" />
+                </div>
+                <p>팀장을 제외한 팀원은 x를 누르면 팀원에서 제외된다.</p>
+            </div>
+            <hr />
+            <div id="image-edit">
+                <h4>7. 팀 이미지 수정/삭제</h4>
+                <div class="centered-image-container">
+                    <img src="/image/docs/service_image.JPG" />
+                </div>
+                <p>팀 이미지를 확인 할 수 있습니다.<br />수정을 누르면 이미지를 수정할 수 있는 모달이 뜹니다.</p>
+                <div class="centered-image-container">
+                    <img src="/image/docs/service_image_form.JPG" />
+                </div>
+                <div class="centered-image-container">
+                    <img src="/image/docs/serivce_image_update.JPG" />
+                </div>
+                <p>업로드 할 이미지를 넣고 수정 버튼을 누르면 수정이 됩니다.</p>
+                <div class="centered-image-container">
+                    <img src="/image/docs/service_image.JPG" />
+                </div>
+                <p>삭제 버튼을 누르면 이미지가 초기화 됩니다.</p>
+            </div>
+        </div>
+    </div>
+
+</div>
+<!-- 푸터 들어갈 자리 -->
+<div class="footer" th:replace="~{layouts/footer :: footer}"></div>
+</body>
+
+</html>

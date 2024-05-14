@@ -2,7 +2,6 @@ package com.ssafy.authorization.config;
 
 import com.ssafy.authorization.member.login.filter.CustomAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -23,6 +22,7 @@ import org.springframework.security.oauth2.server.authorization.config.annotatio
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -43,10 +43,12 @@ import jakarta.servlet.http.HttpServletRequest;
 public class AuthorizationServerConfig {
 
 	private final RedisTemplate<String, String> redisTemplate;
+	private final CustomAuthenticationFilter customAuthenticationFilter;
 
 	@Autowired
-	public AuthorizationServerConfig(RedisTemplate<String, String> redisTemplate) {
+	public AuthorizationServerConfig(RedisTemplate<String, String> redisTemplate, CustomAuthenticationFilter customAuthenticationFilter) {
 		this.redisTemplate = redisTemplate;
+		this.customAuthenticationFilter = customAuthenticationFilter;
 	}
 
 	@Bean
@@ -62,7 +64,6 @@ public class AuthorizationServerConfig {
 
 		http
 
-//				.addFilterBefore(new CustomAuthenticationFilter(redisTemplate), OAuth2AuthorizationRequestRedirectFilter.class)
 				.exceptionHandling((exceptions) -> exceptions
 						.defaultAuthenticationEntryPointFor(
 								new LoginUrlAuthenticationEntryPoint("/login"),
@@ -128,6 +129,9 @@ public class AuthorizationServerConfig {
 	 			.formLogin(formLogin -> formLogin
 	 					.loginPage("/login")
 	 			);
+
+		http.addFilterAfter(customAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
 
 	 	return http.build();
 	 }
