@@ -6,7 +6,7 @@ import { Client } from 'https://cdn.skypack.dev/@stomp/stompjs';
 import { updateMetrics } from './dataStore.js';
 // WebSocket 연결 생성
 const client = new Client({
-  brokerURL: 'ws://localhost:9000/ws', // 서버 URL 경로에 맞게 조정하세요
+  brokerURL: 'wss://ssafyauth-authorization.duckdns.org/ws',
   reconnectDelay: 5000,
   debug: function (str) {
     // console.log(str);
@@ -16,7 +16,7 @@ const client = new Client({
 client.onConnect = function(frame) {
   console.log('Connected to WebSocket!');
 
-  // 서버로부터 메시지를 수신하면 웹 페이지에 표시합니다.
+  // 서버로부터 메시지를 수신하면 웹 페이지에 표시
   client.subscribe('/topic/metrics', function (message) {
     const metrics = JSON.parse(message.body);
     // console.log('Received metrics:', metrics);
@@ -37,7 +37,7 @@ client.onStompError = function (frame) {
   console.error('Additional details: ' + frame.body);
 };
 
-// WebSocket에 연결을 시도합니다.
+// WebSocket에 연결
 client.activate();
 
 
