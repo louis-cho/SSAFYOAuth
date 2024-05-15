@@ -21,7 +21,9 @@
             <ul class="navbar-nav ml-auto"> <!-- ml-auto를 사용하여 오른쪽으로 정렬 -->
                 <li class="nav-item">
                     <button class="btn btn-primary" id="loginBtn" sec:authorize="isAnonymous()">로그인</button>
-                    <button class="btn btn-danger" id="logoutBtn" sec:authorize="isAuthenticated()">로그아웃</button>
+                    <form th:action="@{/logout}" method="post">
+                        <button type="submit" class="btn btn-danger" sec:authorize="isAuthenticated()">로그아웃</button>
+                    </form>
                 </li>
             </ul>
         </div>

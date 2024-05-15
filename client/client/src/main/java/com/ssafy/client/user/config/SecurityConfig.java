@@ -92,7 +92,6 @@ public class SecurityConfig {
             http
                     .authorizeHttpRequests((auth) -> auth
                             .requestMatchers("/api/**","/css/**", "/favicon.ico", "/error", "/image/**", "/vendor/**","users/**").permitAll()
-                        .requestMatchers("/**").permitAll()
                             .anyRequest().authenticated());
 
             //세션 설정 : STATELESS
