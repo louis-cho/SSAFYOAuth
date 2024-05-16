@@ -80,7 +80,7 @@
                     "Authorization": 'Bearer ' + token
                 },
                 success: function (response) {
-                    document.getElementById('userLoginCount').innerText = response.userLoginCount + "명";
+                    document.getElementById('userLoginCount').innerText = response.userLoginCount + "회";
                 },
                 error: function (xhr, status, error) {
                     console.error('Error loading data:', error);
