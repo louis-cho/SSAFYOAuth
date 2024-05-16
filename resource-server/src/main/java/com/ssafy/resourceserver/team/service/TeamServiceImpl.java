@@ -3,6 +3,7 @@ package com.ssafy.resourceserver.team.service;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,19 +11,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import com.ssafy.resourceserver.redirect.repository.RedirectEntityRepository;
-import com.ssafy.resourceserver.team.repository.DeveloperTeamRepository;
-import com.ssafy.resourceserver.team.repository.TeamListRepository;
-import com.ssafy.resourceserver.team.repository.TeamMemberRepository;
-import com.ssafy.resourceserver.team.repository.TeamMemberWithInfoRepository;
-import com.ssafy.resourceserver.team.vo.DeveloperSearchVo;
-import com.ssafy.resourceserver.team.vo.InviteListVo;
-import com.ssafy.resourceserver.team.vo.ServiceNameUpdateVo;
-import com.ssafy.resourceserver.team.vo.TeamAddVo;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -32,15 +21,29 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.ssafy.resourceserver.member.model.repository.MemberRepository;
 import com.ssafy.resourceserver.redirect.model.RedirectEntity;
+import com.ssafy.resourceserver.redirect.repository.RedirectEntityRepository;
 import com.ssafy.resourceserver.redirect.service.RedirectService;
 import com.ssafy.resourceserver.team.dto.TeamAddDto;
+import com.ssafy.resourceserver.team.entity.BlockedCountriesEntity;
+import com.ssafy.resourceserver.team.entity.CountLoginUserEntity;
 import com.ssafy.resourceserver.team.entity.DeveloperMemberEntity;
 import com.ssafy.resourceserver.team.entity.DeveloperTeamEntity;
 import com.ssafy.resourceserver.team.entity.TeamListEntity;
 import com.ssafy.resourceserver.team.entity.TeamMemberEntity;
 import com.ssafy.resourceserver.team.entity.TeamMemberPK;
 import com.ssafy.resourceserver.team.entity.TeamMemberWithInfoEntity;
+import com.ssafy.resourceserver.team.repository.BlockedCountriesRepository;
+import com.ssafy.resourceserver.team.repository.CountLoginUserRepository;
 import com.ssafy.resourceserver.team.repository.DeveloperMemberRepository;
+import com.ssafy.resourceserver.team.repository.DeveloperTeamRepository;
+import com.ssafy.resourceserver.team.repository.Oauth2AuthorizationConsentRepository;
+import com.ssafy.resourceserver.team.repository.TeamListRepository;
+import com.ssafy.resourceserver.team.repository.TeamMemberRepository;
+import com.ssafy.resourceserver.team.repository.TeamMemberWithInfoRepository;
+import com.ssafy.resourceserver.team.vo.DeveloperSearchVo;
+import com.ssafy.resourceserver.team.vo.InviteListVo;
+import com.ssafy.resourceserver.team.vo.ServiceNameUpdateVo;
+import com.ssafy.resourceserver.team.vo.TeamAddVo;
 import com.ssafy.resourceserver.team.vo.TeamDetailVo;
 import com.ssafy.resourceserver.team.vo.TeamImageVo;
 import com.ssafy.resourceserver.team.vo.TeamListVo;
@@ -61,6 +64,11 @@ public class TeamServiceImpl implements TeamService {
 	private final MemberRepository memberRepository;
 	private final RedirectService redirectService;
 	private final RedirectEntityRepository redirectRepository;
+	private final Oauth2AuthorizationConsentRepository oauth2AuthorizationConsentRepository;
+	private final CountLoginUserRepository countLoginUserRepository;
+	private final BlockedCountriesRepository blockedCountriesRepository;
+
+
 	private boolean test = true;
 
 	@Value("${cloud.aws.s3.bucket}")
@@ -603,18 +611,54 @@ public class TeamServiceImpl implements TeamService {
 
 	@Override
 	public List<String> getBlockedCountriesByTeamId(Integer teamSeq) {
-		// List<String> blockedCountry = countryRepository.findByTeamId(teamId);
-		List<String> arr = new ArrayList<>();
-		arr.add("KR");
-		arr.add("US");
-
-		return arr;
+		Optional<BlockedCountriesEntity> blockedCountry = blockedCountriesRepository.findByTeamId(teamSeq);
+		if(blockedCountry.isPresent()){
+			BlockedCountriesEntity entity = blockedCountry.get();
+			List<String> countryList = Arrays.asList(entity.getCountryList().trim().split(","));
+			return countryList;
+		}
+		return new ArrayList<>();
 	}
 
 	@Override
-	public boolean updateBlockedCountries(List<String> countries) {
+	public boolean updateBlockedCountries(List<String> countries,int teamSeq) {
+		Optional<BlockedCountriesEntity> byTeamId = blockedCountriesRepository.findByTeamId(teamSeq);
+		BlockedCountriesEntity entity = null;
+		if(byTeamId.isPresent()){
+			entity = byTeamId.get();
+			String s = countries.toString();
+			entity.setCountryList(s.replace(" ","").replace("[", "").replace("]", ""));
+		}
+		else{
+			String s = countries.toString();
+			entity = BlockedCountriesEntity.builder()
+				.teamId(teamSeq)
+				.countryList(s.replace(" ","").replace("[", "").replace("]", ""))
+				.build();
+		}
+		blockedCountriesRepository.save(entity);
 
 		return false;
+	}
+
+	@Override
+	public Map countServiceUser(Integer teamSeq) {
+		Map<String, Integer> data = new HashMap<>();
+		Integer userCount = oauth2AuthorizationConsentRepository.countServiceUser(String.valueOf(teamSeq));
+		data.put("userCount", userCount);
+		return data;
+	}
+
+	@Override
+	public Map countLoginUser(Integer teamSeq) {
+		Map<String, Long> data = new HashMap<>();
+		CountLoginUserEntity countLoginUser = countLoginUserRepository.findByServiceId(String.valueOf(teamSeq));
+		if (countLoginUser!=null) {
+			data.put("userLoginCount", countLoginUser.getLoginCount());
+		} else {
+			data.put("userLoginCount", 0L);
+		}
+		return data;
 	}
 
 }

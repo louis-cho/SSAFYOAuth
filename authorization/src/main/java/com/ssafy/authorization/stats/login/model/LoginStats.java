@@ -33,4 +33,10 @@ public class LoginStats {
 	public void isSuccess(boolean success){
 		this.success = success;
 	}
+
+	@Override
+	public String toString() {
+		return "LoginStats(userId=" + userId + ", teamId=" + teamId + ", createdAt=" + createdAt + ", success="+ success + ")\n";
+	}
+
 }

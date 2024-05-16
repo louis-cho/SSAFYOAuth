@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>SSAFY Auth - 독스 auth</title>
+
+    <!-- Custom fonts for this template-->
+    <link th:href="@{/vendor/fontawesome-free/css/all.min.css}" rel="stylesheet" type="text/css">
+    <link th:href="@{https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i}"
+          rel="stylesheet">
+
+    <!-- Custom styles for this template-->
+    <link rel="stylesheet" th:href="@{/css/footer.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/header.css}">
+    <link th:href="@{/css/sb-admin-2.min.css}" rel="stylesheet">
+    <link th:href="@{/css/main.css}" rel="stylesheet">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <script th:src="@{/vendor/jquery/jquery.min.js}"></script>
+    <script th:src="@{/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
+    <script th:src="@{/vendor/jquery-easing/jquery.easing.min.js}"></script>
+    <!-- 페이지 로딩될 때 데이터 fetch -->
+    <script th:src="@{/js/sb-admin-2.min.js}"></script>
+    <script th:inline="javascript">
+        function getCookie(name) {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = cookies[i];
+                while (cookie.charAt(0) === ' ') {
+                    cookie = cookie.substring(1);
+                }
+                if (cookie.indexOf(name + "=") === 0) {
+                    return cookie.substring(name.length + 1, cookie.length);
+                }
+            }
+            return undefined;
+        }
+
+        window.onload = function () {
+            loadData();
+            loadTeams();
+            var teamSeq = window.location.pathname.match(/\/teams\/(\d+)\/summary/)[1];
+            loadTeamData(teamSeq);
+        };
+
+        function loadData() {
+            var token = getCookie("access_token")
+            $.ajax({
+                url: 'http://localhost:8090/api/team',
+                type: 'GET',
+                contentType: 'application/json',
+                headers: {
+                    "Authorization": 'Bearer ' + token
+                },
+                success: function (response) {
+                    displayTeams(response.list);
+                    displayTeamInfo(response.list[0]);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error loading data:', error);
+                }
+            });
+        }
+
+        function loadTeams() {
+            var token = getCookie("access_token");
+            $.ajax({
+                url: 'http://localhost:8090/api/team',
+                type: 'GET',
+                headers: {
+                    "Authorization": 'Bearer ' + token
+                },
+                success: function (response) {
+                    populateSidebar(response.list);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error loading data:', error);
+                }
+            });
+        }
+
+        function populateSidebar(data) {
+            var container = document.getElementById('teamNavContainer');
+            container.innerHTML = '';
+            data.forEach(function (team, index) {
+                var teamNavItem = document.createElement('li');
+                teamNavItem.classList.add('nav-item');
+                teamNavItem.innerHTML = `
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapse${index}"
+                    aria-expanded="true" aria-controls="collapse${index}">
+                    <i class="fas fa-fw fa-cog"></i>
+                    <span>${team.teamName}</span>
+                </a>
+                <div id="collapse${index}" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <h6 class="collapse-header">관리</h6>
+                        <a class="collapse-item" href="/teams/${team.teamSeq}/summary">요약 정보</a>
+                        <a class="collapse-item" href="/teams/${team.teamSeq}/dashboard">대시보드</a>
+                        <a class="collapse-item" href="/teams/${team.teamSeq}/consents">동의 항목</a>
+                        <a class="collapse-item" href="/teams/${team.teamSeq}/country-ip">국가 아이피 관리</a>
+                        <a class="collapse-item" href="/teams/${team.teamSeq}/management">팀 관리</a>
+                        <a class="collapse-item" href="/teams/${team.teamSeq}/settings">설정</a>
+                    </div>
+                </div>`;
+                container.appendChild(teamNavItem);
+            });
+        }
+
+
+        function getCookie(name) {
+            let value = `; ${document.cookie}`;
+            let parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        }
+
+
+    </script>
+
+
+    <style>
+
+        .api-section {
+            padding: 30px;
+            background-color: #ffffff;
+            box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+
+        .api-section h1, .characteristic h2, .link-auth h2 {
+            color: #000000; /* Adds a SSAFY brand color */
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e2e8f0;
+            margin-bottom: 20px;
+        }
+
+        .api-section p, .api-description p, .login-process p, .characteristic p {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .api-description {
+            margin-bottom: 15px;
+            color: #666;
+        }
+
+        .endpoint a, .link-auth a {
+            color: #4a73df;
+            text-decoration: none;
+            background-color: #e7e9fc;
+            padding: 8px 16px;
+            border-radius: 5px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .endpoint a:hover, .link-auth a:hover {
+            background-color: #4a73df;
+            color: white;
+        }
+
+        .characteristic {
+            margin-top: 20px;
+        }
+
+        .characteristic-1, .characteristic-2, .characteristic-3 {
+            background-color: #f8f9fa;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-left: 5px solid #4a73df;
+            border-radius: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .api-section {
+                padding: 15px;
+            }
+        }
+        @media (max-width: 768px) {
+            .form-inline {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+<body id="page-top" th:class="${bodyClass}">
+<div class="header" th:replace="~{layouts/header :: header}"></div>
+<!-- Page Wrapper -->
+<div id="wrapper">
+    <!-- Sidebar -->
+    <div class="header" th:replace="~{layouts/sidebar :: sidebar}"></div>
+    <div class="col-xl-10 col-lg-12 col-md-9">
+            <div class="card-body p-0">
+                <div class="col">
+                    <div class="api-section">
+                        <h1>개요</h1>
+                        <div class="api-description">
+                            <p>싸피 로그인은 oauth2.0기반 사용자 인증 서비스를 제공해 다른 서비스에서도 로그인 서비스를 이용할 수 있도록 제공합니다. 각 서비스에서 별도의 회원가입 없이 SSAFY OAuth 계정으로 로그인을 할 수 있다는 장점이 있습니다. 싸피 교육생만의 Ouath 관련 서비스를 한 번 이용해보세요!</p>
+                        </div>
+                        <div class="endpoint">
+                            <a href="/"> SSAFY OAUTH 이용하기 </a>
+                            <br>
+                            <div class="image">
+                                <img src="/image/start.PNG" width="100%">
+                            </div>
+                            <br>
+                            <div class="login-process">
+                                <p>1. 웹 서비스에서 SSAFY OAUTH 로 로그인하기를 클릭하면 SSAFY OAUTH 로그인 페이지로 이동하게 됩니다.</p>
+                                <p>2. SSAFY OAUTH 페이지에서 아이디 비밀번호로 로그인합니다.</p>
+                                <p>3. SSAFY OAUTH 동의 화면에서 제공할 정보를 클릭합니다.</p>
+                                <p>4. 사용자가 등록한 Redirect URI로 이동하게 됩니다.</p>
+                            </div>
+                            <div class="characteristic">
+                                <h2> SSAFY OAUTH의 특징 </h2>
+                                <div class="characteristic-1">
+                                    <h3> 불필요한 회원 정보 입력 과정을 없애주는 프로필 조회 API 제공</h3>
+                                    <p>
+                                        SSAFY OAUTH를 이용해 가입하고 로그인한 사용자의 프로필(이름, 이메일 주소, 프로필 사진, 휴대전화번호, 성별, 학번, 전공/비전공 코스 정보) 를 조회할 수 있습니다.
+                                        또한 SSAFY OAUTH에서 제공하는 서비스를 이용할 수 있습니다.
+                                    </p>
+                                </div>
+
+                                <div class="characteristic-2">
+                                    <h3> 다양한 모니터링 시스템 제공</h3>
+                                    <p>
+                                        SSAFY OAUTH를 이용해 로그인한 사용자는 각 클라이언트 서비스별로 로그를 남겨 제공하는 서비스가 있습니다.
+                                        따라서 시간대 별 통계자료를 확인할 수 있습니다.
+                                    </p>
+                                </div>
+                                <div class="characteristic-3">
+                                    <h3> RFC 6749 기반 로그인 인가 인증 처리 과정 </h3>
+                                    <p>
+                                        RFC 6749 기반으로 OPENID 를 이용한 로그인 과정과 기존 resource 서버에 요청해 사용자 정보를 가져오는 기능을 구현했습니다. 이를 통해 다양한 OAUTH 서비스와 함께 이용하는데 문제없이 사용할 수 있습니다.
+                                    </p>
+                                </div>
+
+                            </div>
+
+                            <div class="link-auth">
+                                <h2>기타</h2>
+                                <a href="/api/auth">SSAFY OAUTH2.0 설명서 보러 가기</a>
+                                <a href="/api/team">Team 관련 API 설명서 보러 가기</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+    </div>
+
+</div>
+<!-- Footer -->
+<div class="footer" th:replace="~{layouts/footer :: footer}"></div>
+</body>
+</html>

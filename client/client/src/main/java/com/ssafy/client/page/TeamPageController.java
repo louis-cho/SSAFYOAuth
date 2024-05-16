@@ -45,7 +45,6 @@ public class TeamPageController {
 
 		try {
 			List<String> blockedCountriesList = objectMapper.readValue(blockedCountries, List.class);
-
 			log.info("블랙 리스트 된 나라들 : {} ", blockedCountriesList);
 
 			model.addAttribute("blockedCountries", blockedCountriesList);

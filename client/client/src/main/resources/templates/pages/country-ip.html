@@ -85,7 +85,7 @@
                     <h1 class="mb-4 text-center">차단할 국가를 선택하세요.</h1>
                     <form id="country-block-form" class="form-inline justify-content-center mb-4">
                         <div class="form-group">
-                            <label for="country-select" class="mr-2">나라 선택하세요:</label>
+                            <label for="country-select" class="mr-2">차단할 국가 : </label>
                             <select id="country-select" name="country" class="custom-select">
                                 <option value="KR" th:unless="${#lists.contains(blockedCountries, 'KR')}">South Korea</option>
                                 <option value="US" th:unless="${#lists.contains(blockedCountries, 'US')}">United States</option>
@@ -114,14 +114,23 @@
         'US': 'United States',
         'CN': 'China'
     };
+    function getCookie(name) {
+        let value = `; ${document.cookie}`;
+        let parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+    }
     function saveChanges(blockedCountries) {
         var blockedCountries = [];
         document.querySelectorAll('.blocked-country button').forEach(function(button) {
             blockedCountries.push(button.getAttribute('data-value'));
         });
+        var token = getCookie("access_token")
         var teamSeq = [[${teamSeq}]];
         $.ajax({
-            url: `/team/${teamSeq}/country-ip`,
+            url: `http://localhost:8090/api/team/${teamSeq}/country-ip`,
+            headers: {
+                "Authorization": 'Bearer ' + token
+            },
             type: 'POST',
             contentType: 'application/json',
             data: JSON.stringify(blockedCountries),
