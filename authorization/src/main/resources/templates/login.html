@@ -102,39 +102,39 @@
 </div>
 
 <script>
-  // /waitSignal 엔드포인트로 요청을 보내는 함수
-  function sendWaitSignal22(event) {
-      event.preventDefault();
-
-      var username = document.getElementById('username').value;
-      var teamId = document.getElementsByName('teamId')[0].value;
-
-      fetch('/api/auth/waitSignal', {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-              username: username,
-              teamId: teamId
-          })
-      })
-      .then(response => {
-          if (response.ok) {
-              return response.text();
-          } else {
-              throw new Error('Failed to send wait signal');
-          }
-      })
-      .then(data => {
-          console.log(data);
-          // "Wait successful" 메시지를 받은 후에 로그인 요청을 보냅니다.
-          sendLoginRequest();
-      })
-      .catch(error => {
-          console.error('Error:', error);
-      });
-  }
+  // // /waitSignal 엔드포인트로 요청을 보내는 함수
+  // function sendWaitSignal(event) {
+  //     event.preventDefault();
+  //
+  //     var username = document.getElementById('username').value;
+  //     var teamId = document.getElementsByName('teamId')[0].value;
+  //
+  //     fetch('/api/auth/waitSignal', {
+  //         method: 'POST',
+  //         headers: {
+  //             'Content-Type': 'application/json'
+  //         },
+  //         body: JSON.stringify({
+  //             username: username,
+  //             teamId: teamId
+  //         })
+  //     })
+  //     .then(response => {
+  //         if (response.ok) {
+  //             return response.text();
+  //         } else {
+  //             throw new Error('Failed to send wait signal');
+  //         }
+  //     })
+  //     .then(data => {
+  //         console.log(data);
+  //         // "Wait successful" 메시지를 받은 후에 로그인 요청을 보냅니다.
+  //         sendLoginRequest();
+  //     })
+  //     .catch(error => {
+  //         console.error('Error:', error);
+  //     });
+  // }
 
   // 초기 로그인 요청을 보내고 키를 받는 함수
   async function initiateLogin(event) {
@@ -194,56 +194,7 @@
     };
   }
 
-  // 서버에 POST 요청을 보내고 SSE 연결을 열기
-  function sendWaitSignal(event) {
-    event.preventDefault();
-    var username = document.getElementById('username').value;
-    var teamId = document.getElementsByName('teamId')[0].value;
 
-    // 서버에 POST 요청 보내기
-    fetch('/api/auth/waitSignal', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        username: username,
-        teamId: teamId
-      })
-    })
-            .then(response => {
-              if (response.ok) {
-                console.log('POST 요청 성공');
-                // SSE 연결 열기
-                openSseConnection();
-              } else {
-                throw new Error('POST 요청 실패');
-              }
-            })
-            .catch(error => {
-              console.error('Error:', error);
-            });
-  }
-
-  // SSE 연결 열기
-  function openSSEConnection() {
-    const eventSource = new EventSource('/api/auth/waitSignal');
-
-    // 이벤트 핸들러 등록
-    eventSource.onopen = function(event) {
-      console.log('SSE 연결이 열렸습니다.');
-    };
-
-    eventSource.onmessage = function(event) {
-      console.log('서버에서 이벤트 수신:', event.data);
-      // 서버에서 보낸 데이터를 처리하는 코드를 여기에 추가합니다.
-    };
-
-    eventSource.onerror = function(event) {
-      console.error('SSE 연결 오류:', event);
-      eventSource.close(); // 오류가 발생하면 연결을 닫습니다.
-    };
-  }
 function sendLoginRequest() {
     var form = document.createElement('form');
     form.method = 'POST';

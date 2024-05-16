@@ -74,13 +74,6 @@ public class LoginController {
     private boolean validLoginRate(LoginRequest request) {
         final String loginIndexKey = LoginRateLimiter.getIndex(request);
         if(Boolean.TRUE.equals(redisTemplate.hasKey(loginIndexKey))) {
-            try {
-                if (Duration.between(LocalDateTime.now(), LocalDateTime.parse(Objects.requireNonNull(redisTemplate.opsForValue().get(loginIndexKey)))).getSeconds() > LIMIT_PER_PERIOD) {
-                    return true;
-                }
-            } catch(Exception e) {
-                return false;
-            }
             return false;
         }
         return true;
@@ -101,6 +94,7 @@ public class LoginController {
         SseEmitter emitter = new SseEmitter(5 * 60 * 1000L);
 
         LoginRequest request = loginRequestMap.get(key);
+        loginRequestMap.remove(key);
         if(request == null) {
             return null;
         }
