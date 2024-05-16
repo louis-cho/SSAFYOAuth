@@ -66,7 +66,7 @@ public class TeamServiceImpl implements TeamService {
 	private final RedirectEntityRepository redirectRepository;
 	private final Oauth2AuthorizationConsentRepository oauth2AuthorizationConsentRepository;
 	private final CountLoginUserRepository countLoginUserRepository;
-	private BlockedCountriesRepository blockedCountriesRepository;
+	private final BlockedCountriesRepository blockedCountriesRepository;
 
 
 	private boolean test = true;
