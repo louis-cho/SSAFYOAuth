@@ -44,5 +44,5 @@ public interface TeamService {
 
 	List<String> getBlockedCountriesByTeamId(Integer teamSeq);
 
-	boolean updateBlockedCountries(List<String> countries);
+	boolean updateBlockedCountries(List<String> countries,int teamSeq);
 }

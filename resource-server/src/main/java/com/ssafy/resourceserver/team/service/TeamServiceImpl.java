@@ -3,6 +3,7 @@ package com.ssafy.resourceserver.team.service;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +12,8 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import com.ssafy.resourceserver.redirect.repository.RedirectEntityRepository;
+import com.ssafy.resourceserver.team.entity.BlockedCountriesEntity;
+import com.ssafy.resourceserver.team.repository.BlockedCountriesRepository;
 import com.ssafy.resourceserver.team.repository.DeveloperTeamRepository;
 import com.ssafy.resourceserver.team.repository.TeamListRepository;
 import com.ssafy.resourceserver.team.repository.TeamMemberRepository;
@@ -61,6 +64,7 @@ public class TeamServiceImpl implements TeamService {
 	private final MemberRepository memberRepository;
 	private final RedirectService redirectService;
 	private final RedirectEntityRepository redirectRepository;
+	private final BlockedCountriesRepository blockedCountriesRepository;
 	private boolean test = true;
 
 	@Value("${cloud.aws.s3.bucket}")
@@ -603,16 +607,18 @@ public class TeamServiceImpl implements TeamService {
 
 	@Override
 	public List<String> getBlockedCountriesByTeamId(Integer teamSeq) {
-		// List<String> blockedCountry = countryRepository.findByTeamId(teamId);
-		List<String> arr = new ArrayList<>();
-		arr.add("KR");
-		arr.add("US");
-
-		return arr;
+		Optional<BlockedCountriesEntity> blockedCountry = blockedCountriesRepository.findByTeamId(teamSeq);
+		if(blockedCountry.isPresent()){
+			BlockedCountriesEntity entity = blockedCountry.get();
+			List<String> countryList = Arrays.asList(entity.getCountryList().split(","));
+			return countryList;
+		}
+		return new ArrayList<>();
 	}
 
 	@Override
-	public boolean updateBlockedCountries(List<String> countries) {
+	public boolean updateBlockedCountries(List<String> countries,int teamSeq) {
+		System.out.println("sssssssssssssssssssss" + countries);
 
 		return false;
 	}

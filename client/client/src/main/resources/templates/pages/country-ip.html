@@ -114,14 +114,23 @@
         'US': 'United States',
         'CN': 'China'
     };
+    function getCookie(name) {
+        let value = `; ${document.cookie}`;
+        let parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+    }
     function saveChanges(blockedCountries) {
         var blockedCountries = [];
         document.querySelectorAll('.blocked-country button').forEach(function(button) {
             blockedCountries.push(button.getAttribute('data-value'));
         });
+        var token = getCookie("access_token")
         var teamSeq = [[${teamSeq}]];
         $.ajax({
-            url: `/team/${teamSeq}/country-ip`,
+            url: `http://localhost:8090/api/team/${teamSeq}/country-ip`,
+            headers: {
+                "Authorization": 'Bearer ' + token
+            },
             type: 'POST',
             contentType: 'application/json',
             data: JSON.stringify(blockedCountries),
