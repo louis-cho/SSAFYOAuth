@@ -3,6 +3,7 @@ package com.ssafy.resourceserver.member.controller;
 import com.ssafy.resourceserver.member.model.dto.ProfileInformationForUpdatesDto;
 import com.ssafy.resourceserver.member.model.dto.UserInfo;
 import com.ssafy.resourceserver.member.service.MemberService;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -26,82 +27,101 @@ import java.util.Map;
 @Slf4j
 @RequiredArgsConstructor
 public class UserController {
-    private final MemberService memberService;
+	private final MemberService memberService;
 
-    @GetMapping("/info")
-    public Map<String, Object> getUserInfo(@AuthenticationPrincipal Jwt jwt) {
-        // Jwt에서 사용자 정보 추출
-        log.info("test : {} ",jwt.getTokenValue());
-        log.info("{} JWT TTT", jwt);
-        String email = jwt.getClaimAsString("sub");
-        List<String> scopes = jwt.getClaimAsStringList("scope");
+	@GetMapping("/check")
+	public ResponseEntity<?> check(@AuthenticationPrincipal Jwt jwt) {
+		String email = jwt.getClaimAsString("sub");
+		log.info("들어온 email value : {} ", email);
+		boolean result = memberService.checkUser(email);
+		return ResponseEntity.status(HttpStatus.OK).body(result);
+	}
 
-        Map<String, Object> userProfile = memberService.getUserProfile(email, scopes);
-        log.info("유저정보 스코프별: {} ",userProfile);
-        return userProfile;
-    }
-    @GetMapping("/data")
-    @ResponseBody
-    public ResponseEntity<?> getUpdateForUserData(@AuthenticationPrincipal Jwt jwt){
-        String email = jwt.getClaimAsString("sub");
-        ProfileInformationForUpdatesDto dto = memberService.ProfileInforForUpdatesData(email);
-        return ResponseEntity.ok(dto);
-    }
+	@PostMapping("/sign-up")
+	public ResponseEntity<?> signUp(@RequestBody Integer seq, @AuthenticationPrincipal Jwt jwt) {
+		log.info("before");
+		memberService.signUp(seq);
+		log.info("after");
+		return ResponseEntity.status(HttpStatus.OK).body(true);
+	}
 
-    @PostMapping("/info")
-    public ResponseEntity<?> updateUserProfile(@AuthenticationPrincipal Jwt jwt, @ModelAttribute ProfileInformationForUpdatesDto userDto) {
-        // Jwt에서 사용자 정보 추출
-        log.info("test : {} ",jwt.getTokenValue());
-        log.info("{} JWT TTT", jwt);
-        String email = jwt.getClaimAsString("sub");
+	@GetMapping("/info")
+	public Map<String, Object> getUserInfo(@AuthenticationPrincipal Jwt jwt) {
+		// Jwt에서 사용자 정보 추출
+		log.info("test : {} ", jwt.getTokenValue());
+		log.info("{} JWT TTT", jwt);
+		String email = jwt.getClaimAsString("sub");
+		List<String> scopes = jwt.getClaimAsStringList("scope");
 
-        try {
-            memberService.updateUserProfile(email, userDto);
-            return ResponseEntity.status(HttpStatus.OK).body(null);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        }
-    }
+		Map<String, Object> userProfile = memberService.getUserProfile(email, scopes);
+		log.info("유저정보 스코프별: {} ", userProfile);
+		return userProfile;
+	}
 
-    @PostMapping("/info/grade")
-    public ResponseEntity<?> updateSecurityGrade(@AuthenticationPrincipal Jwt jwt, @RequestBody Integer grade) {
-        // Jwt에서 사용자 정보 추출
-        log.info("test : {} ",jwt.getTokenValue());
-        log.info("{} JWT TTT", jwt);
-        String email = jwt.getClaimAsString("sub");
+	@GetMapping("/data")
+	@ResponseBody
+	public ResponseEntity<?> getUpdateForUserData(@AuthenticationPrincipal Jwt jwt) {
+		String email = jwt.getClaimAsString("sub");
+		ProfileInformationForUpdatesDto dto = memberService.ProfileInforForUpdatesData(email);
+		return ResponseEntity.ok(dto);
+	}
 
-        try {
-            memberService.updateSecurityGrade(email, grade);
-            return ResponseEntity.status(HttpStatus.OK).body(null);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.OK).body(null);
-        }
-    }
+	@PostMapping("/info")
+	public ResponseEntity<?> updateUserProfile(@AuthenticationPrincipal Jwt jwt,
+		@ModelAttribute ProfileInformationForUpdatesDto userDto) {
+		// Jwt에서 사용자 정보 추출
+		log.info("test : {} ", jwt.getTokenValue());
+		log.info("{} JWT TTT", jwt);
+		String email = jwt.getClaimAsString("sub");
 
-    @PostMapping("/info/password")
-    public ResponseEntity<?> updatePassword(@AuthenticationPrincipal Jwt jwt, @RequestBody Map<String, String> passwords) {
-        // Jwt에서 사용자 정보 추출
-        log.info("test : {} ",jwt.getTokenValue());
-        log.info("{} JWT TTT", jwt);
-        String email = jwt.getClaimAsString("sub");
+		try {
+			memberService.updateUserProfile(email, userDto);
+			return ResponseEntity.status(HttpStatus.OK).body(null);
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+		}
+	}
 
-        try {
-            memberService.updatePassword(email, passwords);
-            return ResponseEntity.status(HttpStatus.OK).body(null);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.OK).body(null);
-        }
-    }
+	@PostMapping("/info/grade")
+	public ResponseEntity<?> updateSecurityGrade(@AuthenticationPrincipal Jwt jwt, @RequestBody Integer grade) {
+		// Jwt에서 사용자 정보 추출
+		log.info("test : {} ", jwt.getTokenValue());
+		log.info("{} JWT TTT", jwt);
+		String email = jwt.getClaimAsString("sub");
 
-    @GetMapping("/test")
-    public String test(@AuthenticationPrincipal Jwt jwt) {
-        // Jwt에서 사용자 정보 추출
-        log.info("test : {} ",jwt.getTokenValue());
-        String username = jwt.getClaimAsString("sub");
-        String scope = jwt.getClaimAsString("scope");
-        log.info("test {} {}" , username,scope);
+		try {
+			memberService.updateSecurityGrade(email, grade);
+			return ResponseEntity.status(HttpStatus.OK).body(null);
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.OK).body(null);
+		}
+	}
 
-        return "잘되네";
-    }
+	@PostMapping("/info/password")
+	public ResponseEntity<?> updatePassword(@AuthenticationPrincipal Jwt jwt,
+		@RequestBody Map<String, String> passwords) {
+		// Jwt에서 사용자 정보 추출
+		log.info("test : {} ", jwt.getTokenValue());
+		log.info("{} JWT TTT", jwt);
+		String email = jwt.getClaimAsString("sub");
+
+		try {
+			memberService.updatePassword(email, passwords);
+			return ResponseEntity.status(HttpStatus.OK).body(null);
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.OK).body(null);
+		}
+	}
+
+	@GetMapping("/test")
+	public String test(@AuthenticationPrincipal Jwt jwt) {
+		// Jwt에서 사용자 정보 추출
+		log.info("test : {} ", jwt.getTokenValue());
+		String username = jwt.getClaimAsString("sub");
+		String scope = jwt.getClaimAsString("scope");
+		log.info("test {} {}", username, scope);
+
+		return "잘되네";
+	}
 
 }

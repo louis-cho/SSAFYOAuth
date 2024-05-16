@@ -26,6 +26,13 @@ public class UserPageController {
 	private final ObjectMapper objectMapper;
 	private final String RESOURCES_URL = "http://localhost:8090";
 	private final String Authorization_URL = "http://localhost:9000";
+
+
+	@GetMapping("/user/sign-up")
+	public String signUp(){
+		return "user/sign_up";
+	}
+
 	@GetMapping("/user/update")
 	public String updateUserPage(Model model) {
 		try {

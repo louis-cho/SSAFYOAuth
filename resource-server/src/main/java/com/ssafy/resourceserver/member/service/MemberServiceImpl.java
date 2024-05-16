@@ -1,13 +1,14 @@
 package com.ssafy.resourceserver.member.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.resourceserver.common.utils.S3Uploader;
 import com.ssafy.resourceserver.member.model.domain.Member;
 import com.ssafy.resourceserver.member.model.dto.ProfileInformationForUpdatesDto;
-import com.ssafy.resourceserver.member.model.dto.UserInfo;
 import com.ssafy.resourceserver.member.model.handler.ScopeHandler;
 import com.ssafy.resourceserver.member.model.handler.ScopeMethod;
 import com.ssafy.resourceserver.member.model.repository.MemberRepository;
+import com.ssafy.resourceserver.member.model.repository.ClientMemberRepository;
+import com.ssafy.resourceserver.team.entity.DeveloperEntity;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -30,10 +31,15 @@ import java.util.Optional;
 @Slf4j
 public class MemberServiceImpl implements MemberService {
     private final MemberRepository memberRepository;
+    private final ClientMemberRepository teamMemberRepository;
     private final ScopeMethod scopeMethod;
     private final S3Uploader s3Uploader;
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-
+    @Override
+    public void signUp(Integer seq){
+        DeveloperEntity developerEntity = new DeveloperEntity(seq, false);
+        teamMemberRepository.save(developerEntity);
+    }
     @Override
     public Map<String, Object> getUserProfile(String email, List<String> scopes) {
         Member member = memberRepository.findByEmail(email).orElseThrow(() -> {
@@ -167,6 +173,17 @@ public class MemberServiceImpl implements MemberService {
             return existMember.EntityToProfileUpdatesDto();
         }
         return null;
+    }
+
+    @Override
+    public boolean checkUser(String email) {
+        Optional<Member> memberOptional = memberRepository.findByEmail(email);
+        if (memberOptional.isPresent()) {
+            Member member = memberOptional.get();
+            int count = teamMemberRepository.countByMemberSeq(member.getMemberId());
+            return count > 0;
+        }
+        return false;
     }
 
 }
