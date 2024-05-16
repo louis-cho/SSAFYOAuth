@@ -24,6 +24,6 @@ public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationF
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
                                         AuthenticationException exception) throws IOException, ServletException {
 
-        response.sendRedirect("https://localhost:8080/asdf");
+        response.sendRedirect("/login?error");
     }
 }

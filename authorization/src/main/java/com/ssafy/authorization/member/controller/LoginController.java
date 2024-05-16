@@ -1,5 +1,6 @@
 package com.ssafy.authorization.member.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -8,6 +9,9 @@ import org.springframework.security.oauth2.server.authorization.OAuth2Authorizat
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationConsentService;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
+import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
+import org.springframework.security.web.savedrequest.RequestCache;
+import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -28,9 +32,10 @@ public class LoginController {
 
 	private final OAuth2AuthorizationConsentService authorizationConsentService;
 	private final RegisteredClientRepository registeredClientRepository;
+	private final RequestCache requestCache = new HttpSessionRequestCache();
 
-	@GetMapping(value = "/login")
-	public String login() {
+	@GetMapping("/login")
+	public String login(HttpServletRequest request, Model model) {
 		return "login";
 	}
 

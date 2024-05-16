@@ -111,16 +111,11 @@ public class LoginController {
 
         SseEmitter emitter = userEmitters.get(key);
         if (emitter != null) {
-            LoginStats loginStats = new LoginStats(request.getUsername(), String.valueOf(request.getTeamId()),
-                Instant.now());
             try {
                 emitter.send(SseEmitter.event().name("WAIT_RESULT").data("Wait successful"));
                 emitter.complete();
-                loginStats.isSuccess(true);
-                loginStatsService.save(loginStats);
                 userEmitters.remove(key);
             } catch (IOException e) {
-                loginStats.isSuccess(false);
                 emitter.completeWithError(e);
                 userEmitters.remove(key);
             }
