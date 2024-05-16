@@ -7,7 +7,28 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <title>SSAFY Auth - 독스 auth</title>
-
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .code-box {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        .code-title {
+            background-color: #e9ecef;
+            padding: 0.5rem;
+            font-weight: bold;
+        }
+        .code-content {
+            background-color: #fff;
+            padding: 1rem;
+            border-top: 1px solid #dee2e6;
+        }
+        .table-container {
+            overflow-x: auto;
+        }
+    </style>
     <!-- Custom fonts for this template-->
     <link th:href="@{/vendor/fontawesome-free/css/all.min.css}" rel="stylesheet" type="text/css">
     <link th:href="@{https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i}"
@@ -177,6 +198,24 @@
             <div class="card-body p-0">
                 <div class="col">
                     <h1>SSAFY OAUTH</h1>
+                    <div class="menu">
+                        <h2>목차</h2>
+
+                        <a href="#request">1. 기능 소개</a>
+                        <br>
+
+                        <a href="#ssafy-login">2. 싸피어스 로그인</a>
+                        <br>
+
+                        <a href="#token">3. 토큰</a>
+                        <br>
+
+                        <a href="#process">4. Oauth 2.0 과정</a>
+                        <br>
+
+                        <a href="#api-list"> 5. API 목록 </a>
+                        <br>
+                    </div>
                     <div class="api-section">
                         <h2>이해하기</h2>
                         <div class="api-description">
@@ -184,9 +223,9 @@
                         </div>
                         <br>
                         <hr>
-                        <div class="endpoint">
-                            <h3>기능소개</h3>
-                            <div class="request">
+                        <div class="introduce" id="introduce">
+                            <div class="request" id="request">
+                                <h3>기능소개</h3>
                                 싸피어스 로그인은 싸피어스계정으로 다양한 서비스에 로그인할 수 있도록 하는 소셜 로그인 서비스입니다.
                                 기능은 다음과 같습니다.
                                 <table class="table table-bordered">
@@ -224,52 +263,883 @@
                                     </tr>
                                     </tbody>
                                 </table>
-                            <div class="question-box">
-                                <h4>애플리케이션</h4>
-                                <p>싸피어스 로그인을 사용하려면 싸피어스(이하 개발자 웹사이트) 애플리케이션(이하 앱)이 필요합니다.</p>
+                                <div class="question-box">
+                                    <h4>애플리케이션</h4>
+                                    <p>싸피어스 로그인을 사용하려면 싸피어스(이하 개발자 웹사이트) 애플리케이션(이하 앱)이 필요합니다.</p>
+                                </div>
                             </div>
-                            </div>
-                            <div class="ssafy-login">
+                            <div class="ssafy-login" id="ssafy-login">
                                 <h3>싸피어스 로그인</h3>
                                 <p>
                                     싸피어스 로그인은 OAuth 2.0 기반의 소셜 로그인 서비스입니다. 싸피어스 로그인을 사용하면 사용자가 싸피어스계정으로 손쉽게 서비스에 로그인할 수 있습니다. 서비스는 서비스 ID 및 비밀번호를 입력받고 검증하는 과정을 직접 구현하지 않고도 사용자에 대한 인증과 인가를 간편하고 안전하게 처리할 수 있습니다.
                                 </p>
-
+                                <table class="table table-bordered">
+                                    <thead>
+                                    <tr>
+                                        <th>구분</th>
+                                        <th>설명</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td>인증(Authentication)</td>
+                                        <td>
+                                            사용자 인증, 싸피어스 API 호출 권한 부여
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>인가(Authorization)</td>
+                                        <td>
+                                            액세스 토큰 재발급에 사용 <br>
+                                            유효한 리프레시 토큰이 있다면 사용자가 매번 싸피어스 정보를 입력하는 인증 절차를 거치지 않아도 액세스 토큰 재발급 가능
+                                        </td>
+                                        <td></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
 
                             </div>
+                            <div class="token" id="token">
+                                <h4>토큰</h4>
+                                <p>
+                                    토큰은 사용자의 싸피어스 로그인 인증 및 인가 정보를 담은 권한 증명으로, 싸피어스 API 호출에 사용됩니다. <br>
+                                    싸피어스 로그인은 OAuth 2.0 표준 규격에 따라 액세스 토큰(Access token), 리프레시 토큰(Refresh token) 두 종류의 토큰을 발급합니다.  <br>
+                                    OpenID Connect 사용 시, 사용자 인증 정보를 담은 ID 토큰을 함께 발급합니다. 각 토큰의 역할과 만료 시간을 표로 정리하면 다음과 같습니다.
+                                </p>
+                                <table class="table table-bordered">
+                                    <thead>
+                                    <tr>
+                                        <th>구분</th>
+                                        <th>설명</th>
+                                        <th>만료 시간</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td>액세스 토큰 (Access token)</td>
+                                        <td>
+                                            ID와 비밀번호로 사용자 신원을 확인 <br>
+                                            각 서비스에 사용자가 싸피어스계정으로 로그인할 수 있는 기능 지원 <br>
+                                            참고: OpenID Connect 지원, 로그인 세션 대신 사용 가능한 ID 토큰 제공 가능
+                                        </td>
+                                        <td>60분</td>
+                                    </tr>
+                                    <tr>
+                                        <td>리프레시 토큰 (Refresh token)</td>
+                                        <td>
+                                            사용자 개인정보와 같은 자원(Resource)에 대한 접근 권한 획득 <br>
+                                            사용자 동의를 바탕으로 사용자 정보나 기능에 대한 접근 권한을 토큰 형태로 서비스에 부여
+                                        </td>
+                                        <td>10일</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>ID 토큰 (ID token)</td>
+                                        <td>
+                                            싸피어스 로그인 사용자의 인증 정보를 제공하는 토큰
+                                        </td>
+                                        <td>엑세스 토큰과 동일</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="process" id="process">
+                            <h2>Oauth 2.0 과정 이해</h2>
+                            <div class="process-1">
+                                <h3>코드 교환 </h3>
+                                <img src="/image/code.PNG" class="img-fluid mt-3 mb-3" alt="Code Image">
+                                <p>
+                                    1. 사용자가 SSAFY AUTH로 로그인 요청을 할 경우, SSAFY authorization server로 페이지를 요청합니다. <br>
+                                    2. request param 데이터가 올바를 경우 로그인페이지를 사용자에게 반환합니다. <br>
+                                    3. 사용자가 아이디 패스워드로 로그인 요청을 authorzation server로 보냅니다. <br>
+                                    4. 해당 클라이언트의 scopes 를 확인 한 후 동의하지 않은 scopes가 존재한다면 동의페이지를 반환합니다. <br>
+                                    5. 사용자가 동의 항목을 체크할 경우 서버에 등록한 redirect_uri로 code 파라미터를 가지고 redirect 합니다. <br>
+
+                                </p>
+                            </div>
+
+                            <div class="process-2">
+                                <h3>토큰 교환</h3>
+                                <img src="/image/token.PNG" class="img-fluid mt-3 mb-3" alt="Token Image">
+                                <p>
+                                    1. 사용자가 받은 code 값으로 서버에 토큰을 요청합니다. <br>
+                                    2. 올바른 code 값일 경우 서버로부터 사용자에게 토큰을 전달합니다.
+                                </p>
+                            </div>
+
+                            <div class="process-3">
+                                <img src="/image/userInfo.PNG" class="img-fluid mt-3 mb-3" alt="User Info Image">
+                                <p>
+                                    1. 사용자가 받은 token 값으로 유저정보를 리소스 서버에게 요청합니다. <br>
+                                    2. 올바른 토큰일 경우 사용자의 정보를 반환합니다. <br>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="api-list" id="api-list">
                             <table class="table table-bordered">
                                 <thead>
                                 <tr>
-                                    <th>구분</th>
-                                    <th>설명</th>
+                                    <th>URL</th>
+                                    <th>호스트</th>
+                                    <th>메서드</th>
+                                    <th>기능</th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 <tr>
-                                    <td>인증(Authentication)</td>
+                                    <td>/oauth2/authorize</td>
                                     <td>
-                                        ID와 비밀번호로 사용자 신원을 확인 <br>
-                                        각 서비스에 사용자가 싸피어스계정으로 로그인할 수 있는 기능 지원 <br>
-                                        참고: OpenID Connect 지원, 로그인 세션 대신 사용 가능한 ID 토큰 제공 가능
+                                        https://ssafyauth-authorization.duckdns.org
+                                    </td>
+                                    <td>GET</td>
+                                    <td>
+                                        <a href="#code-part"> 인가코드 받기</a>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>인가(Authorization)</td>
+                                    <td>/oauth2/token</td>
                                     <td>
-                                        사용자 개인정보와 같은 자원(Resource)에 대한 접근 권한 획득 <br>
-                                        사용자 동의를 바탕으로 사용자 정보나 기능에 대한 접근 권한을 토큰 형태로 서비스에 부여
+                                        https://ssafyauth-authorization.duckdns.org
+                                    </td>
+                                    <td>POST</td>
+                                    <td>
+                                        <a href="#token-part">토큰 받기</a>
+                                        <a href="#refresh-part">토큰 갱신하기</a>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>/user/info</td>
+                                    <td>
+                                        https://ssafyauth-resource.duckdns.org
+                                    </td>
+                                    <td>GET</td>
+                                    <td>
+                                        <a href="#user-info-part">사용자 정보 가져오기</a>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>/oauth2/jwks</td>
+                                    <td>
+                                        https://ssafyauth-authorization.duckdns.org
+                                    </td>
+                                    <td>GET</td>
+                                    <td>
+                                        <a href="#open-key-oidc-part">OIDC 공개키 조회</a>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>/.well-known/oauth-authorization-server</td>
+                                    <td>
+                                        https://ssafyauth-authorization.duckdns.org
+                                    </td>
+                                    <td>GET</td>
+                                    <td>
+                                        <a href="#metadata-oidc-part">OIDC 메타데이터 확인하기</a>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>/auth2/userinfo</td>
+                                    <td>
+                                        https://ssafyauth-authorization.duckdns.org
+                                    </td>
+                                    <td>GET</td>
+                                    <td>
+                                        <a href="#user-info-oidc-part">OIDC 사용자 정보 가져오기</a>
                                     </td>
                                 </tr>
                                 </tbody>
                             </table>
+                        </div>
+                    </div>
+                    <div id="code-part" class="code-part">
+                        <div class="container my-4">
+                            <h2> 인가코드 받기</h2>
+                            <h4>요청</h4>
+                            <div class="table-container">
+                                <table class="table table-bordered">
+                                    <thead>
+                                    <tr>
+                                        <th>이름</th>
+                                        <th>설명</th>
+                                        <th>필수</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td>client_id</td>
+                                        <td>발급받은 클라이언트 아이디</td>
+                                        <td>O</td>
+                                    </tr>
+                                    <tr>
+                                        <td>redirect_uri</td>
+                                        <td>인가 코드 전달받을 서비스 서버 URI (예 : http://localhost:8080/oauth2/authorzie)</td>
+                                        <td>O</td>
+                                    </tr>
+                                    <tr>
+                                        <td>response_type</td>
+                                        <td>code, credentials (authorization-grant-type)</td>
+                                        <td>O</td>
+                                    </tr>
+                                    <td>선택 scope</td>
+                                    <td> studentId, name,track, phoneNumber, gender</td>
+                                    <td>X</td>
+                                    <tr>
+                                        <td>필수 scope</td>
+                                        <td> openId 사용시 (openid)/ 기본 email, image </td>
+                                        <td>O</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <h4>응답</h4>
+                            <div class="table-container">
+                                <table class="table table-bordered">
+                                    <thead>
+                                    <tr>
+                                        <th>이름</th>
+                                        <th>설명</th>
+                                        <th>필수</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td>code</td>
+                                        <td>로그인 성공 시 인가 코드</td>
+                                        <td>O</td>
+                                    </tr>
+                                    <tr>
+                                        <td>error</td>
+                                        <td>인증 실패 시 반환되는 에러 코드</td>
+                                        <td>X</td>
+                                    </tr>
+                                    <tr>
+                                        <td>error_description</td>
+                                        <td>인증 실패 시 반환되는 에러 설명</td>
+                                        <td>X</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <h4>예제</h4>
+                            <div class="code-box">
+                                <div class="code-title">요청</div>
+                                <div class="code-content">
+                                    <code> [POST] https://ssafyauth-authorization.duckdns.org/oauth2/authorize?response_type={CODE}&amp;client_id={CLIENT_ID}&amp;redirect_uri={REDIRECT_URI}&scope={SCOPE}</code>
+                                </div>
+                            </div>
+                            <div class="code-box">
+                                <div class="code-title">응답: 사용자 인증 (동의하고 계속하기) 선택, 로그인 성공</div>
+                                <div class="code-content">
+                                    <code>
+                                        HTTP/1.1 302 Found<br>
+                                        Content-Length: 0<br>
+                                        Location: {REDIRECT_URI}?code={AUTHORIZE_CODE}&state={STATE_VALUABLE}
+                                    </code>
+                                </div>
+                            </div>
+                            <div class="code-box">
+                                <div class="code-title">실패</div>
+                                <div class="code-content">
+                                    <code>
+                                        HTTP/1.1 401 <br>
+                                        Content-Length: 0<br>
+                                        Location: {REDIRECT_URL}?error={}&error_description={}&error_uri={}
+
+                                    </code>
+                                    <br>
+                                    안에 에러 메시지가 추가되어 넘어가게 됩니다.
+                                    401 에러의 주 된 원인 중 하나는 로그인이 되어있을 떄 똑같이 로그인폼을 이용해 로그인을 요청할 경우 발생할 수 있습니다.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="token-part" class="token-part">
+                        <div class="container my-4">
+                            <h2> 토큰 받기</h2>
+                            <h4>요청</h4>
+                            <div class="table-container">
+                                <table class="table table-bordered">
+                                    <thead>
+                                    <tr>
+                                        <th>이름</th>
+                                        <th>설명</th>
+                                        <th>필수</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td>code</td>
+                                        <td>인가 코드 값</td>
+                                        <td>O</td>
+                                    </tr>
+                                    <tr>
+                                        <td>grant_type</td>
+                                        <td>인증방식 타입</td>
+                                        <td>O</td>
+                                    </tr>
+                                    <tr>
+                                        <td>scope</td>
+                                        <td>설정한 스코프</td>
+                                        <td>O</td>
+                                    </tr>
+                                    <tr>
+                                        <td>redirect_uri</td>
+                                        <td>설정한 리다이렉트</td>
+                                        <td>O</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Username</td>
+                                        <td>클라이언트 아이디 (헤더에 설정)</td>
+                                        <td>O</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Password</td>
+                                        <td>클라이언트 시크릿 키 (헤더에 설정)</td>
+                                        <td>O</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <h4>응답</h4>
+                            <div class="table-container">
+                                <table class="table table-bordered">
+                                    <thead>
+                                    <tr>
+                                        <th>이름</th>
+                                        <th>설명</th>
+                                        <th>필수</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td>access_token</td>
+                                        <td>엑세스 토큰 값</td>
+                                        <td>O</td>
+                                    </tr>
+                                    <tr>
+                                        <td>token_type</td>
+                                        <td>토큰 타입 (Bearer) </td>
+                                        <td>O</td>
+                                    </tr>
+                                    <tr>
+                                        <td>refresh_token</td>
+                                        <td>리프레쉬 토큰 값</td>
+                                        <td>O</td>
+                                    </tr>
+                                    <tr>
+                                        <td>scope</td>
+                                        <td>설정한 스코프 값</td>
+                                        <td>O</td>
+                                    </tr>
+                                    <tr>
+                                        <td>error</td>
+                                        <td>에러 발생시 에러 명</td>
+                                        <td>O</td>
+                                    </tr>
+                                    <tr>
+                                        <td>error_description</td>
+                                        <td>에러 발생시 에러 설명</td>
+                                        <td>O</td>
+                                    </tr>
+
+                                    </tbody>
+                                </table>
+                            </div>
+                            <h4>예제</h4>
+                            <div class="code-box">
+                                <div class="code-title">요청</div>
+                                <div class="code-content">
+                                    <code>https://ssafyauth-authorization.duckdns.org/oauth2/token?grant_ype={GRANT_TYPE}&code={CODE}&scope={SCOPE}&redirect_uri={redirect_URI}</code>
+                                </div>
+                            </div>
+                            <div class="code-box">
+                                <div class="code-title">응답: 성공시</div>
+                                <div class="code-content">
+                                    <code>
+                                        HTTP/1.1 200 OK<br>
+                                        CONTENT_TYPE  : APPLICATION/JSON <br>
+                                        BODY : "access_token" : {} , "refresh_token" : {} , "scope" : {}, "expires_in" : {}, "token_type" : {}
+                                    </code>
+                                </div>
+                            </div>
+                            <div class="code-box">
+                                <div class="code-title">실패</div>
+                                <div class="code-content">
+                                    <code>
+                                        HTTP/1.1 400 BAD REQUEST <br>
+                                        CONTENT_TYPE : APPLICATION/JSON <br>
+                                        BODY : "error" : {} , "error_description" : {}
+                                    </code>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="refresh-part" class="refresh-part">
+                        <div class="container my-4">
+                            <h2> 토큰 재발급</h2>
+                            <h4>요청</h4>
+                            <div class="table-container">
+                                <table class="table table-bordered">
+                                    <thead>
+                                    <tr>
+                                        <th>이름</th>
+                                        <th>설명</th>
+                                        <th>필수</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td>grant_type</td>
+                                        <td>refresh_token 으로 설정</td>
+                                        <td>O</td>
+                                    </tr>
+                                    <tr>
+                                        <td>refresh_token</td>
+                                        <td>refresh_token 값</td>
+                                        <td>O</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <h4>응답</h4>
+                            <div class="table-container">
+                                <table class="table table-bordered">
+                                    <thead>
+                                    <tr>
+                                        <th>이름</th>
+                                        <th>설명</th>
+                                        <th>필수</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td>access_token</td>
+                                        <td>엑세스 토큰 값</td>
+                                        <td>O</td>
+                                    </tr>
+                                    <tr>
+                                        <td>token_type</td>
+                                        <td>토큰 타입 (Bearer) </td>
+                                        <td>O</td>
+                                    </tr>
+                                    <tr>
+                                        <td>refresh_token</td>
+                                        <td>리프레쉬 토큰 값</td>
+                                        <td>O</td>
+                                    </tr>
+                                    <tr>
+                                        <td>scope</td>
+                                        <td>설정한 스코프 값</td>
+                                        <td>O</td>
+                                    </tr>
+                                    <tr>
+                                        <td>error</td>
+                                        <td>에러 발생시 에러 명</td>
+                                        <td>O</td>
+                                    </tr>
+                                    <tr>
+                                        <td>error_description</td>
+                                        <td>에러 발생시 에러 설명</td>
+                                        <td>O</td>
+                                    </tr>
+
+                                    </tbody>
+                                </table>
+                            </div>
+                            <h4>예제</h4>
+                            <div class="code-box">
+                                <div class="code-title">요청</div>
+                                <div class="code-content">
+                                    <code> [POST] https://ssafyauth-authorization.duckdns.org/oauth2/token?grant_ype={GRANT_TYPE}&refresh_token={REFRESH_TOKEN}</code>
+                                </div>
+                            </div>
+                            <div class="code-box">
+                                <div class="code-title">응답: 성공시</div>
+                                <div class="code-content">
+                                    <code>
+                                        HTTP/1.1 200 OK<br>
+                                        CONTENT_TYPE  : APPLICATION/JSON <br>
+                                        BODY : "access_token" : {} , "refresh_token" : {} , "scope" : {}, "expires_in" : {}, "token_type" : {}
+                                    </code>
+                                </div>
+                            </div>
+                            <div class="code-box">
+                                <div class="code-title">실패</div>
+                                <div class="code-content">
+                                    <code>
+                                        HTTP/1.1 400 BAD REQUEST <br>
+                                        CONTENT_TYPE : APPLICATION/JSON <br>
+                                        BODY : "error" : {} , "error_description" : {}
+                                    </code>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="user-info-part" class="user-info-part">
+                        <div class="container my-4">
+                            <h2> 유저 정보 불러오기</h2>
+                            <h4>요청</h4>
+                            <div class="table-container">
+                                <table class="table table-bordered">
+                                    <thead>
+                                    <tr>
+                                        <th>이름</th>
+                                        <th>설명</th>
+                                        <th>필수</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td>access_token</td>
+                                        <td>access_token 헤더에 Authorzation : Bearer 로 설정</td>
+                                        <td>O</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <h4>응답</h4>
+                            <div class="table-container">
+                                <table class="table table-bordered">
+                                    <thead>
+                                    <tr>
+                                        <th>이름</th>
+                                        <th>설명</th>
+                                        <th>필수</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td>email</td>
+                                        <td>이메일</td>
+                                        <td>O</td>
+                                    </tr>
+                                    <tr>
+                                        <td>image</td>
+                                        <td>이미지 </td>
+                                        <td>O</td>
+                                    </tr>
+                                    <tr>
+                                        <td>나머지</td>
+                                        <td>gender, phoneNumber (선택 항목은 응답이 안올 수 있습니다.)</td>
+                                        <td>X</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <h4>예제</h4>
+                            <div class="code-box">
+                                <div class="code-title">요청</div>
+                                <div class="code-content">
+                                    [Header] Authorzation : Bearer : {access_token} <br>
+                                    <code> [GET] https://ssafyauth-resource.duckdns.org/user/info</code>
+                                </div>
+                            </div>
+                            <div class="code-box">
+                                <div class="code-title">응답: 성공시</div>
+                                <div class="code-content">
+                                    <code>
+                                        HTTP/1.1 200 OK<br>
+                                        CONTENT_TYPE  : APPLICATION/JSON <br>
+                                        BODY : "email" : {} , "image" : {} ...
+                                    </code>
+                                </div>
+                            </div>
+                            <div class="code-box">
+                                <div class="code-title">실패</div>
+                                <div class="code-content">
+                                    <code>
+                                        HTTP/1.1 401 Unauthorized <br>
+                                        Content-Length: 0<br>
+                                    </code>
+                                    <code>
+                                        HTTP/1.1 400 BAD REQUEST <br>
+                                        Content-Length: 0<br>
+                                    </code>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="open-key-oidc-part" class="open-key-oidc-part">
+                        <div class="container my-4">
+                            <h2> OIDC 공캐키 정보</h2>
+                            <h4>응답</h4>
+                            <div class="table-container">
+                                이 응답은 keys 배열안에 아래 데이터들이 존재합니다.
+                                <table class="table table-bordered">
+                                    <thead>
+                                    <tr>
+                                        <th>이름</th>
+                                        <th>설명</th>
+                                        <th>필수</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td>kty</td>
+                                        <td>암호화 방식</td>
+                                        <td>O</td>
+                                    </tr>
+                                    <tr>
+                                        <td>e</td>
+                                        <td>공개 지수 값 </td>
+                                        <td>O</td>
+                                    </tr>
+                                    <tr>
+                                        <td>kid</td>
+                                        <td>Key ID의 약자로, 키의 고유 식별자</td>
+                                        <td>O</td>
+                                    </tr>
+                                    <tr>
+                                        <td>n</td>
+                                        <td>RSA 공개 키의 모듈러스</td>
+                                        <td>O</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <h4>예제</h4>
+                            <div class="code-box">
+                                <div class="code-title">요청</div>
+                                <div class="code-content">
+                                    <code> [GET] https://ssafyauth-authorzation.duckdns.org/jwks</code>
+                                </div>
+                            </div>
+                            <div class="code-box">
+                                <div class="code-title">응답: 성공시</div>
+                                <div class="code-content">
+                                    <code>
+                                        HTTP/1.1 200 OK<br>
+                                        CONTENT_TYPE  : APPLICATION/JSON <br>
+                                        {
+                                        "keys": [
+                                        {
+                                        "kty": {}, <br>
+                                        "e": {}, <br>
+                                        "kid": {}, <br>
+                                        "n": {} <br>
+                                        }
+                                        ]}
+                                    </code>
+                                </div>
+                            </div>
+                            <div class="code-box">
+                                <div class="code-title">실패</div>
+                                <div class="code-content">
+                                    <code>
+                                        HTTP/1.1 400 BAD REQUEST <br>
+                                        Content-Length: 0<br>
+                                    </code>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="metadata-oidc-part" class="metadata-oidc-part">
+                        <div class="container my-4">
+                            <h2> OIDC 메타데이터 확인하기</h2>
+                            <h4>응답</h4>
+                            <div class="table-container">
+                                <table class="table table-bordered">
+                                    <thead>
+                                    <tr>
+                                        <th>이름</th>
+                                        <th>설명</th>
+                                        <th>필수</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td>issuer</td>
+                                        <td>OAuth 서버의 고유 식별자</td>
+                                        <td>O</td>
+                                    </tr>
+                                    <tr>
+                                        <td>authorization_endpoint</td>
+                                        <td>사용자 인증과 권한 부여 코드를 얻기 위한 엔드포인트의 UR</td>
+                                        <td>O</td>
+                                    </tr>
+                                    <tr>
+                                        <td>device_authorization_endpoint</td>
+                                        <td>디바이스 코드 플로우를 위한 엔드포인트의 URL</td>
+                                        <td>O</td>
+                                    </tr>
+                                    <tr>
+                                        <td>token_endpoint</td>
+                                        <td>클라이언트가 권한 부여 코드를 액세스 토큰으로 교환할 때 사용하는 엔드포인트</td>
+                                        <td>O</td>
+                                    </tr>
+                                    <tr>
+                                        <td>token_endpoint_auth_methods_supported</td>
+                                        <td>토큰 엔드포인트에 대한 클라이언트 인증 방식</td>
+                                        <td>O</td>
+                                    </tr>
+                                    <tr>
+                                        <td>jwks_uri</td>
+                                        <td>공개 키 세트가 위치한 URL</td>
+                                        <td>O</td>
+                                    </tr>
+                                    <tr>
+                                        <td>response_types_supported</td>
+                                        <td>서버가 지원하는 응답 타입</td>
+                                        <td>O</td>
+                                    </tr>
+                                    <tr>
+                                        <td>revocation_endpoint</td>
+                                        <td>클라이언트가 토큰을 폐기할 수 있는 엔드포인트의 URL</td>
+                                        <td>O</td>
+                                    </tr>
+                                    <tr>
+                                        <td>revocation_endpoint_auth_methods_supported</td>
+                                        <td>토큰 폐기 엔드포인트에 대한 클라이언트 인증 방식</td>
+                                        <td>O</td>
+                                    </tr>
+                                    <tr>
+                                        <td>introspection_endpoint</td>
+                                        <td>클라이언트가 토큰의 상태를 검사할 수 있는 엔드포인트의 URL</td>
+                                        <td>O</td>
+                                    </tr>
+                                    <tr>
+                                        <td>code_challenge_methods_supported</td>
+                                        <td> PKCE(Proof Key for Code Exchange)를 위해 지원하는 코드 챌린지 메서드</td>
+                                        <td>O</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <h4>예제</h4>
+                            <div class="code-box">
+                                <div class="code-title">요청</div>
+                                <div class="code-content">
+                                    <code> [GET] https://ssafyauth-authorzation.duckdns.org/.well-known/oauth-authorization-server</code>
+                                </div>
+                            </div>
+                            <div class="code-box">
+                                <div class="code-title">응답: 성공시</div>
+                                <div class="code-content">
+                                    <code style="white-space: normal">
+                                        HTTP/1.1 200 OK <br>
+                                        CONTENT_TYPE  : APPLICATION/JSON <br>
+                                        {
+                                        "issuer":{},
+                                        "authorization_endpoint": {},
+                                        "device_authorization_endpoint": {},
+                                        "token_endpoint": {},
+                                        "token_endpoint_auth_methods_supported": [
+                                        ],
+                                        "jwks_uri": {},
+                                        "response_types_supported": [
+                                        ],
+                                        "grant_types_supported": [
+                                        ],
+                                        "revocation_endpoint": {},
+                                        "revocation_endpoint_auth_methods_supported": [
+                                        ],
+                                        "introspection_endpoint": {},
+                                        "introspection_endpoint_auth_methods_supported": [
+                                        ],
+                                        "code_challenge_methods_supported": [
+                                        "S256"
+                                        ]
+                                        }
+                                    </code>
+                                </div>
+                            </div>
+                            <div class="code-box">
+                                <div class="code-title">실패</div>
+                                <div class="code-content">
+                                    <code>
+                                        HTTP/1.1 400 BAD REQUEST <br>
+                                        Content-Length: 0<br>
+                                    </code>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="user-info-oidc-part" class="user-info-oidc-part">
+                        <div class="container my-4">
+                            <h2> OIDC 유저 정보 불러오기</h2>
+                            <h4>요청</h4>
+                            <div class="table-container">
+                                <table class="table table-bordered">
+                                    <thead>
+                                    <tr>
+                                        <th>이름</th>
+                                        <th>설명</th>
+                                        <th>필수</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td>access_token</td>
+                                        <td>access_token 헤더에 Authorzation : Bearer 로 설정</td>
+                                        <td>O</td>
+                                    </tr>
+
+                                    </tbody>
+                                </table>
+                            </div>
+                            <h4>응답</h4>
+                            <div class="table-container">
+                                <table class="table table-bordered">
+                                    <thead>
+                                    <tr>
+                                        <th>이름</th>
+                                        <th>설명</th>
+                                        <th>필수</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td>sub</td>
+                                        <td>이메일</td>
+                                        <td>O</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <h4>예제</h4>
+                            <div class="code-box">
+                                <div class="code-title">요청</div>
+                                <div class="code-content">
+                                    [Header] Authorzation : Bearer : {access_token} <br>
+                                    <code> [GET] https://ssafyauth-authorzation.duckdns.org/userinfo</code>
+                                </div>
+                            </div>
+                            <div class="code-box">
+                                <div class="code-title">응답: 성공시</div>
+                                <div class="code-content">
+                                    <code>
+                                        HTTP/1.1 200 OK<br>
+                                        CONTENT_TYPE  : APPLICATION/JSON <br>
+                                        BODY : "sub" : {}
+                                    </code>
+                                </div>
+                            </div>
+                            <div class="code-box">
+                                <div class="code-title">실패</div>
+                                <div class="code-content">
+                                    <code>
+                                        HTTP/1.1 401 Unauthorized <br>
+                                        Content-Length: 0<br>
+                                    </code>
+                                    <code>
+                                        HTTP/1.1 400 BAD REQUEST <br>
+                                        Content-Length: 0<br>
+                                    </code>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
-
-                    </div>
                 </div>
             </div>
         </div>
-</div>
+    </div>
 
 </div>
 <!-- Footer -->

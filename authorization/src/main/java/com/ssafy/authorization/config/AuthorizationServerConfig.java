@@ -1,6 +1,9 @@
 package com.ssafy.authorization.config;
 
+import com.ssafy.authorization.filter.CustomUsernamePasswordAuthenticationFilter;
 import com.ssafy.authorization.member.login.filter.CustomAuthenticationFilter;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,8 +14,13 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.SqlParameterValue;
 import org.springframework.jdbc.support.lob.DefaultLobHandler;
 import org.springframework.jdbc.support.lob.LobHandler;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter;
@@ -21,14 +29,14 @@ import org.springframework.security.oauth2.server.authorization.client.Registere
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.*;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.CorsUtils;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -42,14 +50,13 @@ import jakarta.servlet.http.HttpServletRequest;
 @EnableWebSecurity
 public class AuthorizationServerConfig {
 
-	private final RedisTemplate<String, String> redisTemplate;
-	private final CustomAuthenticationFilter customAuthenticationFilter;
 
+	private final CustomUsernamePasswordAuthenticationFilter customUsernamePasswordAuthenticationFilter;
 	@Autowired
-	public AuthorizationServerConfig(RedisTemplate<String, String> redisTemplate, CustomAuthenticationFilter customAuthenticationFilter) {
-		this.redisTemplate = redisTemplate;
-		this.customAuthenticationFilter = customAuthenticationFilter;
-	}
+	public AuthorizationServerConfig(CustomUsernamePasswordAuthenticationFilter customUsernamePasswordAuthenticationFilter) {
+
+		this.customUsernamePasswordAuthenticationFilter = customUsernamePasswordAuthenticationFilter;
+    }
 
 	@Bean
 	@Order(1)
@@ -80,9 +87,11 @@ public class AuthorizationServerConfig {
 
 	@Bean
 	 @Order(2)
-	 SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http)
+	 SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http, AuthenticationManager authenticationManager)
 	 		throws Exception {
-	 	http.csrf(csrf -> csrf.disable());
+		// customUsernamePasswordAuthenticationFilter.setCustomAuthenticationManager(authenticationManager);
+
+		http.csrf(csrf -> csrf.disable());
 
 
 		http
@@ -126,17 +135,24 @@ public class AuthorizationServerConfig {
 					.requestMatchers("/ws").permitAll()
 	 					.anyRequest().authenticated()
 	 			)
-	 			.formLogin(formLogin -> formLogin
-	 					.loginPage("/login")
-	 			);
+				.formLogin(formLogin -> formLogin
+						.loginPage("/login")
+				);
 
-		http.addFilterAfter(customAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+		 http.addFilterBefore(customUsernamePasswordAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
 
-	 	return http.build();
-	 }
+		return http.build();
 
-	
+     }
+
+
+
+	@Bean
+	public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+		return authenticationConfiguration.getAuthenticationManager();
+	}
+
 	@Bean
 	PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
