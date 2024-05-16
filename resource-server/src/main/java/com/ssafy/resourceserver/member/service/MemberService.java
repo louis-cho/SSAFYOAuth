@@ -20,5 +20,5 @@ public interface MemberService {
     void signUp(Integer seq);
     ProfileInformationForUpdatesDto ProfileInforForUpdatesData(String email);
 
-    boolean checkUser(String email);
+    Integer checkUser(String email);
 }

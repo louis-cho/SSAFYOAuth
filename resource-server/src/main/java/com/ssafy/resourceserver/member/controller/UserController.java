@@ -33,7 +33,7 @@ public class UserController {
 	public ResponseEntity<?> check(@AuthenticationPrincipal Jwt jwt) {
 		String email = jwt.getClaimAsString("sub");
 		log.info("들어온 email value : {} ", email);
-		boolean result = memberService.checkUser(email);
+		Integer result = memberService.checkUser(email);
 		return ResponseEntity.status(HttpStatus.OK).body(result);
 	}
 

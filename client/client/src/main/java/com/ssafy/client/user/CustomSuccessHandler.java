@@ -49,7 +49,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         // API 호출을 통해 사용자 존재 유무를 체크
         String result = apiService.callProtectedApi(RESOURCE_SERVER_URL + "user/check");
 
-        if ("true".equals(result)) {
+        if (!"-1".equals(result)) {
             // 사용자가 존재하는 경우
             HttpSession session = request.getSession(false);
             String accessToken = (session != null) ? (String) session.getAttribute("access_token") : null;
@@ -72,7 +72,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         } else {
             // 사용자가 존재하지 않는 경우, 회원가입 페이지로 리다이렉트
             response.setStatus(HttpStatus.OK.value());
-            response.sendRedirect("http://localhost:8080/user/sign-up");
+            response.sendRedirect("http://localhost:8080/user/sign-up/" + result);
         }
 
 

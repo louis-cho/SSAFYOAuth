@@ -1,12 +1,75 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원 가입</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* 전체 페이지와 요소들의 기본 스타일을 설정합니다. */
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+        }
+
+        /* 가입 페이지 전체 스타일 */
+        .signup-page {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        /* 회원 가입 폼 스타일 */
+        .signup-form {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        /* 제목 스타일 */
+        .signup-form h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        /* 버튼 스타일 */
+        .signup-button {
+            background-color: #3396F4;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 4px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* 버튼 호버 효과 */
+        .signup-button:hover {
+            background-color: #45a049;
+        }
+
+    </style>
 </head>
 <body>
-<button>
-    회원가입
-</button>
+<div id="signup-page" class="signup-page">
+    <div class="signup-form">
+        <h1>개발자 등록하기</h1>
+        <form action="user/sign_up" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="seq" value="${seq}">
+            <button type="submit" class="signup-button">가입 완료</button>
+        </form>
+    </div>
+</div>
 </body>
 </html>

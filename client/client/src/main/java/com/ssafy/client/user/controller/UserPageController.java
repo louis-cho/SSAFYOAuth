@@ -7,7 +7,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -28,9 +31,19 @@ public class UserPageController {
 	private final String Authorization_URL = "http://localhost:9000";
 
 
-	@GetMapping("/user/sign-up")
-	public String signUp(){
+	@GetMapping("/user/sign-up/{seq}")
+	public String signUp(@PathVariable Integer seq, Model model){
+		model.addAttribute("seq", seq);
 		return "user/sign_up";
+	}
+
+	@PostMapping("/user/sign-up")
+	public String signUp(@RequestParam(name = "seq", required = false) Integer seq){
+		log.info("post 들어갈 seq : {}", seq);
+		String url = RESOURCES_URL + "/api/team/sign-up";
+		String s = apiService.callPostSignUp(url, seq);
+		log.info("post result : {}", s);
+		return "redirect:/";
 	}
 
 	@GetMapping("/user/update")

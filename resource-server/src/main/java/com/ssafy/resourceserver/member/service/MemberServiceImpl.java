@@ -176,14 +176,14 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public boolean checkUser(String email) {
+    public Integer checkUser(String email) {
         Optional<Member> memberOptional = memberRepository.findByEmail(email);
         if (memberOptional.isPresent()) {
             Member member = memberOptional.get();
             int count = teamMemberRepository.countByMemberSeq(member.getMemberId());
-            return count > 0;
+            return count > 0 ? member.getMemberId() : -1;
         }
-        return false;
+        return -1;
     }
 
 }
