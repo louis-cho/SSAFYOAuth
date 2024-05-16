@@ -24,6 +24,7 @@ spring:
     redis:
       host: k10a306.p.ssafy.io
       port: 6379
+      password: ssafy
   datasource:
     url: jdbc:postgresql://k10a306.p.ssafy.io:5432/postgres
     username: postgres

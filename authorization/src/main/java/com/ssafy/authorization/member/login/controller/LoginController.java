@@ -1,30 +1,28 @@
 package com.ssafy.authorization.member.login.controller;
 
-import java.io.IOException;
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import co.elastic.clients.elasticsearch.nodes.Http;
 import com.ssafy.authorization.member.login.filter.LoginRateLimiter;
+import com.ssafy.authorization.member.login.model.LoginRequest;
+import com.ssafy.authorization.member.login.service.LoginService;
+import com.ssafy.authorization.stats.login.service.LoginStatsService;
 import jakarta.servlet.http.HttpServletRequest;
-import org.joda.time.DateTime;
-import org.joda.time.Seconds;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
+import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
+import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
+import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-import com.ssafy.authorization.member.login.model.LoginRequest;
-import com.ssafy.authorization.member.login.service.LoginService;
-import com.ssafy.authorization.stats.login.service.LoginStatsService;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @RestController("LoginController")
 @RequestMapping("/api/auth")
@@ -39,15 +37,18 @@ public class LoginController {
     private final LoginStatsService loginStatsService;
 
     private static final Long LIMIT_PER_PERIOD = 2L;
+    private final HttpSessionRequestCache requestCache = new HttpSessionRequestCache();
+    private final RegisteredClientRepository registeredClientRepository;
 
 
     @Autowired
     LoginController(LoginService loginService, RedisTemplate<String, String> redisTemplate
-    ,LoginStatsService loginStatsService) {
+    ,LoginStatsService loginStatsService, RegisteredClientRepository registeredClientRepository) {
         this.loginService = loginService;
         this.userEmitters = new ConcurrentHashMap<>();
         this.redisTemplate = redisTemplate;
         this.loginStatsService = loginStatsService;
+        this.registeredClientRepository = registeredClientRepository;
     }
 
     private void updateLoginRate(LoginRequest request) {
@@ -63,6 +64,7 @@ public class LoginController {
             Long loginRate = redisTemplate.opsForValue().increment(loginRateKey);
             if(loginRate != null && loginRate.compareTo(LIMIT_PER_PERIOD) > 0) {
                 redisTemplate.opsForValue().set(loginIndexKey, LocalDateTime.now().toString());
+                redisTemplate.opsForValue().increment(String.valueOf(request.getTeamId()));
             }
         } else {
             redisTemplate.opsForValue().set(loginRateKey, "1");
@@ -85,10 +87,25 @@ public class LoginController {
     public ResponseEntity<String> createLoginRequest(@RequestBody LoginRequest request, HttpServletRequest httpServletRequest) {
         String key = UUID.randomUUID().toString();
         request.setIp(httpServletRequest.getRemoteAddr());
+        request.setTeamId(findTeamId(httpServletRequest));
         loginRequestMap.put(key, request);
         return ResponseEntity.ok(key);
     }
+    public int findTeamId(HttpServletRequest request){
+        SavedRequest savedRequest = requestCache.getRequest(request, null);
 
+        // SavedRequest 객체가 존재하면 파라미터 맵에서 client_id 추출
+        if (savedRequest != null) {
+            Map<String, String[]> parameterMap = savedRequest.getParameterMap();
+            String[] clientIds = parameterMap.get("client_id");
+            if (clientIds != null && clientIds.length > 0) {
+                String clientId = clientIds[0];
+                RegisteredClient client = registeredClientRepository.findByClientId(clientId);
+                return Integer.parseInt(client.getId());
+            }
+        }
+        return 0;
+    }
     @GetMapping("/sse/{key}")
     public SseEmitter connectSse(@PathVariable String key) {
         SseEmitter emitter = new SseEmitter(5 * 60 * 1000L);
@@ -120,7 +137,7 @@ public class LoginController {
                 emitter.completeWithError(new RuntimeException("Queue Exceed"));
             }
         } catch (IOException e) {
-            emitter.completeWithError(e);
+            emitter.completeWithError(new RuntimeException("Queue Exceed"));
         }
 
         emitter.onCompletion(() -> userEmitters.remove(request.toString()));

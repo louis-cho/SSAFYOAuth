@@ -35,6 +35,7 @@
             var teamSeq = window.location.pathname.match(/\/teams\/(\d+)\/dashboard/)[1];
             loadUserCount(teamSeq);
             loadLoginCount(teamSeq);
+            loadAbnormalLoginCount(teamSeq)
         };
         function getCookie(name) {
             var cookies = document.cookie.split(';');
@@ -84,7 +85,25 @@
                 },
                 error: function (xhr, status, error) {
                     console.error('Error loading data:', error);
-g                }
+                }
+            });
+        }
+
+        function loadAbnormalLoginCount(teamSeq) {
+            var token = getCookie("access_token")
+            $.ajax({
+                url: 'http://localhost:8090/api/team/'+teamSeq+'/abnormal-login',
+                type: 'GET',
+                contentType: 'application/json',
+                headers: {
+                    "Authorization": 'Bearer ' + token
+                },
+                success: function (response) {
+                    document.getElementById('abnormalLoginCount').innerText = response.abnormalLoginCount + "회";
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error loading data:', error);
+                }
             });
         }
 
@@ -193,7 +212,7 @@ g                }
                                 <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
                                     이상 징후 회원 수
                                 </div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">18</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800" id="abnormalLoginCount">18</div>
                             </div>
                             <div class="col-auto">
                                 <i class="fas fa-user-slash fa-2x text-gray-300"></i>

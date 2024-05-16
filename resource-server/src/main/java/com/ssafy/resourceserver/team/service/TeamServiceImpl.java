@@ -12,6 +12,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -67,6 +68,7 @@ public class TeamServiceImpl implements TeamService {
 	private final Oauth2AuthorizationConsentRepository oauth2AuthorizationConsentRepository;
 	private final CountLoginUserRepository countLoginUserRepository;
 	private final BlockedCountriesRepository blockedCountriesRepository;
+	private final RedisTemplate redisTemplate;
 
 
 	private boolean test = true;
@@ -645,7 +647,8 @@ public class TeamServiceImpl implements TeamService {
 	public Map countServiceUser(Integer teamSeq) {
 		Map<String, Integer> data = new HashMap<>();
 		Integer userCount = oauth2AuthorizationConsentRepository.countServiceUser(String.valueOf(teamSeq));
-		data.put("userCount", userCount);
+		if(userCount == null) data.put("userCount", 0);
+		else data.put("userCount", userCount);
 		return data;
 	}
 
@@ -657,6 +660,19 @@ public class TeamServiceImpl implements TeamService {
 			data.put("userLoginCount", countLoginUser.getLoginCount());
 		} else {
 			data.put("userLoginCount", 0L);
+		}
+		return data;
+	}
+
+	@Override
+	public Map abnormalLogin(Integer teamSeq) {
+		Map<String,Long> data = new HashMap<>();
+		String value =  (String) redisTemplate.opsForValue().get(String.valueOf(teamSeq));
+		if(value != null) {
+			data.put("abnormalLoginCount", Long.parseLong(value));
+		}
+		else{
+			data.put("abnormalLoginCount", 0L);
 		}
 		return data;
 	}
