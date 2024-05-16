@@ -14,6 +14,8 @@ import java.util.stream.Collectors;
 import com.ssafy.resourceserver.redirect.repository.RedirectEntityRepository;
 import com.ssafy.resourceserver.team.entity.BlockedCountriesEntity;
 import com.ssafy.resourceserver.team.repository.BlockedCountriesRepository;
+import com.ssafy.resourceserver.team.entity.CountLoginUserEntity;
+import com.ssafy.resourceserver.team.repository.CountLoginUserRepository;
 import com.ssafy.resourceserver.team.repository.DeveloperTeamRepository;
 import com.ssafy.resourceserver.team.repository.TeamListRepository;
 import com.ssafy.resourceserver.team.repository.TeamMemberRepository;
@@ -64,7 +66,9 @@ public class TeamServiceImpl implements TeamService {
 	private final MemberRepository memberRepository;
 	private final RedirectService redirectService;
 	private final RedirectEntityRepository redirectRepository;
-	private final BlockedCountriesRepository blockedCountriesRepository;
+	private final Oauth2AuthorizationConsentRepository oauth2AuthorizationConsentRepository;
+	private final CountLoginUserRepository countLoginUserRepository;
+
 	private boolean test = true;
 
 	@Value("${cloud.aws.s3.bucket}")
@@ -621,6 +625,26 @@ public class TeamServiceImpl implements TeamService {
 		System.out.println("sssssssssssssssssssss" + countries);
 
 		return false;
+	}
+
+	@Override
+	public Map countServiceUser(Integer teamSeq) {
+		Map<String, Integer> data = new HashMap<>();
+		Integer userCount = oauth2AuthorizationConsentRepository.countServiceUser(String.valueOf(teamSeq));
+		data.put("userCount", userCount);
+		return data;
+	}
+
+	@Override
+	public Map countLoginUser(Integer teamSeq) {
+		Map<String, Long> data = new HashMap<>();
+		CountLoginUserEntity countLoginUser = countLoginUserRepository.findByServiceId(String.valueOf(teamSeq));
+		if (countLoginUser!=null) {
+			data.put("userLoginCount", countLoginUser.getLoginCount());
+		} else {
+			data.put("userLoginCount", 0L);
+		}
+		return data;
 	}
 
 }

@@ -127,17 +127,17 @@ public class AuthorizationServerConfig {
 					return configuration;
 				}
 			}));
-	 	http
-	 			.authorizeHttpRequests((authorize) -> authorize
-	 					.requestMatchers("/js/**","/api/auth/waitSignal", "/css/**", "/favicon.ico", "/error","/image/**","/vendor/**",
-	 						"/test/**","/login","/signup", "/sendemail","/certify","/forgot_password","/forgot_user","/find_user"
-	 						,".well-known/jwks.json").permitAll()
-					.requestMatchers("/ws").permitAll()
-	 					.anyRequest().authenticated()
-	 			)
-				.formLogin(formLogin -> formLogin
-						.loginPage("/login")
-				);
+		http
+			.authorizeHttpRequests((authorize) -> authorize
+				.requestMatchers("/js/**","/api/auth/waitSignal", "/css/**", "/favicon.ico", "/error","/image/**","/vendor/**",
+					"/test/**","/login","/signup", "/sendemail","/certify","/forgot_password","/forgot_user","/find_user"
+					,".well-known/jwks.json").permitAll()
+				.requestMatchers("/ws").permitAll()
+				.anyRequest().authenticated()
+			)
+			.formLogin(formLogin -> formLogin
+				.loginPage("/login")
+			);
 
 		 http.addFilterBefore(customUsernamePasswordAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
