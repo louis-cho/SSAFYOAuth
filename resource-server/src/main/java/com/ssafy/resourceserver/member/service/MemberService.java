@@ -17,6 +17,8 @@ public interface MemberService {
 
     void updatePassword(String email, Map<String, String> passwords);
 
-
+    void signUp(Integer seq);
     ProfileInformationForUpdatesDto ProfileInforForUpdatesData(String email);
+
+    boolean checkUser(String email);
 }

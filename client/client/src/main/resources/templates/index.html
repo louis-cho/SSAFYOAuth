@@ -51,7 +51,10 @@
                 },
                 success: function (response) {
                     console.log(response.list)
-                    displayTeams(response.list);
+                    if (response.list) {
+                        displayTeams(response.list);
+                        document.getElementById('teamCount').innerText = '(' + response.list.length + ')';
+                    }
                 },
                 error: function (xhr, status, error) {
                     console.error('Error loading data:', error);
@@ -71,8 +74,8 @@
                         <h5 class="card-title">${team.teamName}</h5>
                         <p class="card-text">서비스: ${team.serviceName}</p>
                         <p class="card-text">status: ${team.isLeader?'Leader':'Member'}</p>
-                        <p class="card-text">최초 게시일: ${team.createDate}</p>
-                        <p class="card-text">최종 수정일: ${team.modifyDate}</p>
+                        <p class="card-text">최초 게시일: ${team.createDate.substring(0, 10)}</p>
+                        <p class="card-text">최종 수정일: ${team.modifyDate.substring(0, 10)}</p>
                         <form method="get" action='/team/detail/${team.teamSeq}'>
                             <button type="submit" class="btn btn-primary">details</button>
                         </form>

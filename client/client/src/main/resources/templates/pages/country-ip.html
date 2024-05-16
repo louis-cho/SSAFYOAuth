@@ -85,7 +85,7 @@
                     <h1 class="mb-4 text-center">차단할 국가를 선택하세요.</h1>
                     <form id="country-block-form" class="form-inline justify-content-center mb-4">
                         <div class="form-group">
-                            <label for="country-select" class="mr-2">나라 선택하세요:</label>
+                            <label for="country-select" class="mr-2">차단할 국가 : </label>
                             <select id="country-select" name="country" class="custom-select">
                                 <option value="KR" th:unless="${#lists.contains(blockedCountries, 'KR')}">South Korea</option>
                                 <option value="US" th:unless="${#lists.contains(blockedCountries, 'US')}">United States</option>

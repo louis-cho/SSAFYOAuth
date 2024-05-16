@@ -26,6 +26,13 @@ public class ApiService {
         return restTemplate.getForObject(apiUrl, String.class);
     }
 
+    public String callPostSignUp(String apiUrl, Integer seq) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<Integer> requestEntity = new HttpEntity<>(seq, headers);
+
+        return restTemplate.postForObject(apiUrl,requestEntity, String.class);
+    }
 
     public String callPostCountry(String apiUrl, List<String> countries) {
         HttpHeaders headers = new HttpHeaders();
