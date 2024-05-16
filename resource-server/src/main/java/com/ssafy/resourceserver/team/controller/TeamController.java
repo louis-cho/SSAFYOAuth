@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.amazonaws.Response;
 import com.ssafy.resourceserver.team.vo.ServiceNameUpdateVo;
 import com.ssafy.resourceserver.team.vo.TeamAddVo;
 
@@ -184,4 +185,19 @@ public class TeamController {
 		boolean result = teamService.updateBlockedCountries(countries);
 		return ResponseEntity.status(HttpStatus.OK).body(true);
 	}
+
+	@GetMapping("/{teamSeq}/count-user")
+	public ResponseEntity<?> countServiceUser(@PathVariable Integer teamSeq) {
+		log.info("팀 아이디 : {}", teamSeq);
+		Map data = teamService.countServiceUser(teamSeq);
+		return ResponseEntity.status(HttpStatus.OK).body(data);
+	}
+
+	@GetMapping("/{teamSeq}/count-login-user")
+	public ResponseEntity<?> countLoginUser(@PathVariable Integer teamSeq) {
+		log.info("팀 아이디 : {}", teamSeq);
+		Map data = teamService.countLoginUser(teamSeq);
+		return ResponseEntity.status(HttpStatus.OK).body(data);
+	}
+
 }

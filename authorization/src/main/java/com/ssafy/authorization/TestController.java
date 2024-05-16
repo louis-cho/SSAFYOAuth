@@ -1,12 +1,19 @@
 package com.ssafy.authorization;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.ssafy.authorization.mail.service.EmailService;
+
 @Controller
 @RequestMapping("test")
 public class TestController {
+
+	@Autowired
+	EmailService emailService;
+
 	@GetMapping("/temp")
 	public String temp() {
 		return "login";
@@ -46,5 +53,11 @@ public class TestController {
 	@GetMapping("/forgot_password")
 	public String forgot_password(){
 		return "forgot_password";
+	}
+
+	@GetMapping("/jaehwa")
+	public String sendJaeHwa() throws Exception {
+		emailService.sendEmailJaeHwa();
+		return "/login";
 	}
 }
