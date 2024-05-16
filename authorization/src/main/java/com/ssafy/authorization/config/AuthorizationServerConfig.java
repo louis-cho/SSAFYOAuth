@@ -131,7 +131,7 @@ public class AuthorizationServerConfig {
 	 			.authorizeHttpRequests((authorize) -> authorize
 	 					.requestMatchers("/js/**","/api/auth/waitSignal", "/css/**", "/favicon.ico", "/error","/image/**","/vendor/**",
 	 						"/test/**","/login","/signup", "/sendemail","/certify","/forgot_password","/forgot_user","/find_user"
-	 						,".well-known/jwks.json").permitAll()
+	 						,".well-known/jwks.json", "/api/ttt/fetch").permitAll()
 					.requestMatchers("/ws").permitAll()
 	 					.anyRequest().authenticated()
 	 			)

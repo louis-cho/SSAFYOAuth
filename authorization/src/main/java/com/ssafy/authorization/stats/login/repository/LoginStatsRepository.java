@@ -40,8 +40,8 @@ public class LoginStatsRepository {
 	// 조회
 	public List<LoginStats> fetch(LoginStatsFetchRequestVO requestVO, Pageable pageable) {
 		// 필드 값들을 추출합니다.
-		UUID userId = requestVO.getUserId();
-		UUID teamId = requestVO.getTeamId();
+		Integer userId = requestVO.getUserId();
+		Integer teamId = requestVO.getTeamId();
 		Instant startTime = requestVO.getStartTime();
 		Instant endTime = requestVO.getEndTime();
 		Boolean success = requestVO.getSuccess();
