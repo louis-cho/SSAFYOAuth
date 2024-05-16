@@ -20,7 +20,7 @@ function loadTeams() {
     var token = getCookie("access_token");
 
     $.ajax({
-        url: 'http://localhost:8090/api/team',
+        url: 'https://ssafyauth-resource.duckdns.org/api/team',
         type: 'GET',
         headers: {
             "Authorization": 'Bearer ' + token
