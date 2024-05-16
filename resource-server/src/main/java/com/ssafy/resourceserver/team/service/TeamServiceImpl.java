@@ -614,7 +614,7 @@ public class TeamServiceImpl implements TeamService {
 		Optional<BlockedCountriesEntity> blockedCountry = blockedCountriesRepository.findByTeamId(teamSeq);
 		if(blockedCountry.isPresent()){
 			BlockedCountriesEntity entity = blockedCountry.get();
-			List<String> countryList = Arrays.asList(entity.getCountryList().split(","));
+			List<String> countryList = Arrays.asList(entity.getCountryList().trim().split(","));
 			return countryList;
 		}
 		return new ArrayList<>();
@@ -622,7 +622,21 @@ public class TeamServiceImpl implements TeamService {
 
 	@Override
 	public boolean updateBlockedCountries(List<String> countries,int teamSeq) {
-		System.out.println("sssssssssssssssssssss" + countries);
+		Optional<BlockedCountriesEntity> byTeamId = blockedCountriesRepository.findByTeamId(teamSeq);
+		BlockedCountriesEntity entity = null;
+		if(byTeamId.isPresent()){
+			entity = byTeamId.get();
+			String s = countries.toString();
+			entity.setCountryList(s.replace(" ","").replace("[", "").replace("]", ""));
+		}
+		else{
+			String s = countries.toString();
+			entity = BlockedCountriesEntity.builder()
+				.teamId(teamSeq)
+				.countryList(s.replace(" ","").replace("[", "").replace("]", ""))
+				.build();
+		}
+		blockedCountriesRepository.save(entity);
 
 		return false;
 	}
