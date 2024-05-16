@@ -28,6 +28,81 @@
         .table-container {
             overflow-x: auto;
         }
+        body, h1, h2, h3, h4, p, table {
+            font-family: 'Nunito', sans-serif; /* Consistent font for all text */
+        }
+
+        .api-section {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        h1, h2, h3, h4 {
+            color: #000000; /* SSAFY brand color for headers */
+        }
+
+        h1 {
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+        }
+
+        h2 {
+            padding-top: 20px;
+        }
+
+        .table-container {
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            background-color: #f8f9fa;
+        }
+
+        table, th, td {
+            border: 1px solid #dee2e6;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #e9ecef;
+            font-weight: bold;
+        }
+
+        .code-title {
+            background-color: #e9ecef;
+            padding: 0.5rem;
+            font-weight: bold;
+        }
+
+        .menu a {
+            color: #4a73df;
+            text-decoration: none;
+            padding: 5px;
+            display: inline-block;
+            margin-bottom: 5px;
+            background-color: #e7e9fc;
+            border-radius: 5px;
+        }
+
+        .menu a:hover {
+            background-color: #4a73df;
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .api-section, .code-box {
+                padding: 15px;
+            }
+        }
     </style>
     <!-- Custom fonts for this template-->
     <link th:href="@{/vendor/fontawesome-free/css/all.min.css}" rel="stylesheet" type="text/css">

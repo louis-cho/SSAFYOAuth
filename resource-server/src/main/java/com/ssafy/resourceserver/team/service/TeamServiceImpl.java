@@ -11,7 +11,10 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import com.ssafy.resourceserver.redirect.repository.RedirectEntityRepository;
+import com.ssafy.resourceserver.team.entity.CountLoginUserEntity;
+import com.ssafy.resourceserver.team.repository.CountLoginUserRepository;
 import com.ssafy.resourceserver.team.repository.DeveloperTeamRepository;
+import com.ssafy.resourceserver.team.repository.Oauth2AuthorizationConsentRepository;
 import com.ssafy.resourceserver.team.repository.TeamListRepository;
 import com.ssafy.resourceserver.team.repository.TeamMemberRepository;
 import com.ssafy.resourceserver.team.repository.TeamMemberWithInfoRepository;
@@ -20,9 +23,6 @@ import com.ssafy.resourceserver.team.vo.InviteListVo;
 import com.ssafy.resourceserver.team.vo.ServiceNameUpdateVo;
 import com.ssafy.resourceserver.team.vo.TeamAddVo;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -61,6 +61,9 @@ public class TeamServiceImpl implements TeamService {
 	private final MemberRepository memberRepository;
 	private final RedirectService redirectService;
 	private final RedirectEntityRepository redirectRepository;
+	private final Oauth2AuthorizationConsentRepository oauth2AuthorizationConsentRepository;
+	private final CountLoginUserRepository countLoginUserRepository;
+
 	private boolean test = true;
 
 	@Value("${cloud.aws.s3.bucket}")
@@ -615,6 +618,26 @@ public class TeamServiceImpl implements TeamService {
 	public boolean updateBlockedCountries(List<String> countries) {
 
 		return false;
+	}
+
+	@Override
+	public Map countServiceUser(Integer teamSeq) {
+		Map<String, Integer> data = new HashMap<>();
+		Integer userCount = oauth2AuthorizationConsentRepository.countServiceUser(String.valueOf(teamSeq));
+		data.put("userCount", userCount);
+		return data;
+	}
+
+	@Override
+	public Map countLoginUser(Integer teamSeq) {
+		Map<String, Long> data = new HashMap<>();
+		CountLoginUserEntity countLoginUser = countLoginUserRepository.findByServiceId(String.valueOf(teamSeq));
+		if (countLoginUser!=null) {
+			data.put("userLoginCount", countLoginUser.getLoginCount());
+		} else {
+			data.put("userLoginCount", 0L);
+		}
+		return data;
 	}
 
 }
