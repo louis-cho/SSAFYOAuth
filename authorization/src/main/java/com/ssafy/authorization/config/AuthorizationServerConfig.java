@@ -1,10 +1,8 @@
 package com.ssafy.authorization.config;
 
-import com.ssafy.authorization.filter.CustomUsernamePasswordAuthenticationFilter;
 import com.ssafy.authorization.member.login.filter.CustomAuthenticationFilter;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -14,13 +12,8 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.SqlParameterValue;
 import org.springframework.jdbc.support.lob.DefaultLobHandler;
 import org.springframework.jdbc.support.lob.LobHandler;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter;
@@ -29,14 +22,13 @@ import org.springframework.security.oauth2.server.authorization.client.Registere
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.*;
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.CorsUtils;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -50,35 +42,35 @@ import jakarta.servlet.http.HttpServletRequest;
 @EnableWebSecurity
 public class AuthorizationServerConfig {
 
+	private final RedisTemplate<String, String> redisTemplate;
 
-	private final CustomUsernamePasswordAuthenticationFilter customUsernamePasswordAuthenticationFilter;
 	@Autowired
-	public AuthorizationServerConfig(CustomUsernamePasswordAuthenticationFilter customUsernamePasswordAuthenticationFilter) {
-
-		this.customUsernamePasswordAuthenticationFilter = customUsernamePasswordAuthenticationFilter;
-    }
+	public AuthorizationServerConfig(RedisTemplate<String, String> redisTemplate) {
+		this.redisTemplate = redisTemplate;
+	}
 
 	@Bean
 	@Order(1)
 	SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http)
-			throws Exception {
+		throws Exception {
 		OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
 		http.getConfigurer(OAuth2AuthorizationServerConfigurer.class)
-				.authorizationEndpoint(auth -> auth
-						.consentPage("/oauth2/consent"));
-		//				.oidc(withDefaults());
+			.authorizationEndpoint(auth -> auth
+				.consentPage("/oauth2/consent"));
+		//                .oidc(withDefaults());
 
 
 		http
 
-				.exceptionHandling((exceptions) -> exceptions
-						.defaultAuthenticationEntryPointFor(
-								new LoginUrlAuthenticationEntryPoint("/login"),
-								new MediaTypeRequestMatcher(MediaType.TEXT_HTML)
-						)
+			//                .addFilterBefore(new CustomAuthenticationFilter(redisTemplate), OAuth2AuthorizationRequestRedirectFilter.class)
+			.exceptionHandling((exceptions) -> exceptions
+				.defaultAuthenticationEntryPointFor(
+					new LoginUrlAuthenticationEntryPoint("/login"),
+					new MediaTypeRequestMatcher(MediaType.TEXT_HTML)
 				)
-				.oauth2ResourceServer((resourceServer) -> resourceServer
-						.jwt(withDefaults()));
+			)
+			.oauth2ResourceServer((resourceServer) -> resourceServer
+				.jwt(withDefaults()));
 
 		return http.build();
 	}
@@ -86,16 +78,14 @@ public class AuthorizationServerConfig {
 
 
 	@Bean
-	 @Order(2)
-	 SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http, AuthenticationManager authenticationManager)
-	 		throws Exception {
-		// customUsernamePasswordAuthenticationFilter.setCustomAuthenticationManager(authenticationManager);
-
+	@Order(2)
+	SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http)
+		throws Exception {
 		http.csrf(csrf -> csrf.disable());
 
 
 		http
-				.authorizeHttpRequests((request) -> request.requestMatchers(CorsUtils::isPreFlightRequest).permitAll());
+			.authorizeHttpRequests((request) -> request.requestMatchers(CorsUtils::isPreFlightRequest).permitAll());
 		http
 			.cors(corsCustomizer -> corsCustomizer.configurationSource(new CorsConfigurationSource() {
 
@@ -127,31 +117,21 @@ public class AuthorizationServerConfig {
 					return configuration;
 				}
 			}));
-	 	http
-	 			.authorizeHttpRequests((authorize) -> authorize
-	 					.requestMatchers("/js/**","/api/auth/waitSignal", "/css/**", "/favicon.ico", "/error","/image/**","/vendor/**",
-	 						"/test/**","/login","/signup", "/sendemail","/certify","/forgot_password","/forgot_user","/find_user"
-	 						,".well-known/jwks.json").permitAll()
-					.requestMatchers("/ws").permitAll()
-	 					.anyRequest().authenticated()
-	 			)
-				.formLogin(formLogin -> formLogin
-						.loginPage("/login")
-				);
-
-		 http.addFilterBefore(customUsernamePasswordAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-
+		http
+			.authorizeHttpRequests((authorize) -> authorize
+				.requestMatchers("/js/**","/api/auth/waitSignal", "/css/**", "/favicon.ico", "/error","/image/**","/vendor/**",
+					"/test/**","/login","/signup", "/sendemail","/certify","/forgot_password","/forgot_user","/find_user"
+					,".well-known/jwks.json").permitAll()
+				.requestMatchers("/ws").permitAll()
+				.anyRequest().authenticated()
+			)
+			.formLogin(formLogin -> formLogin
+				.loginPage("/login")
+			);
 
 		return http.build();
-
-     }
-
-
-
-	@Bean
-	public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
-		return authenticationConfiguration.getAuthenticationManager();
 	}
+
 
 	@Bean
 	PasswordEncoder passwordEncoder() {
