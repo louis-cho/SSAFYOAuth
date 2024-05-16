@@ -647,7 +647,7 @@ public class TeamServiceImpl implements TeamService {
 		Integer userCount = oauth2AuthorizationConsentRepository.countServiceUser(String.valueOf(teamSeq));
 		data.put("userCount", userCount);
 		return data;
-	}
+	}git 
 
 	@Override
 	public Map countLoginUser(Integer teamSeq) {
