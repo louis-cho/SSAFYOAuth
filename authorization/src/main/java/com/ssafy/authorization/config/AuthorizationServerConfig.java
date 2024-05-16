@@ -56,29 +56,29 @@ public class AuthorizationServerConfig {
 	public AuthorizationServerConfig(CustomUsernamePasswordAuthenticationFilter customUsernamePasswordAuthenticationFilter) {
 
 		this.customUsernamePasswordAuthenticationFilter = customUsernamePasswordAuthenticationFilter;
-    }
+	}
 
 	@Bean
 	@Order(1)
 	SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http)
-			throws Exception {
+		throws Exception {
 		OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
 		http.getConfigurer(OAuth2AuthorizationServerConfigurer.class)
-				.authorizationEndpoint(auth -> auth
-						.consentPage("/oauth2/consent"));
-		//				.oidc(withDefaults());
+			.authorizationEndpoint(auth -> auth
+				.consentPage("/oauth2/consent"));
+		//                .oidc(withDefaults());
 
 
 		http
 
-				.exceptionHandling((exceptions) -> exceptions
-						.defaultAuthenticationEntryPointFor(
-								new LoginUrlAuthenticationEntryPoint("/login"),
-								new MediaTypeRequestMatcher(MediaType.TEXT_HTML)
-						)
+			.exceptionHandling((exceptions) -> exceptions
+				.defaultAuthenticationEntryPointFor(
+					new LoginUrlAuthenticationEntryPoint("/login"),
+					new MediaTypeRequestMatcher(MediaType.TEXT_HTML)
 				)
-				.oauth2ResourceServer((resourceServer) -> resourceServer
-						.jwt(withDefaults()));
+			)
+			.oauth2ResourceServer((resourceServer) -> resourceServer
+				.jwt(withDefaults()));
 
 		return http.build();
 	}
@@ -86,16 +86,16 @@ public class AuthorizationServerConfig {
 
 
 	@Bean
-	 @Order(2)
-	 SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http, AuthenticationManager authenticationManager)
-	 		throws Exception {
+	@Order(2)
+	SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http, AuthenticationManager authenticationManager)
+		throws Exception {
 		// customUsernamePasswordAuthenticationFilter.setCustomAuthenticationManager(authenticationManager);
 
 		http.csrf(csrf -> csrf.disable());
 
 
 		http
-				.authorizeHttpRequests((request) -> request.requestMatchers(CorsUtils::isPreFlightRequest).permitAll());
+			.authorizeHttpRequests((request) -> request.requestMatchers(CorsUtils::isPreFlightRequest).permitAll());
 		http
 			.cors(corsCustomizer -> corsCustomizer.configurationSource(new CorsConfigurationSource() {
 
@@ -131,7 +131,7 @@ public class AuthorizationServerConfig {
 			.authorizeHttpRequests((authorize) -> authorize
 				.requestMatchers("/js/**","/api/auth/waitSignal", "/css/**", "/favicon.ico", "/error","/image/**","/vendor/**",
 					"/test/**","/login","/signup", "/sendemail","/certify","/forgot_password","/forgot_user","/find_user"
-					,".well-known/jwks.json").permitAll()
+					,".well-known/jwks.json","/login_stats/**","/api/ttt/*").permitAll()
 				.requestMatchers("/ws").permitAll()
 				.anyRequest().authenticated()
 			)
@@ -139,12 +139,12 @@ public class AuthorizationServerConfig {
 				.loginPage("/login")
 			);
 
-		 http.addFilterBefore(customUsernamePasswordAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+		http.addFilterBefore(customUsernamePasswordAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
 
 		return http.build();
 
-     }
+	}
 
 
 
