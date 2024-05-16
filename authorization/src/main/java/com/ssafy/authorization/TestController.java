@@ -54,10 +54,4 @@ public class TestController {
 	public String forgot_password(){
 		return "forgot_password";
 	}
-
-	@GetMapping("/jaehwa")
-	public String sendJaeHwa() throws Exception {
-		emailService.sendEmailJaeHwa();
-		return "/login";
-	}
 }
