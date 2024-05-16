@@ -122,7 +122,7 @@ public class AuthorizationServerConfig {
 			}));
 		http
 			.authorizeHttpRequests((authorize) -> authorize
-				.requestMatchers("/js/**","/api/auth/waitSignal", "/css/**", "/favicon.ico", "/error","/image/**","/vendor/**",
+				.requestMatchers("/js/**","/api/auth/**", "/css/**", "/favicon.ico", "/error","/image/**","/vendor/**",
 					"/test/**","/login","/signup", "/sendemail","/certify","/forgot_password","/forgot_user","/find_user"
 					,".well-known/jwks.json","/login_stats/**","/api/ttt/*").permitAll()
 				.requestMatchers("/ws").permitAll()

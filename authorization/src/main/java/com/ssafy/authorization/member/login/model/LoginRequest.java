@@ -10,6 +10,7 @@ import lombok.ToString;
 public class LoginRequest {
     private String username;
     private Integer teamId;
+    private String ip;
 
 
     public LoginRequest(String username, Integer teamId) {
