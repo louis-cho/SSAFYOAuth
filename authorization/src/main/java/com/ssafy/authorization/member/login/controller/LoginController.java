@@ -36,7 +36,7 @@ public class LoginController {
     private RedisTemplate<String, String> redisTemplate;
     private final LoginStatsService loginStatsService;
 
-    private static final Long LIMIT_PER_PERIOD = 2L;
+    private static final Long LIMIT_PER_PERIOD = 30L;
     private final HttpSessionRequestCache requestCache = new HttpSessionRequestCache();
     private final RegisteredClientRepository registeredClientRepository;
 
