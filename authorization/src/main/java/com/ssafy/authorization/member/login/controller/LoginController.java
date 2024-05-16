@@ -1,19 +1,25 @@
 package com.ssafy.authorization.member.login.controller;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import co.elastic.clients.elasticsearch.nodes.Http;
+import com.ssafy.authorization.member.login.filter.LoginRateLimiter;
+import jakarta.servlet.http.HttpServletRequest;
+import org.joda.time.DateTime;
+import org.joda.time.Seconds;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import com.ssafy.authorization.member.login.model.LoginRequest;
@@ -27,9 +33,12 @@ public class LoginController {
     private final LoginService loginService;
     private final Map<String, SseEmitter> userEmitters;
 
+    private final Map<String, LoginRequest> loginRequestMap = new ConcurrentHashMap<>();
 
     private RedisTemplate<String, String> redisTemplate;
     private final LoginStatsService loginStatsService;
+
+    private static final Long LIMIT_PER_PERIOD = 2L;
 
 
     @Autowired
@@ -41,14 +50,62 @@ public class LoginController {
         this.loginStatsService = loginStatsService;
     }
 
-    @PostMapping("/waitSignal")
-    public SseEmitter waitSignal(@RequestBody LoginRequest request) {
+    private void updateLoginRate(LoginRequest request) {
 
-        final SseEmitter emitter = new SseEmitter(5 * 60 * 1000L);
-        final String key = request.toString();
+        if(request.getIp() == null) {
+            return;
+        }
 
-        if(userEmitters.isEmpty() == false && userEmitters.get(key) != null) {
-            userEmitters.remove(key);
+        final String loginRateKey = LoginRateLimiter.getCountIndex(request);
+        final String loginIndexKey = LoginRateLimiter.getIndex(request);
+
+        if(Boolean.TRUE.equals(redisTemplate.hasKey(loginRateKey))) {
+            Long loginRate = redisTemplate.opsForValue().increment(loginRateKey);
+            if(loginRate != null && loginRate.compareTo(LIMIT_PER_PERIOD) > 0) {
+                redisTemplate.opsForValue().set(loginIndexKey, LocalDateTime.now().toString());
+            }
+        } else {
+            redisTemplate.opsForValue().set(loginRateKey, "1");
+            redisTemplate.expire(loginIndexKey, 10, TimeUnit.SECONDS);
+            redisTemplate.expire(loginRateKey, 10, TimeUnit.SECONDS);
+        }
+    }
+
+    private boolean validLoginRate(LoginRequest request) {
+        final String loginIndexKey = LoginRateLimiter.getIndex(request);
+        if(Boolean.TRUE.equals(redisTemplate.hasKey(loginIndexKey))) {
+            return false;
+        }
+        return true;
+    }
+
+
+
+    @PostMapping("/waitRequest")
+    public ResponseEntity<String> createLoginRequest(@RequestBody LoginRequest request, HttpServletRequest httpServletRequest) {
+        String key = UUID.randomUUID().toString();
+        request.setIp(httpServletRequest.getRemoteAddr());
+        loginRequestMap.put(key, request);
+        return ResponseEntity.ok(key);
+    }
+
+    @GetMapping("/sse/{key}")
+    public SseEmitter connectSse(@PathVariable String key) {
+        SseEmitter emitter = new SseEmitter(5 * 60 * 1000L);
+
+        LoginRequest request = loginRequestMap.get(key);
+        loginRequestMap.remove(key);
+        if(request == null) {
+            return null;
+        }
+
+
+        final String emitterKey = request.toString();
+
+        updateLoginRate(request);
+
+        if(userEmitters.isEmpty() == false && userEmitters.get(emitterKey) != null) {
+            userEmitters.remove(emitterKey);
         }
 
         userEmitters.put(request.toString(), emitter);
@@ -60,7 +117,7 @@ public class LoginController {
                 emitter.send(SseEmitter.event().name("STATUS").data("Request enqueued"));
             } else {
                 emitter.send(SseEmitter.event().name("STATUS").data("Queue is full"));
-                emitter.complete();
+                emitter.completeWithError(new RuntimeException("Queue Exceed"));
             }
         } catch (IOException e) {
             emitter.completeWithError(e);
@@ -71,6 +128,42 @@ public class LoginController {
 
         return emitter;
     }
+
+//    @PostMapping("/waitSignal")
+//    public SseEmitter waitSignal(@RequestBody LoginRequest request, HttpServletRequest servletRequest) {
+//
+//        final SseEmitter emitter = new SseEmitter(5 * 60 * 1000L);
+//        final String key = request.toString();
+//        request.setIp(servletRequest.getRemoteAddr());
+//
+//        updateLoginRate(request);
+//
+//        if(userEmitters.isEmpty() == false && userEmitters.get(key) != null) {
+//            userEmitters.remove(key);
+//        }
+//
+//        userEmitters.put(request.toString(), emitter);
+//
+//        try {
+//            emitter.send(SseEmitter.event().name("STATUS").data("Request received"));
+//            boolean enqueued = loginService.getLoginQueueManager().enqueue(request);
+//             if (enqueued) {
+//                emitter.send(SseEmitter.event().name("STATUS").data("Request enqueued"));
+//            } else {
+//                emitter.send(SseEmitter.event().name("STATUS").data("Queue is full"));
+//                emitter.completeWithError(new RuntimeException("Queue Exceed"));
+//            }
+//        } catch (IOException e) {
+//            emitter.completeWithError(e);
+//        }
+//
+//        emitter.onCompletion(() -> userEmitters.remove(request.toString()));
+//        emitter.onTimeout(() -> userEmitters.remove(request.toString()));
+//
+//        return emitter;
+//    }
+
+
 //    @PostMapping("/login")
 //    public SseEmitter addLoginRequest(@RequestBody LoginRequest request) {
 //        final SseEmitter emitter = new SseEmitter(Long.MAX_VALUE); // 긴 연결 시간 설정
@@ -101,11 +194,16 @@ public class LoginController {
         redisTemplate.expire(key, 300, TimeUnit.SECONDS);
 
 
+
         SseEmitter emitter = userEmitters.get(key);
         if (emitter != null) {
             try {
-                emitter.send(SseEmitter.event().name("WAIT_RESULT").data("Wait successful"));
-                emitter.complete();
+                if(!validLoginRate(request)) {
+                    emitter.completeWithError(new RuntimeException("되겠냐?"));
+                } else {
+                    emitter.send(SseEmitter.event().name("WAIT_RESULT").data("Wait successful"));
+                    emitter.complete();
+                }
                 userEmitters.remove(key);
             } catch (IOException e) {
                 emitter.completeWithError(e);
