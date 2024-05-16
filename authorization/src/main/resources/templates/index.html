@@ -13,8 +13,41 @@
 
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
     <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        #wrapper {
+            padding: 20px;
+        }
+
+        h1 {
+            color: #0056b3;
+            font-weight: 700;
+            padding-bottom: 10px;
+        }
+
         .my-team-title {
             margin: 50px 0 15px 0;
+        }
+
+        .docs-link {
+            font-size: 18px;
+            font-weight: bold;
+            background-color: #0056b3;
+            color: #ffffff;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            display: inline-block;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .docs-link:hover {
+            background-color: #004494;
+            color: #cccccc;
         }
     </style>
 </head>
@@ -22,16 +55,13 @@
 <body id="page-top" th:class="${bodyClass}">
 <!-- Page Wrapper -->
 <div id="wrapper">
-
-    <!-- 여기가 주 된 내용 -->
+    <!-- Main Content -->
     <div id="content-wrapper" class="d-flex flex-column">
-        <h1>싸피 오어스 홈 화면입니다. 여러분 오어스 로그인을 이용하세요</h1>
-
+        <h1>Welcome to SSAFY Auth Dashboard</h1>
+        <p>Use SSAFY Auth for streamlined OAuth2.0 based authentication across different services.</p>
+        <a href="https://k10a306.p.ssafy.io/api/outline" class="docs-link">Go to Developer Docs</a>
     </div>
-
 </div>
-
-
 </body>
 
 </html>
