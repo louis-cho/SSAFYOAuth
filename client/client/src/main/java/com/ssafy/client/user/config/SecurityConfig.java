@@ -3,9 +3,11 @@ package com.ssafy.client.user.config;
 import java.util.Arrays;
 import java.util.Collections;
 
+import com.ssafy.client.user.CustomLogoutHandler;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -41,7 +43,9 @@ public class SecurityConfig {
     private final CustomOAuth2UserService customOAuth2UserService;
     private final CustomSuccessHandler customSuccessHandler;
     private final CustomOAuth2FailHandler customOAuth2FailHandler;
+    private final CustomLogoutHandler customLogoutHandler;
 
+    private final TokenExpirationFilter tokenExpirationFilter;
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring()
@@ -64,13 +68,14 @@ public class SecurityConfig {
             http
                     .httpBasic((auth) -> auth.disable());
 
-            http.addFilterBefore(new TokenExpirationFilter(), UsernamePasswordAuthenticationFilter.class);
+            http.addFilterBefore(tokenExpirationFilter, UsernamePasswordAuthenticationFilter.class);
+
             http.logout((logout) -> logout
                     .logoutUrl("/logout")
-                    .logoutSuccessUrl("https://k10a306.p.ssafy.io")
+                    .logoutSuccessUrl("/")
+                    .deleteCookies("JSESSIONID","access_token", "refresh_token")
                     .invalidateHttpSession(true)
-                    .clearAuthentication(true)
-                    .deleteCookies("access", "refresh")
+                    .addLogoutHandler(customLogoutHandler)
             );
 
 
@@ -82,6 +87,7 @@ public class SecurityConfig {
             http
 
                     .oauth2Login((oauth2) -> oauth2
+                            .loginPage("/custom-login")
                             .userInfoEndpoint((userInfoEndpointConfig) -> userInfoEndpointConfig
                                     .userService(customOAuth2UserService))
                             .successHandler(customSuccessHandler)
@@ -91,7 +97,7 @@ public class SecurityConfig {
             //경로별 인가 작업
             http
                     .authorizeHttpRequests((auth) -> auth
-                            .requestMatchers("/api/**","/css/**", "/favicon.ico", "/error/**", "/image/**", "/vendor/**","users/**").permitAll()
+                            .requestMatchers("/custom-login","/api/**","/css/**", "/favicon.ico", "/error/**", "/image/**", "/vendor/**","users/**").permitAll()
                             .anyRequest().authenticated());
 
             //세션 설정 : STATELESS
