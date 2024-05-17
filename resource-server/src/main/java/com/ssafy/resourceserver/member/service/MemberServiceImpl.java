@@ -195,4 +195,9 @@ public class MemberServiceImpl implements MemberService {
 		return tempDto;
 	}
 
+	@Override
+	public Long countAllUser() {
+		return memberRepository.count();
+	}
+
 }

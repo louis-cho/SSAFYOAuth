@@ -133,4 +133,9 @@ public class UserController {
 		return "잘되네";
 	}
 
+	@GetMapping("/count-user")
+	public ResponseEntity<?> countAllUser() {
+		Long userCount = memberService.countAllUser();
+		return ResponseEntity.status(HttpStatus.OK).body(userCount);
+	}
 }
