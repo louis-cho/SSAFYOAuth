@@ -49,4 +49,8 @@ public interface TeamService {
 	Map countLoginUser(Integer teamSeq);
 
 	Map abnormalLogin(Integer teamSeq);
+
+	int countAllLoginUser();
+
+	Long allAbnormalLogin();
 }

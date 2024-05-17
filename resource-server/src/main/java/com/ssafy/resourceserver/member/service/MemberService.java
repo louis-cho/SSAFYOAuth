@@ -21,4 +21,6 @@ public interface MemberService {
     ProfileInformationForUpdatesDto ProfileInforForUpdatesData(String email);
 
     TempDto checkUser(String email);
+
+	Long countAllUser();
 }

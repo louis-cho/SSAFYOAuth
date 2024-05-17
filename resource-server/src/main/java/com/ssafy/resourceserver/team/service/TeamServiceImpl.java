@@ -677,4 +677,24 @@ public class TeamServiceImpl implements TeamService {
 		return data;
 	}
 
+	@Override
+	public int countAllLoginUser() {
+		return countLoginUserRepository.countAllLoginUser();
+	}
+
+	@Override
+	public Long allAbnormalLogin() {
+		Long count = 0L;
+		int teamSeq;
+		List<DeveloperTeamEntity> teams =  developerTeamRepository.findAll();
+		for (DeveloperTeamEntity team : teams) {
+			teamSeq = team.getSeq();
+			String value =  (String) redisTemplate.opsForValue().get(String.valueOf(teamSeq));
+			if(value != null) {
+				count += Long.parseLong(value);
+			}
+		}
+		return count;
+	}
+
 }
