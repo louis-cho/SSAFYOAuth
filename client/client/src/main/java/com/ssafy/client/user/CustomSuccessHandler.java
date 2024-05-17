@@ -12,8 +12,10 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.client.user.domain.CustomOAuth2User;
 // import com.ssafy.client.client.user.jwt.JWTUtil;
+import com.ssafy.client.user.dto.TempDto;
 import com.ssafy.client.user.jwt.JWTUtil;
 import com.ssafy.client.user.service.ApiService;
 import com.ssafy.client.user.service.JWTService;
@@ -32,6 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
     public final ApiService apiService;
+    private final ObjectMapper objectMapper;
     private static final String RESOURCE_SERVER_URL = "http://localhost:8090/";
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException, IOException {
@@ -48,8 +51,8 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         log.info("통과 ");
         // API 호출을 통해 사용자 존재 유무를 체크
         String result = apiService.callProtectedApi(RESOURCE_SERVER_URL + "user/check");
-
-        if (!"-1".equals(result)) {
+        TempDto tempDto = objectMapper.readValue(result, TempDto.class);
+        if (tempDto.isRes()) {
             // 사용자가 존재하는 경우
             HttpSession session = request.getSession(false);
             String accessToken = (session != null) ? (String) session.getAttribute("access_token") : null;
@@ -72,7 +75,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         } else {
             // 사용자가 존재하지 않는 경우, 회원가입 페이지로 리다이렉트
             response.setStatus(HttpStatus.OK.value());
-            response.sendRedirect("http://localhost:8080/user/sign-up/" + result);
+            response.sendRedirect("http://localhost:8080/user/sign-up/" + tempDto.getSeq());
         }
 
 

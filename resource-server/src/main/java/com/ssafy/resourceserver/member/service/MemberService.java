@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import com.ssafy.resourceserver.member.TempDto;
 import com.ssafy.resourceserver.member.model.dto.ProfileInformationForUpdatesDto;
-import com.ssafy.resourceserver.member.model.dto.UserInfo;
 
 public interface MemberService {
 
@@ -20,5 +20,5 @@ public interface MemberService {
     void signUp(Integer seq);
     ProfileInformationForUpdatesDto ProfileInforForUpdatesData(String email);
 
-    Integer checkUser(String email);
+    TempDto checkUser(String email);
 }

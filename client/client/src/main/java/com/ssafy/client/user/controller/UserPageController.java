@@ -37,8 +37,8 @@ public class UserPageController {
 		return "user/sign_up";
 	}
 
-	@PostMapping("/user/sign-up")
-	public String signUp(@RequestParam(name = "seq", required = false) Integer seq){
+	@PostMapping("/user/sign-up/{seq}")
+	public String signUp(@PathVariable Integer seq){
 		log.info("post 들어갈 seq : {}", seq);
 		String url = RESOURCES_URL + "/api/team/sign-up";
 		String s = apiService.callPostSignUp(url, seq);

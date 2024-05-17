@@ -1,5 +1,6 @@
 package com.ssafy.resourceserver.member.controller;
 
+import com.ssafy.resourceserver.member.TempDto;
 import com.ssafy.resourceserver.member.model.dto.ProfileInformationForUpdatesDto;
 import com.ssafy.resourceserver.member.model.dto.UserInfo;
 import com.ssafy.resourceserver.member.service.MemberService;
@@ -33,7 +34,8 @@ public class UserController {
 	public ResponseEntity<?> check(@AuthenticationPrincipal Jwt jwt) {
 		String email = jwt.getClaimAsString("sub");
 		log.info("들어온 email value : {} ", email);
-		Integer result = memberService.checkUser(email);
+		TempDto result = memberService.checkUser(email);
+		log.info("result ttt : {}", result);
 		return ResponseEntity.status(HttpStatus.OK).body(result);
 	}
 
