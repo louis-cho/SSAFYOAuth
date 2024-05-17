@@ -87,8 +87,8 @@
                         <div class="form-group">
                             <label for="country-select" class="mr-2">차단할 국가 : </label>
                             <select id="country-select" name="country" class="custom-select">
-                                <option value="KR" th:unless="${#lists.contains(blockedCountries, 'KR')}">South Korea</option>
-                                <option value="US" th:unless="${#lists.contains(blockedCountries, 'US')}">United States</option>
+                                <option value="KO" th:unless="${#lists.contains(blockedCountries, 'KO')}">South Korea</option>
+                                <option value="EN" th:unless="${#lists.contains(blockedCountries, 'EN')}">United States</option>
                                 <option value="CN" th:unless="${#lists.contains(blockedCountries, 'CN')}">China</option>
                             </select>
                             <button type="button" class="btn btn-primary ml-2">추가하기</button>

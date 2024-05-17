@@ -1,15 +1,13 @@
 package com.ssafy.resourceserver.team.service;
 
-import java.util.List;
-import java.util.Map;
-
 import com.ssafy.resourceserver.team.vo.ServiceNameUpdateVo;
 import com.ssafy.resourceserver.team.vo.TeamAddVo;
-import org.springframework.security.core.Authentication;
-import org.springframework.web.multipart.MultipartFile;
-
 import com.ssafy.resourceserver.team.vo.TeamImageVo;
 import com.ssafy.resourceserver.team.vo.TeamNameUpdateVo;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
+import java.util.Map;
 
 public interface TeamService {
 	Map<String, Object> addTeam(TeamAddVo vo, String email);
@@ -49,4 +47,6 @@ public interface TeamService {
 	Map countServiceUser(Integer teamSeq);
 
 	Map countLoginUser(Integer teamSeq);
+
+	Map abnormalLogin(Integer teamSeq);
 }

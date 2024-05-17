@@ -38,7 +38,7 @@
                   로그인에 실패했습니다. 다시 시도해주세요.
                 </div>
 
-                <form class="user" th:action="@{/login}" method="post" onsubmit="sendWaitSignal(event)">
+                <form class="user" th:action="@{/login}" method="post" onsubmit="initiateLogin(event)">
                   <div class="form-group">
                     <input
                             type="email"
@@ -102,39 +102,98 @@
 </div>
 
 <script>
-  // /waitSignal 엔드포인트로 요청을 보내는 함수
-  function sendWaitSignal(event) {
-      event.preventDefault();
+  // // /waitSignal 엔드포인트로 요청을 보내는 함수
+  // function sendWaitSignal(event) {
+  //     event.preventDefault();
+  //
+  //     var username = document.getElementById('username').value;
+  //     var teamId = document.getElementsByName('teamId')[0].value;
+  //
+  //     fetch('/api/auth/waitSignal', {
+  //         method: 'POST',
+  //         headers: {
+  //             'Content-Type': 'application/json'
+  //         },
+  //         body: JSON.stringify({
+  //             username: username,
+  //             teamId: teamId
+  //         })
+  //     })
+  //     .then(response => {
+  //         if (response.ok) {
+  //             return response.text();
+  //         } else {
+  //             throw new Error('Failed to send wait signal');
+  //         }
+  //     })
+  //     .then(data => {
+  //         console.log(data);
+  //         // "Wait successful" 메시지를 받은 후에 로그인 요청을 보냅니다.
+  //         sendLoginRequest();
+  //     })
+  //     .catch(error => {
+  //         console.error('Error:', error);
+  //     });
+  // }
 
+  // 초기 로그인 요청을 보내고 키를 받는 함수
+  async function initiateLogin(event) {
+    try {
+    event.preventDefault();
       var username = document.getElementById('username').value;
       var teamId = document.getElementsByName('teamId')[0].value;
-
-      fetch('/api/auth/waitSignal', {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-              username: username,
-              teamId: teamId
-          })
-      })
-      .then(response => {
-          if (response.ok) {
-              return response.text();
-          } else {
-              throw new Error('Failed to send wait signal');
-          }
-      })
-      .then(data => {
-          console.log(data);
-          // "Wait successful" 메시지를 받은 후에 로그인 요청을 보냅니다.
-          sendLoginRequest();
-      })
-      .catch(error => {
-          console.error('Error:', error);
+      const response = await fetch('/api/auth/waitRequest', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          username: username,
+          teamId: teamId
+        })
       });
+
+      if (response.ok) {
+        const key = await response.text();
+        console.log('Received key:', key);
+
+        // SSE 연결 설정
+        connectSse(key);
+      } else {
+        throw new Error('Failed to initiate login request');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
   }
+
+  // SSE 연결을 설정하는 함수
+  function connectSse(key) {
+    const sseUrl = `/api/auth/sse/${key}`;
+    const eventSource = new EventSource(sseUrl);
+
+    eventSource.onmessage = function(event) {
+      console.log('Message from server:', event.data);
+    };
+
+    eventSource.addEventListener('STATUS', function(event) {
+      console.log('STATUS event:', event.data);
+    });
+
+    eventSource.addEventListener('WAIT_RESULT', function(event) {
+      console.log('WAIT_RESULT event:', event.data);
+      // 로그인 요청을 보내는 함수 호출 (예시)
+      sendLoginRequest();
+      eventSource.close();
+    });
+
+    eventSource.onerror = function(event) {
+      console.error('SSE error:', event);
+      eventSource.close();
+      window.location.href = "/error";
+    };
+  }
+
 
 function sendLoginRequest() {
     var form = document.createElement('form');

@@ -31,7 +31,7 @@ public class GlobalExceptionHandler {
 		model.addAttribute("errorCode", ErrorCode.INTERNAL_SERVER_ERROR);
 		model.addAttribute("message", e.getMessage());
 		model.addAttribute("description", "처리 오류.");
-		return "500";
+		return "/error/500";
 	}
 
 	/**
