@@ -15,6 +15,7 @@ import com.ssafy.client.user.service.ApiService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -37,17 +38,24 @@ public class TeamController {
 	private final ApiService apiService;
 	private final ObjectMapper objectMapper;
 	private final String SUFFIX = "pages/";
+
 	@PostMapping("/{teamSeq}/country-ip")
-	public ResponseEntity<?> blocked(@PathVariable String teamSeq, @RequestBody List<String> blockedCountries, Model model){
+	public ResponseEntity<?> blocked(@PathVariable String teamSeq, @RequestBody List<String> blockedCountries,
+		Model model) {
 		log.info("teamSeq : {}, blockedCountries : {}", teamSeq, blockedCountries);
 		String url = RESOURCE_SERVER_URL + "team/" + teamSeq + "/country-ip";
 		String result = apiService.callPostCountry(url, blockedCountries);
 		return ResponseEntity.status(HttpStatus.OK).body(result);
 	}
+
 	@GetMapping("/detail/{team-seq}")
 	public String teamDetail(@PathVariable("team-seq") Integer teamSeq, Model model) {
 		model.addAttribute("teamSeq", teamSeq);
 		return "team/detail";
 	}
 
+	@GetMapping("/test")
+	public String test() {
+		return SUFFIX+ "login-log";
+	}
 }

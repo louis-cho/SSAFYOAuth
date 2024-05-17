@@ -103,4 +103,26 @@ public class LoginStatsTestController {
 
 	}
 
+	@PostMapping("/fetch-all")
+	public String testAllFetch(@RequestBody JsonNode requestBody) {
+		LoginStatsFetchRequestVO requestVO = new LoginStatsFetchRequestVO(requestBody);
+		Pageable pageable = null;
+		if (requestBody.get("page") != null & requestBody.get("size") != null) {
+			pageable = PageRequest.of(requestBody.get("page").asInt(0), requestBody.get("size").asInt(30),
+				Sort.by("createdAt").descending());
+		}
+
+		List<LoginStats> list = null;
+		try {
+			list = loginStatsService.fetch(requestVO, pageable);
+		} catch (Exception e) {
+			return null;
+		}
+		StringBuilder ret = new StringBuilder();
+		for (LoginStats loginStats : list) {
+			ret.append(loginStats.toString());
+		}
+		System.out.println(ret);
+		return ret.toString();
+	}
 }

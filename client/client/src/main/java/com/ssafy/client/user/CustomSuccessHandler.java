@@ -43,17 +43,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         CustomOAuth2User customUserDetails = (CustomOAuth2User) authentication.getPrincipal();
 
         String username = customUserDetails.getUsername();
-
-        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-        Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
-        GrantedAuthority auth = iterator.next();
-        String role = auth.getAuthority();
-        log.info("통과 ");
-        // API 호출을 통해 사용자 존재 유무를 체크
-        String result = apiService.callProtectedApi(RESOURCE_SERVER_URL + "user/check");
-        TempDto tempDto = objectMapper.readValue(result, TempDto.class);
-        if (tempDto.isRes()) {
-            // 사용자가 존재하는 경우
+        if (username.equals("admin@admin")) {
             HttpSession session = request.getSession(false);
             String accessToken = (session != null) ? (String) session.getAttribute("access_token") : null;
 
@@ -71,14 +61,42 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
             // 성공 응답 설정 후 리다이렉트
             response.setStatus(HttpStatus.OK.value());
-            response.sendRedirect("http://localhost:8080");
+            response.sendRedirect("http://localhost:8080/admin/dashboard");
         } else {
-            // 사용자가 존재하지 않는 경우, 회원가입 페이지로 리다이렉트
-            response.setStatus(HttpStatus.OK.value());
-            response.sendRedirect("http://localhost:8080/user/sign-up/" + tempDto.getSeq());
+            Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+            Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
+            GrantedAuthority auth = iterator.next();
+            String role = auth.getAuthority();
+            log.info("통과 ");
+            // API 호출을 통해 사용자 존재 유무를 체크
+            String result = apiService.callProtectedApi(RESOURCE_SERVER_URL + "user/check");
+            TempDto tempDto = objectMapper.readValue(result, TempDto.class);
+            if (tempDto.isRes()) {
+                // 사용자가 존재하는 경우
+                HttpSession session = request.getSession(false);
+                String accessToken = (session != null) ? (String) session.getAttribute("access_token") : null;
+
+                if (accessToken != null) {
+                    // 액세스 토큰이 세션에 존재하면 쿠키를 생성하여 응답에 추가
+                    Cookie accessCookie = createCookie("access_token", accessToken);
+                    response.addCookie(accessCookie);
+                } else {
+                    // 액세스 토큰이 세션에 존재하지 않으면 경고 로그
+                    log.warn("Access token not found in session");
+                }
+
+                // 인증된 사용자의 정보 로깅
+                log.info("{} what is this", authentication.getPrincipal());
+
+                // 성공 응답 설정 후 리다이렉트
+                response.setStatus(HttpStatus.OK.value());
+                response.sendRedirect("http://localhost:8080");
+            } else {
+                // 사용자가 존재하지 않는 경우, 회원가입 페이지로 리다이렉트
+                response.setStatus(HttpStatus.OK.value());
+                response.sendRedirect("http://localhost:8080/user/sign-up/" + tempDto.getSeq());
+            }
         }
-
-
     }
 
     public static Cookie createCookie(String key, String value) {

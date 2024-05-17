@@ -194,4 +194,15 @@ public class TeamController {
 		return ResponseEntity.status(HttpStatus.OK).body(data);
 	}
 
+	@GetMapping("/count-all-login-user")
+	public ResponseEntity<?> countAllLoginUser() {
+		int loginCount = teamService.countAllLoginUser();
+		return ResponseEntity.status(HttpStatus.OK).body(loginCount);
+	}
+
+	@GetMapping("/all-abnormal-login")
+	public ResponseEntity<?> allAbnormalLogin() {
+		Long allAbnormalCount = teamService.allAbnormalLogin();
+		return ResponseEntity.status(HttpStatus.OK).body(allAbnormalCount);
+	}
 }
