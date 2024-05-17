@@ -1,5 +1,6 @@
 package com.ssafy.authorization.config;
 
+import java.time.Duration;
 import java.time.ZoneOffset;
 import java.util.Arrays;
 
@@ -9,6 +10,7 @@ import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
+import org.springframework.security.oauth2.server.authorization.settings.TokenSettings;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.Assert;
 
@@ -73,7 +75,12 @@ public class RegisteredClientRepositoryImpl implements RegisteredClientRepositor
 				})
 				.scopes(scopes ->{
 					Arrays.stream(scope).toList().forEach(s -> {scopes.add(s);});
-				}).build();
+				})
+				.tokenSettings(TokenSettings.builder()
+						.accessTokenTimeToLive(Duration.ofSeconds(7200)) // Access token expiry
+						.refreshTokenTimeToLive(Duration.ofSeconds(864000)) // Refresh token expiry
+						.build())
+				.build();
 	}
 
 	@Override
@@ -117,6 +124,10 @@ public class RegisteredClientRepositoryImpl implements RegisteredClientRepositor
 							}
 					);
 				})
+				.tokenSettings(TokenSettings.builder()
+						.accessTokenTimeToLive(Duration.ofSeconds(7200)) // Access token expiry
+						.refreshTokenTimeToLive(Duration.ofSeconds(864000)) // Refresh token expiry
+						.build())
 				.clientSettings(ClientSettings.builder()
 						.requireAuthorizationConsent(true)
 						.build())
