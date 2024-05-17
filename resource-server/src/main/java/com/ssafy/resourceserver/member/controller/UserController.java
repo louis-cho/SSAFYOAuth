@@ -4,6 +4,7 @@ import com.ssafy.resourceserver.member.TempDto;
 import com.ssafy.resourceserver.member.model.dto.ProfileInformationForUpdatesDto;
 import com.ssafy.resourceserver.member.model.dto.UserInfo;
 import com.ssafy.resourceserver.member.service.MemberService;
+import com.ssafy.resourceserver.team.service.DeveloperService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +30,13 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class UserController {
 	private final MemberService memberService;
-
+	private final DeveloperService developerService;
+	@PostMapping("/developer-sign-up")
+	public ResponseEntity<?> developerSignUp(@RequestBody Integer seq) {
+		log.info("들어온 인티저 : {} ", seq);
+		developerService.developerSignUp(seq);
+		return ResponseEntity.status(HttpStatus.OK).body(true);
+	}
 	@GetMapping("/check")
 	public ResponseEntity<?> check(@AuthenticationPrincipal Jwt jwt) {
 		String email = jwt.getClaimAsString("sub");
@@ -39,13 +46,13 @@ public class UserController {
 		return ResponseEntity.status(HttpStatus.OK).body(result);
 	}
 
-	@PostMapping("/sign-up")
-	public ResponseEntity<?> signUp(@RequestBody Integer seq, @AuthenticationPrincipal Jwt jwt) {
-		log.info("before");
-		memberService.signUp(seq);
-		log.info("after");
-		return ResponseEntity.status(HttpStatus.OK).body(true);
-	}
+	// @PostMapping("/sign-up")
+	// public ResponseEntity<?> signUp(@RequestBody Integer seq, @AuthenticationPrincipal Jwt jwt) {
+	// 	log.info("before");
+	// 	memberService.signUp(seq);
+	// 	log.info("after");
+	// 	return ResponseEntity.status(HttpStatus.OK).body(true);
+	// }
 
 	@GetMapping("/info")
 	public Map<String, Object> getUserInfo(@AuthenticationPrincipal Jwt jwt) {
