@@ -77,8 +77,10 @@
                         <option value="false">Failure</option>
                     </select>
                 </div>
-                <button type="button" class="btn btn-primary mb-2" onclick="fetchLogs()">Search</button>
-                <button type="button" class="btn btn-primary mb-2" onclick="downloadLogs()">로그 다운로드</button>
+                <div style="display: flex">
+                    <button type="button" class="btn btn-primary mb-2" onclick="fetchLogs()">Search</button>
+                    <button type="button" class="btn btn-primary mb-2" onclick="downloadLogs()">로그 다운로드</button>
+                </div>
             </form>
         </div>
 
@@ -123,8 +125,8 @@
         });
     });
 
-    const teamId = 1; // teamId 값을 설정하세요.
-    const logsPerPage = 20; // 한 페이지에 표시할 로그 수
+    const teamId =window.location.pathname.match(/\/team\/(\d+)\/login-log/)[1]; // teamId 값을 설정하세요.
+    const logsPerPage = 11; // 한 페이지에 표시할 로그 수
     let currentPage = 1;
 
     function fetchLogs(page = 1) {
@@ -132,11 +134,8 @@
         const startDate = $('#startDate').val();
         const endDate = $('#endDate').val();
         const success = $('#success').val();
+
         const url = "http://localhost:9000/api/ttt/fetch";
-        console.log(userId);
-        console.log(startDate);
-        console.log(endDate);
-        console.log(success);
         $.ajax({
             url: url,
             type: "POST",

@@ -37,6 +37,7 @@
             loadLoginCount(teamSeq);
             loadAbnormalLoginCount(teamSeq)
         };
+
         function getCookie(name) {
             var cookies = document.cookie.split(';');
             for (var i = 0; i < cookies.length; i++) {
@@ -55,7 +56,7 @@
         function loadUserCount(teamSeq) {
             var token = getCookie("access_token")
             $.ajax({
-                url: 'http://localhost:8090/api/team/'+teamSeq+'/count-user',
+                url: 'http://localhost:8090/api/team/' + teamSeq + '/count-user',
                 type: 'GET',
                 contentType: 'application/json',
                 headers: {
@@ -74,7 +75,7 @@
         function loadLoginCount(teamSeq) {
             var token = getCookie("access_token")
             $.ajax({
-                url: 'http://localhost:8090/api/team/'+teamSeq+'/count-login-user',
+                url: 'http://localhost:8090/api/team/' + teamSeq + '/count-login-user',
                 type: 'GET',
                 contentType: 'application/json',
                 headers: {
@@ -92,7 +93,7 @@
         function loadAbnormalLoginCount(teamSeq) {
             var token = getCookie("access_token")
             $.ajax({
-                url: 'http://localhost:8090/api/team/'+teamSeq+'/abnormal-login',
+                url: 'http://localhost:8090/api/team/' + teamSeq + '/abnormal-login',
                 type: 'GET',
                 contentType: 'application/json',
                 headers: {
@@ -107,6 +108,12 @@
             });
         }
 
+        $(document).ready(function () {
+            $('#userLoginCountCard').click(function () {
+                var teamSeq = window.location.pathname.match(/\/teams\/(\d+)\/dashboard/)[1];
+                window.location.href = `/team/${teamSeq}/login-log`;
+            });
+        });
 
     </script>
     <style>
@@ -163,7 +170,7 @@
     <div class="container-fluid">
         <div class="d-sm-flex align-items-center justify-content-between mb-4">
             <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
-                   </div>
+        </div>
         <div class="row">
 
             <!-- Earnings (Monthly) Card Example -->
@@ -185,8 +192,8 @@
                 </div>
             </div>
 
-            <!-- Earnings (Monthly) Card Example -->
-            <div class="col-xl-4 col-md-6 mb-4">
+            <!-- 일일 로그인 수 Card Example -->
+            <div class="col-xl-4 col-md-6 mb-4" id="userLoginCountCard" style="cursor: pointer;">
                 <div class="card border-left-success shadow h-100 py-2">
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
@@ -196,8 +203,8 @@
                                 </div>
                                 <div class="h5 mb-0 font-weight-bold text-gray-800" id="userLoginCount">50,000 회</div>
                             </div>
-                            <div class="col-auto"><i class="fas fa-users fa-2x text-gray-300"></i>
-
+                            <div class="col-auto">
+                                <i class="fas fa-users fa-2x text-gray-300"></i>
                             </div>
                         </div>
                     </div>
@@ -253,12 +260,12 @@
                     </div>
                 </div>
             </div>
-<!--            <div class="col-xl-7 col-lg-6">-->
-<!--                <div class="chart-card card-border">-->
-<!--                    <div class="card-header">임대 문의</div>-->
-<!--                    010 - xxxx - xxxx-->
-<!--                </div>-->
-<!--            </div>-->
+            <!--            <div class="col-xl-7 col-lg-6">-->
+            <!--                <div class="chart-card card-border">-->
+            <!--                    <div class="card-header">임대 문의</div>-->
+            <!--                    010 - xxxx - xxxx-->
+            <!--                </div>-->
+            <!--            </div>-->
 
         </div>
 

@@ -54,8 +54,9 @@ public class TeamController {
 		return "team/detail";
 	}
 
-	@GetMapping("/test")
-	public String test() {
+	@GetMapping("/{teamSeq}/login-log")
+	public String loginLog(@PathVariable Integer teamSeq) {
+
 		return SUFFIX+ "login-log";
 	}
 }
