@@ -86,6 +86,7 @@
             document.getElementById('teamNameHeading').innerText = teamDetail.teamName;
             document.getElementById('serviceName').innerText = teamDetail.serviceName;
             document.getElementById('serviceKey').innerText = teamDetail.serviceKey;
+            document.getElementById('clientId').innerText = teamDetail.clientId;
         }
 
         function copyServiceKey() {
@@ -123,7 +124,17 @@
                 }
             });
         }
-
+        function copyClientId() {
+            var serviceKeyElement = document.getElementById('clientId');
+            var serviceKey = serviceKeyElement.innerText;
+            var tempTextArea = document.createElement('textarea');
+            tempTextArea.value = serviceKey;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempTextArea);
+            alert('클라이언트 키가 복사되었습니다.');
+        }
 
 
     </script>
@@ -168,6 +179,21 @@
                                                         onclick="reclaimServiceKey()">재발급</button>
                                             </div>
                                         </div>
+                                    </div>
+                                    <div class="col-12 mb-3">
+                                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1"
+                                             style="margin-bottom: 10px;">
+                                            클라이언트 아이디
+                                        </div>
+                                        <div class="input-group">
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="clientId">클라이언트 키
+                                            </div>
+                                            <div class="btn-group" style="margin-left: 10px;">
+                                                <button class="btn btn-primary"
+                                                        onclick="copyClientId()">복사</button>
+                                            </div>
+                                        </div>
+
                                     </div>
                                 </div>
                             </div>
