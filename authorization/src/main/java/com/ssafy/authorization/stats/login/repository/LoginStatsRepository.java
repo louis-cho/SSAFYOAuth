@@ -48,7 +48,7 @@ public class LoginStatsRepository {
 
 		List<Criteria> queryList = new ArrayList<>();
 		// userId가 존재하면 userId로 검색합니다.
-		if (!userId.isBlank() || !userId.isEmpty()) {
+		if (userId != null && (!userId.isBlank() || !userId.isEmpty())) {
 			queryList.add(new Criteria("userId").is(userId));
 		}
 

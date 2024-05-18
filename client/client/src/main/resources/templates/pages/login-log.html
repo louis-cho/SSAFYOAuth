@@ -134,12 +134,7 @@
         const startDate = $('#startDate').val();
         const endDate = $('#endDate').val();
         const success = $('#success').val().trim() === '' ? undefined : $('#success').val().trim();
-
         const url = "http://localhost:9000/api/ttt/fetch";
-        console.log("userId: ", userId);
-        console.log("startDate: ", startDate);
-        console.log("endDate: ", endDate);
-        console.log("success: ", success);
         $.ajax({
             url: url,
             type: "POST",
