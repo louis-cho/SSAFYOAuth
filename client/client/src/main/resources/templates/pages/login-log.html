@@ -130,12 +130,16 @@
     let currentPage = 1;
 
     function fetchLogs(page = 1) {
-        const userId = $('#userId').val();
+        const userId = $('#userId').val().trim();
         const startDate = $('#startDate').val();
         const endDate = $('#endDate').val();
-        const success = $('#success').val();
+        const success = $('#success').val().trim() === '' ? undefined : $('#success').val().trim();
 
         const url = "http://localhost:9000/api/ttt/fetch";
+        console.log("userId: ", userId);
+        console.log("startDate: ", startDate);
+        console.log("endDate: ", endDate);
+        console.log("success: ", success);
         $.ajax({
             url: url,
             type: "POST",
@@ -149,6 +153,7 @@
                 page: page - 1,
                 size: logsPerPage
             }),
+
             success: function(data) {
                 const logEntries = data.split('\n').filter(entry => entry.trim() !== '');
                 const logData = logEntries.map(entry => {
@@ -157,9 +162,13 @@
                     const userId = parts[0].split('=')[1];
                     const teamId = parseInt(parts[1].split('=')[1]);
                     const createdAt = new Date(parts[2].split('=')[1]).toLocaleString();
-                    const success = parts[3].split('=')[1] === 'true';
+                    const successStr = parts[3].split('=')[1].replace(')', '').trim();
+                    console.log(successStr);
+                    const success = successStr === 'true';
                     return { userId, teamId, createdAt, success };
                 });
+                console.log(logData);
+                logData.forEach(log => console.log(log.success));
                 updateTable(logData);
                 updatePagination(page, logEntries.length < logsPerPage);
             },

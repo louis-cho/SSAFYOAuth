@@ -21,7 +21,7 @@ import lombok.ToString;
 @NoArgsConstructor
 public class LoginStatsFetchRequestVO {
 
-	public Integer userId = null;
+	public String userId;
 	public Integer teamId = null;
 	public Instant startTime = null;
 	public Instant endTime = null;
@@ -38,10 +38,10 @@ public class LoginStatsFetchRequestVO {
 
 		if (userNode != null) {
 			try {
-				userId = Integer.parseInt(userNode.asText());
+				userId = userNode.asText();
 				this.setUserId(userId);
 			} catch (IllegalArgumentException e) {
-				userId = null;
+				userId = "";
 			}
 		}
 

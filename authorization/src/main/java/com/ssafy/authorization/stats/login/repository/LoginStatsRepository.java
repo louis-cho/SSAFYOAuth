@@ -40,16 +40,15 @@ public class LoginStatsRepository {
 	// 조회
 	public List<LoginStats> fetch(LoginStatsFetchRequestVO requestVO, Pageable pageable) {
 		// 필드 값들을 추출합니다.
-		Integer userId = requestVO.getUserId();
+		String userId = requestVO.getUserId();
 		Integer teamId = requestVO.getTeamId();
 		Instant startTime = requestVO.getStartTime();
 		Instant endTime = requestVO.getEndTime();
 		Boolean success = requestVO.getSuccess();
 
 		List<Criteria> queryList = new ArrayList<>();
-
 		// userId가 존재하면 userId로 검색합니다.
-		if (userId != null) {
+		if (!userId.isBlank() || !userId.isEmpty()) {
 			queryList.add(new Criteria("userId").is(userId));
 		}
 
