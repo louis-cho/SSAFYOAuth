@@ -45,7 +45,7 @@ public class LogoutOutService {
         headers.set("Authorization", authHeader);
 
         // 요청 바디에 토큰 포함
-        String requestBody = String.format("token=%s&token_type_hint=access_token", token);
+        String requestBody = String.format("token=%s&token_type_hint=refresh_token", token);
         HttpEntity<String> entity = new HttpEntity<>(requestBody, headers);
 
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
@@ -86,6 +86,7 @@ public class LogoutOutService {
     public void handleLogout(HttpServletRequest request, HttpServletResponse response) throws IOException {
         SecurityContextHolder.clearContext();
         request.getSession().invalidate();
+
         // Remove cookies
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
