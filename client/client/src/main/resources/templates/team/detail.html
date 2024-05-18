@@ -67,6 +67,19 @@
             justify-content: space-between;
         }
     </style>
+    <script>
+        function copyClientId() {
+            var serviceKeyElement = document.getElementById('client-id');
+            var serviceKey = serviceKeyElement.value;
+            var tempTextArea = document.createElement('textarea');
+            tempTextArea.value = serviceKey;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempTextArea);
+            alert('클라이언트 키가 복사되었습니다.');
+        }
+    </script>
 </head>
 <body id="page-top" th:class="${bodyClass}">
 <!-- 헤더 -->
@@ -120,7 +133,7 @@
                     <div id="client-id-container" class="team-content input-group">
                         <label form="client-id" class="input-group-text">Client ID</label>
                         <input id="client-id" class="form-control" disabled type="text"/>
-                        <button id="client-id-copy-btn" class="btn btn-success input-group-append">Copy</button>
+                        <button id="client-id-copy-btn" class="btn btn-success input-group-append" onclick="copyClientId()">Copy</button>
                     </div>
                     <!-- client id end -->
                     <!-- redirect urls start -->
@@ -537,5 +550,8 @@
             }
         });
     });
+
+
+
 </script>
 </html>
