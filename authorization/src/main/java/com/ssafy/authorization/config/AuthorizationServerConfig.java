@@ -1,12 +1,8 @@
 package com.ssafy.authorization.config;
 
-import static org.springframework.security.config.Customizer.*;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.function.Function;
-
+import com.ssafy.authorization.filter.CustomUsernamePasswordAuthenticationFilter;
+import com.ssafy.authorization.member.model.domain.Member;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,12 +16,16 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.server.authorization.OAuth2Authorization;
+import org.springframework.security.oauth2.server.authorization.OAuth2TokenType;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
+import org.springframework.security.oauth2.server.authorization.token.JwtEncodingContext;
+import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenCustomizer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -35,9 +35,13 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.CorsUtils;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import com.ssafy.authorization.filter.CustomUsernamePasswordAuthenticationFilter;
+import java.time.Instant;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.Function;
 
-import jakarta.servlet.http.HttpServletRequest;
+import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @EnableWebSecurity
@@ -163,6 +167,23 @@ public class AuthorizationServerConfig {
 	@Bean
 	public Function<OAuth2Authorization, List<SqlParameterValue>> authorizationParametersMapper() {
 		return new TestOauth2ServiceImpl.OAuth2AuthorizationParametersMapper();
+	}
+
+	@Bean
+	public OAuth2TokenCustomizer<JwtEncodingContext> jwtTokenCustomizer(UserDetailsService userDetailsService) {
+		return (context) -> {
+			OAuth2TokenType tokenType = context.getTokenType();
+			if (OAuth2TokenType.ACCESS_TOKEN.equals(tokenType)) {
+				String username = context.getPrincipal().getName();
+				Member user = (Member) userDetailsService.loadUserByUsername(username);
+				context.getClaims().issuedAt(Instant.now());
+				// 2 hour expiry time for access token
+				context.getClaims().expiresAt(Instant.now().plusSeconds(7200));
+			} else if (OAuth2TokenType.REFRESH_TOKEN.equals(tokenType)) {
+				// 10 days expiry time for refresh token
+				context.getClaims().expiresAt(Instant.now().plusSeconds(864000));
+			}
+		};
 	}
 
 

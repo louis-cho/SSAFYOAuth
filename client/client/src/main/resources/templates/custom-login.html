@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Custom OAuth2 Login</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<style>
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: #f7f9fc;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+    }
+
+    .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        background: #fff;
+        padding: 40px 60px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .login-box {
+        text-align: center;
+    }
+
+    .login-box h2 {
+        font-size: 24px;
+        color: #333;
+        margin-bottom: 20px;
+    }
+
+    .login-box p {
+        font-size: 18px;
+        color: #666;
+        margin-bottom: 30px;
+    }
+
+    .login-button {
+        background: none;
+        border: none;
+        padding: 0;
+        cursor: pointer;
+    }
+
+    .login-button img {
+        width: 250px;
+        height
+
+</style>
+<body>
+<div class="container">
+    <div class="login-box">
+        <h2>Welcome to SSAFY OAuth Developer Login !</h2>
+        <p>Please use the button below to log in with ssafyOAuth.</p>
+        <form th:action="@{/oauth2/authorization/ssafyOAuth}" method="post">
+            <button type="submit" class="login-button">
+                <img src="https://dagak.s3.ap-northeast-2.amazonaws.com/ssafy_login_large_narrow-removebg.png" alt="Login with ssafyOAuth">
+            </button>
+        </form>
+    </div>
+</div>
+</body>
+</html>

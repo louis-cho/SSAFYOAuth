@@ -22,4 +22,9 @@ public class RestClientConfig {
 		return new OAuth2Interceptor();
 	}
 
+	@Bean
+	public RestTemplate logoutRestTemplate(){
+		return new RestTemplate();
+	}
+
 }
