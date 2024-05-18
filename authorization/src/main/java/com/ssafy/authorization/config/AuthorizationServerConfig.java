@@ -62,12 +62,11 @@ public class AuthorizationServerConfig {
 		OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
 		http.getConfigurer(OAuth2AuthorizationServerConfigurer.class)
 			.authorizationEndpoint(auth -> auth
-				.consentPage("/oauth2/consent"));
-		//                .oidc(withDefaults());
+				.consentPage("/oauth2/consent"))
+				.oidc(withDefaults());
 
 
 		http
-
 			.exceptionHandling((exceptions) -> exceptions
 				.defaultAuthenticationEntryPointFor(
 					new LoginUrlAuthenticationEntryPoint("/login"),

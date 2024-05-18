@@ -7,6 +7,7 @@ import java.util.Arrays;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
+import org.springframework.security.oauth2.core.oidc.OidcScopes;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
@@ -74,7 +75,11 @@ public class RegisteredClientRepositoryImpl implements RegisteredClientRepositor
 					});
 				})
 				.scopes(scopes ->{
-					Arrays.stream(scope).toList().forEach(s -> {scopes.add(s);});
+					Arrays.stream(scope).toList().forEach(s -> {
+						scopes.add(s);
+					});
+					scopes.add(OidcScopes.OPENID);
+					scopes.add(OidcScopes.PROFILE);
 				})
 				.tokenSettings(TokenSettings.builder()
 						.accessTokenTimeToLive(Duration.ofSeconds(7200)) // Access token expiry
@@ -121,8 +126,9 @@ public class RegisteredClientRepositoryImpl implements RegisteredClientRepositor
 				.scopes(scopes -> {
 					Arrays.stream(scope).toList().forEach(s -> {
 								scopes.add(s);
-							}
-					);
+							});
+					scopes.add(OidcScopes.OPENID);
+					scopes.add(OidcScopes.PROFILE);
 				})
 				.tokenSettings(TokenSettings.builder()
 						.accessTokenTimeToLive(Duration.ofSeconds(7200)) // Access token expiry
