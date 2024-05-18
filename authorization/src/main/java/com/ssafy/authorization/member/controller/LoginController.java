@@ -1,6 +1,8 @@
 package com.ssafy.authorization.member.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -16,8 +18,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.io.IOException;
 import java.security.Principal;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -44,7 +49,7 @@ public class LoginController {
 		return "login_test";
 	}
 
-	@GetMapping()
+	@GetMapping("/logout")
 	public String logout(){
 		log.debug("logout 호출");
 		return "login";
