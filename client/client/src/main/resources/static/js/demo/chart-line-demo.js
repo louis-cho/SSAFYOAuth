@@ -122,9 +122,11 @@ function fetchData() {
                        hourlyCounts[hour]++;
                    }
             });
+            const totalLogins = hourlyCounts.reduce((acc, count) => acc + count, 0);
 
             logChart.data.datasets[0].data = hourlyCounts;
             logChart.update();
+            document.getElementById('userLoginCount').innerText = totalLogins + " 회";
         })
         .catch(error => console.error('Error fetching data:', error));
 }
