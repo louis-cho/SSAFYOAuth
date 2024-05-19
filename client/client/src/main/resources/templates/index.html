@@ -169,17 +169,7 @@
                         <label for="email">이메일 추가</label>
                         <input type="email" class="form-control" id="email" name="email" required>
                     </div>
-                    <div class="form-group" id="domainGroup">
-                        <label for="domainUrl">도메인 URL</label>
-                        <div class="input-group">
-                            <input type="url" class="form-control" id="domainUrl" name="domainUrl" required>
-                            <div class="input-group-append">
-                                <button type="button" class="btn btn-outline-secondary"
-                                        onclick="addInputField('domainGroup')">+
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+
                     <div class="form-group" id="redirectGroup">
                         <label for="redirectUrl">리다이렉트 URL</label>
                         <div class="input-group">
@@ -224,7 +214,6 @@
             teamName: $('#teamName').val(),
             serviceName: $('#serviceName').val(),
             teamMember: [$('#email').val()], // If this should be an array
-            domainUrl: [$('#domainUrl').val()],
             redirectionUrl: [$('#redirectUrl').val()]
         });
         var token = getCookie("access_token")
@@ -241,7 +230,6 @@
                 var teamName = response.vo.teamName || 'Name not returned'; // Fallback if response does not include the name
                 var serviceName = response.vo.serviceName || 'Service not specified';
                 var teamMember = response.vo.teamMember || 'No email returned';
-                var domainUrl = response.vo.domainUrl || 'No domain returned';
                 var redirectionUrl = response.vo.redirectionUrl || 'No redirect URL returned';
 
                 var teamList = document.getElementById('teamList');
@@ -252,7 +240,6 @@
                     <h5 class="card-title">${teamName}</h5>
                     <p class="card-text">서비스: ${serviceName}</p>
                     <p class="card-text">팀원: ${teamMember}</p>
-                    <p class="card-text">도메인: ${domainUrl}</p>
                     <p class="card-text">리다이렉트: ${redirectionUrl}</p>
                 </div>
             </div>`;
