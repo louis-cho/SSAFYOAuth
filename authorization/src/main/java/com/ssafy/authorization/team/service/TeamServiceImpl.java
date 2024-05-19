@@ -618,4 +618,10 @@ public class TeamServiceImpl implements TeamService {
 		}
 		return data;
 	}
+
+	@Override
+	public DeveloperTeamEntity findByClientId(String clientId) {
+		return developerTeamRepository.findByClientId(clientId);
+	}
+
 }

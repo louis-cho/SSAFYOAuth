@@ -1,11 +1,10 @@
 package com.ssafy.authorization.member.controller;
 
+import com.ssafy.authorization.team.entity.DeveloperTeamEntity;
+import com.ssafy.authorization.team.service.TeamService;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationConsent;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationConsentService;
@@ -13,16 +12,12 @@ import org.springframework.security.oauth2.server.authorization.client.Registere
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
-import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.io.IOException;
 import java.security.Principal;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -38,6 +33,7 @@ public class LoginController {
 	private final OAuth2AuthorizationConsentService authorizationConsentService;
 	private final RegisteredClientRepository registeredClientRepository;
 	private final RequestCache requestCache = new HttpSessionRequestCache();
+	private final TeamService teamService;
 
 	@GetMapping("/login")
 	public String login(HttpServletRequest request, Model model) {
@@ -66,6 +62,7 @@ public class LoginController {
 		Set<String> scopesToApprove = new HashSet<>();
 		Set<String> previouslyApprovedScopes = new HashSet<>();
 		RegisteredClient client = registeredClientRepository.findByClientId(clientId);
+		DeveloperTeamEntity teamData = teamService.findByClientId(clientId);
 		OAuth2AuthorizationConsent previousConsent = this.authorizationConsentService.findById(client.getId(), principal.getName());
 		for (String scopeFromRequest : StringUtils.delimitedListToStringArray(scope, " ")) {
 			if (previousConsent != null && previousConsent.getScopes().contains(scopeFromRequest)) {
@@ -74,12 +71,13 @@ public class LoginController {
 				scopesToApprove.add(scopeFromRequest);
 			}
 		}
-
 		model.addAttribute("state", state);
 		model.addAttribute("clientId", clientId);
 		model.addAttribute("scopes", withDescription(scopesToApprove));
 		model.addAttribute("previouslyApprovedScopes", withDescription(previouslyApprovedScopes));
 		model.addAttribute("principalName", principal.getName());
+		model.addAttribute("clientName", teamData.getServiceName());
+		model.addAttribute("image", teamData.getServiceImage());
 
 		return "consent";
 	}

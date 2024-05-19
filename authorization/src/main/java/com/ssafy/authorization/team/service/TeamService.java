@@ -2,8 +2,8 @@ package com.ssafy.authorization.team.service;
 
 import java.util.Map;
 
+import com.ssafy.authorization.team.entity.DeveloperTeamEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ssafy.authorization.team.vo.ServiceNameUpdateVo;
@@ -41,4 +41,6 @@ public interface TeamService {
 	Map acceptInvite(Integer teamSeq, Authentication authentication);
 
 	Map rejectInvite(Integer teamSeq, Authentication authentication);
+
+	DeveloperTeamEntity findByClientId(String clientId);
 }
