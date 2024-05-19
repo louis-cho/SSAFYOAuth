@@ -31,7 +31,6 @@ public class DevelopController {
 
 	@GetMapping("/team")
 	public String team(){
-
 		return "login";
 	}
 

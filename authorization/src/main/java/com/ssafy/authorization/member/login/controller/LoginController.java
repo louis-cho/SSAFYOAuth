@@ -60,6 +60,7 @@ public class LoginController {
         final String loginRateKey = LoginRateLimiter.getCountIndex(request);
         final String loginIndexKey = LoginRateLimiter.getIndex(request);
 
+
         if(Boolean.TRUE.equals(redisTemplate.hasKey(loginRateKey))) {
             Long loginRate = redisTemplate.opsForValue().increment(loginRateKey);
             if(loginRate != null && loginRate.compareTo(LIMIT_PER_PERIOD) > 0) {
