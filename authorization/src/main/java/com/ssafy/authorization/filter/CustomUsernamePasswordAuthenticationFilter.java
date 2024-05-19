@@ -8,6 +8,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -28,6 +29,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.web.client.RestTemplate;
 
 @Component
 public class CustomUsernamePasswordAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
@@ -39,10 +41,13 @@ public class CustomUsernamePasswordAuthenticationFilter extends UsernamePassword
     private final RegisteredClientRepository registeredClientRepository;
     private final BlockedCountriesRepository blockedCountriesRepository;
 
+    private RedisTemplate<String, String> redisTemplate;
+
     @Autowired
     public CustomUsernamePasswordAuthenticationFilter(@Lazy AuthenticationManager authenticationManager, CustomAuthenticationSuccessHandler successHandler,
                                                       CustomAuthenticationFailureHandler failureHandler, LoginStatsService loginStatsService
-            , @Lazy RegisteredClientRepository registeredClientRepository, BlockedCountriesRepository blockedCountriesRepository) {
+            , @Lazy RegisteredClientRepository registeredClientRepository, BlockedCountriesRepository blockedCountriesRepository
+    , RedisTemplate<String, String> redisTemplate) {
 		this.blockedCountriesRepository = blockedCountriesRepository;
 
 		setAuthenticationManager(authenticationManager);
@@ -50,6 +55,7 @@ public class CustomUsernamePasswordAuthenticationFilter extends UsernamePassword
         this.failureHandler = failureHandler;
         this.loginStatsService = loginStatsService;
         this.registeredClientRepository = registeredClientRepository;
+        this.redisTemplate =redisTemplate;
     }
 
     public void setCustomAuthenticationManager(AuthenticationManager authenticationManager) {
@@ -79,6 +85,7 @@ public class CustomUsernamePasswordAuthenticationFilter extends UsernamePassword
                     boolean flag = Arrays.stream(block.getCountryList().split(",")).anyMatch(e -> e.equals(languageCode));
 
                     if(flag){
+                        redisTemplate.opsForValue().increment(String.valueOf(client.getId()));
                         throw new RuntimeException("차단된 국가입니다");
 					}
 
@@ -101,6 +108,16 @@ public class CustomUsernamePasswordAuthenticationFilter extends UsernamePassword
             String[] clientIds = parameterMap.get("client_id");
             if (clientIds != null && clientIds.length > 0) {
                 String clientId = clientIds[0];
+                String email = authResult.getName();
+                RegisteredClient client = registeredClientRepository.findByClientId(clientId);
+                LoginStats loginStats = new LoginStats(email, client.getId(), Instant.now());
+                loginStats.setSuccess(true);
+                loginStatsService.save(loginStats);
+            }
+        }
+        else if(request != null){
+            String clientId = request.getParameter("clientId");
+            if (clientId != null && (!clientId.isEmpty() || !clientId.isBlank())) {
                 String email = authResult.getName();
                 RegisteredClient client = registeredClientRepository.findByClientId(clientId);
                 LoginStats loginStats = new LoginStats(email, client.getId(), Instant.now());
