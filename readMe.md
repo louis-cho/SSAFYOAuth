@@ -1,7 +1,8 @@
 # 🏴‍☠️ SSAFYAuth
 ## ✨서비스 설명
 
-![main](./README_IMAGE/main.png)
+![image](https://github.com/Juyeori/SSAFYOAuth/assets/98978787/11c711d9-d1c9-4e92-bdab-a71e9a9689bb)
+
 
 ### 개요 🧾
 
@@ -9,26 +10,45 @@
 - 서비스 명 : **SSAFYAuth**
 
 ### 주요 기능 💡
-- `인증, 인가` OAuth2.0 표준 스펙에 맞췄으니, 우리 서비스로 쉽게 인증, 인가를 구현해보자!
-- `모니터링` 우리 서비스엔 어느 시간대에 유저가 많이 들어오나 확인해보자!
+- `인증, 인가` OAuth2.0 표준 스펙에 맞췄으니, 싸피 교육생들은 별도의 회원 가입 없이 우리 서비스로 쉽게 인증, 인가를 구현해보자!
+- `모니터링` 우리 서비스엔 어떤 유저가 있는 확인해보자!
 
-## 🔎 서비스 소개
+## 🔎 인가 과정
+![image](https://github.com/Juyeori/SSAFYOAuth/assets/98978787/19c8a232-7057-44a2-b8bf-514205ebb3f5)
 
-![rule](./README_IMAGE/rule.png)
-![page](./README_IMAGE/page.png)
-![store](./README_IMAGE/store.png)
+## 🔎 인증, 인가 API
+![image](https://github.com/Juyeori/SSAFYOAuth/assets/98978787/b9de39ba-7cdf-404c-9405-25b093b24818)
+
 
 ## 🖥️ 화면 예시
-|렌더링|상점|
+|**사용자 로그**|**로그인 기록**|
 |:--:|:--:|
-|![rendering](./README_IMAGE/rendering.gif)|![storegif](./README_IMAGE/storegif.gif)|
-|**마이페이지**|**사용자게임**|
-|![mypage](./README_IMAGE/mypage.gif)|![room](./README_IMAGE/room.gif)|
-|**인게임(시작 위치)**|**인게임(이동)**|
-|![start](./README_IMAGE/start.gif)|![move](./README_IMAGE/move.gif)|
-|**인게임(조사)**|**인게임(체포)**|
-|![investigate](./README_IMAGE/investigate.gif)|![arrest](./README_IMAGE/arrestgif.gif)|
+|![image](https://github.com/Juyeori/SSAFYOAuth/assets/98978787/6475c664-3537-4d1a-a892-6367a83c02f1)|![image](https://github.com/Juyeori/SSAFYOAuth/assets/98978787/08c8a9b0-41e7-4dff-ba68-092c051871f4)|
 
+## Spring Security .yml 예시
+```
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          ssafyOAuth:
+            provider: ssafyOAuth
+            client-id: 55853ea6-cd86-4e36-bbea-e2036954e9c4
+            client-secret: 1234
+            authorization-grant-type: authorization_code
+            redirect-uri: http://localhost:8080/login/oauth2/code/ssafyOAuth
+            scope: email,image
+            client-name: ssafyOAuth
+
+
+        provider:
+          ssafyOAuth:
+            authorization-uri: https://ssafyauth-authorization.duckdns.org/oauth2/authorize
+            token-uri: https://ssafyauth-authorization.duckdns.org/oauth2/token
+            user-info-uri: https://ssafyauth-resource.duckdns.org/user/info
+            user-name-attribute: email
+```
 
 
 ## ⚒️ 기술 소개
@@ -44,8 +64,8 @@
 ### 사용 언어 및 라이브러리
 |분류|이름 및 버전|
 |:---|:---|
-|**Frontend**|- npm: >=9 <br> - node: >=18 <br> - TypeScript: >=5 <br> - React: >=18 <br> - Next.js: >=14 <br> - Three.js: 0.162.0 <br> - @stomp/stompjs: 7.0.0 <br> - Zustand: 4.5.2 <br> - sass: 1.71.1 <br> - @emotion/react: 11.11.4, @emotion/styled: 11.11.0 <br> - prettier: 3.2.5 <br> - eslint: >=8 <br> - jest: >=29 <br> - leva: 0.9.35|
-|**Backend**|- JAVA (Zulu 21) <br> - Gradle 8.5 <br> - SpringBoot 3.2.1 <br> - JPA <br> - Lombok 1.18.20 <br> - security6, oauth-client2, jjwt 0.11.5 <br> - JUnit5 <br> - Stomp 2.3.4|
+|**Frontend**|- thymeleaf <br> - chart.js: 2.9.4 <br> - bootstrap: 4.6.0 <br> - jQuery: 3.6.0 <br> - fontawesome-free: 5.15.3 <br> - jQuery Easing: 1.4.1 <br> - DataTables: 1.10.24|
+|**Backend**|- JAVA (Zulu 21) <br> - Gradle 8.5 <br> - SpringBoot 3.2.4 <br> - JPA <br> - Lombok 1.18.20 <br> - security6, oauth-client2, jjwt 0.11.5 <br> - JUnit5 <br> - oauth2-authorization-server <br> - oauth2-resource-server <br> - websocket <br> - batch <br> - actuator <br> - mail|
 
 
 
@@ -57,7 +77,8 @@
 |커뮤니케이션|- Notion <br> - Mattermost <br> - Discord|
 
 ### 아키텍처 다이어그램
-![image.png](./README_IMAGE/architecture.png)
+![image](https://github.com/Juyeori/SSAFYOAuth/assets/98978787/e77faef0-0653-44e3-a864-f2d0fa5bb802)
+
 
 ### Git Commit 컨벤션
 
@@ -84,8 +105,6 @@ ex) 회원가입 기능
 - `feat/function1`
 - `feat/function2`
 
-### ERD
-![erd.png](./README_IMAGE/erdiagram.png)
 
 ### EC2 포트 정리
 *Manager(main) Server*
@@ -119,4 +138,4 @@ ex) 회원가입 기능
 ## 팀원
 |**김다나**|**김시은**|**서재화**|**이동재**|**이주연**|**조현우**|
 |:--:|:--:|:--:|:--:|:--:|:--:|
-|Fullstack|Fullstack|Fullstack|Fullstack|인프라|Fullstack <br> 팀장|
+|Fullstack|Fullstack|Fullstack|Fullstack|Infra|Fullstack <br> 팀장|
