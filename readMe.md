@@ -1,4 +1,4 @@
-# 🏴‍☠️ SSAFYAuth
+# SSAFYAuth
 ## ✨서비스 설명
 
 ![image](https://github.com/Juyeori/SSAFYOAuth/assets/98978787/11c711d9-d1c9-4e92-bdab-a71e9a9689bb)
