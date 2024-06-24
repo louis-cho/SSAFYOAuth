@@ -57,6 +57,7 @@
 <summary>우선 순위 재계산 코드</summary>
 
 ```java
+<<<<<<< HEAD
 @Scheduled(fixedRate = 5000)
 private void schedulePriorityRestoration() {
     LocalDateTime current = LocalDateTime.now();
@@ -87,6 +88,38 @@ private void restorePriority(PriorityQueueNode node, Iterator<PriorityQueueNode>
 
 </details>
 <br><br>
+=======
+    @Scheduled(fixedRate = 5000)
+    private void schedulePriorityRestoration() {
+        LocalDateTime current = LocalDateTime.now();
+        AtomicInteger qSize = new AtomicInteger();
+
+        for (ConcurrentLinkedQueue<PriorityQueueNode> queue : procs) {
+            Iterator<PriorityQueueNode> iterator = queue.iterator();
+            while (iterator.hasNext()) {
+                PriorityQueueNode node = iterator.next();
+                qSize.addAndGet(node.getRequests().size());
+                if (node.getLastAccessTime() != null && node.getLastAccessTime().plusSeconds(10).isBefore(current)) {
+                    restorePriority(node, iterator); // restorePriority에 iterator를 전달하여 제거 수행
+                }
+            }
+        }
+        queueSize = qSize;
+    }
+
+    private void restorePriority(PriorityQueueNode node, Iterator<PriorityQueueNode> iterator) {
+        int currentPriority = getCurrentPriority(node.getTeamId());
+        int newPriority = Math.max(0, currentPriority / 10);
+        teamTpsMap.get(node.getTeamId()).set(newPriority);
+
+        iterator.remove(); // 안전하게 현재 요소를 제거
+        procs[newPriority].add(node); // 새 우선순위에 노드를 추가
+    }
+
+```
+
+</details>
+>>>>>>> 7ad803fb553cd0622e3a0d4a858cc420ec74bd37
 
 해당 연산은 저희 인증 서비스를 이용하는 다양한 도메인의 공정성을 만족시키기 위해 도입하였으며, JAVA 21부터 적용된 Virtual Thread를 활용한 멀티 스레드 프로그래밍을 통해 개선된 성능을 보입니다.
 
@@ -94,6 +127,10 @@ private void restorePriority(PriorityQueueNode node, Iterator<PriorityQueueNode>
 <summary>Virtual Thread 적용</summary>
 
 ```java
+<<<<<<< HEAD
+=======
+
+>>>>>>> 7ad803fb553cd0622e3a0d4a858cc420ec74bd37
 public class AuthorizationApplication implements ApplicationRunner {
 
   private final VirtualThreadExecutor virtualThreadExecutor;
@@ -101,15 +138,24 @@ public class AuthorizationApplication implements ApplicationRunner {
 
   @Override
   public void run(ApplicationArguments args) throws Exception {
+<<<<<<< HEAD
     virtualThreadExecutor.execute(loginQueueManager);
+=======
+    	virtualThreadExecutor.execute(loginQueueManager);
+>>>>>>> 7ad803fb553cd0622e3a0d4a858cc420ec74bd37
   }
 }
 ```
 
 </details>
+<<<<<<< HEAD
 <br><br>
 
 또한 동시성 문제를 해결하기 위해 Non-Blocking CAS 연산을 사용하는 Concurrent 컬렉션과 Atomic 자료형을 사용해 임계 영역 동시 접근을 방지하였습니다.
+=======
+
+또한 동시성 문제를 해결하기 위해 Non-Blocking CAS 연산을 사용하는 Concurrent 컬랙션와 Atomic 자료형을 사용해 임계 영역 동시 접근을 방지하였습니다.
+>>>>>>> 7ad803fb553cd0622e3a0d4a858cc420ec74bd37
 
 <details>
 <summary>Concurrent Collection & Atomic Data Type</summary>
@@ -130,7 +176,10 @@ public class LoginQueueManager implements Runnable {
 ```
 
 </details>
+<<<<<<< HEAD
 <br><br>
+=======
+>>>>>>> 7ad803fb553cd0622e3a0d4a858cc420ec74bd37
 
 ## 🖥️ 화면 예시
 
